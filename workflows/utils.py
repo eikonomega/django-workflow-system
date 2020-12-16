@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from workflows.models.collection import WorkflowCollection, WorkflowCollectionMember
+from .models import WorkflowCollection, WorkflowCollectionMember
 
 
 class EditLinkToInlineObject(object):
