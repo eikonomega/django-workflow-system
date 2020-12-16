@@ -22,12 +22,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """
-        This command has three jobs related to Survey Workflow Collection Assignments.
+        This command has three jobs related to Workflow Collection Assignments.
 
         First, it takes every assignment which is in progress but has a finished
         engagement, and marks it as closed complete
 
-        Next it takes every Assignment 30 days old which is not complete, and not in
+        Next it takes every Assignment x days old which is not complete, and not in
         the list of excluded workflow collections, and marks it as closed-incomplete
 
         Finally, this adds an end date for workflow collection engagements which are from
@@ -79,6 +79,7 @@ class Command(BaseCommand):
         assignments_marked_incomplete_count = assignments_marked_incomplete.update(
             status=WorkflowCollectionAssignment.CLOSED_INCOMPLETE)
 
+        # Marks any lingering engagements as finished
         engagements_marked_finished = WorkflowCollectionEngagement.objects.filter(
             finished__isnull=True,
             workflowcollectionassignment__status=WorkflowCollectionAssignment.CLOSED_INCOMPLETE)
