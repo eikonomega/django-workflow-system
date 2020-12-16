@@ -1,23 +1,24 @@
-import logging
 from datetime import timedelta
 
 from django.core.management import BaseCommand
-from django.db.models import Q
 from django.utils import timezone
 
-from website.utils.logging_utils import generate_extra
-from website.workflows.models import (
+from ...models import (
     WorkflowCollectionAssignment,
     WorkflowCollectionEngagement,
 )
 
-logger = logging.getLogger(__name__)
-
 
 class Command(BaseCommand):
-    """This command closes complete assignments, and incomplete assignments after 30 days"""
+    """
+    This command closes complete assignments, and incomplete assignments after 30 days
+    """
 
-    excluded_workflow_collections = ("demographics_survey_welcome_collection",)
+    def add_arguments(self, parser):
+        parser.add_argument('-d', '--days_old', type=str, required=True,
+                            help='How many days old an assignment will be CLOSED after')
+        parser.add_argument('-t', '--type', type=str, required=True,
+                            help='Which type of Assignments to terminate. Options are ["SURVEY", "ACTIVITY"], for both type "survey,activity"')
 
     def handle(self, *args, **options):
         """
@@ -34,95 +35,64 @@ class Command(BaseCommand):
         """
         print("Starting Assignment Terminator. Hasta la vista, Baby!", file=self.stdout)
 
-        # mark any in-progress survey assignments with finished engagements as complete
-        assignments_marked_complete = WorkflowCollectionAssignment.objects.filter(
-            workflow_collection__category="SURVEY",
-            status=WorkflowCollectionAssignment.IN_PROGRESS,
-            engagement__finished__isnull=False,
-        )
-        
-        for assignment in assignments_marked_complete:
-            logger.info(
-                "Assignment terminator marked assigment of collection %s to user %s as CLOSED_COMPLETE",
-                assignment.workflow_collection.code,
-                assignment.user,
-                extra=generate_extra(
-                    event_code="WORKFLOW_COLLECTION_ASSIGNMENT_COMPLETED",
-                    workflow_collection_assignment=assignment
-                ),
-            )
-        assignments_marked_complete_count = assignments_marked_complete.update(
-            status=WorkflowCollectionAssignment.CLOSED_COMPLETE
-        )
+        if options['type']:
+            list_of_types = ["SURVEY", "ACTIVITY"]
+            types = options['type'].split(',')
+            assignment_types = []
+            for item in types:
+                if item.upper() not in list_of_types:
+                    print(f'{item} not a valid type. Options are {list_of_types}')
+                    return
+                else:
+                    assignment_types.append(item.upper())
 
-        # takes all assignments which are...
-        #   * surveys
-        #   * old
-        #   * not complete
-        #   * not excluded
-        # ... and marks them as incomplete
+        if options['days_old']:
+            try:
+                days_old = int(options['days_old'])
+            except ValueError:
+                print(f"{options['days_old']} is not an integer.")
+                return
+
+        # Mark any in progress assignments with finished engagements as complete
+        assignments_marked_complete = WorkflowCollectionAssignment.objects.filter(
+            workflow_collection__category__in=assignment_types,
+            status=WorkflowCollectionAssignment.IN_PROGRESS,
+            engagement__finished__isnull=False)
+
+        for assignment in assignments_marked_complete:
+            print(f"Assignment Terminator marked assignment of collection \
+                {assignment.workflow_collection.code} to user {assignment.user} as CLOSED_COMPLETE")
+
+        assignments_marked_complete_count = assignments_marked_complete.update(
+            status=WorkflowCollectionAssignment.CLOSED_COMPLETE)
+
+        # Mark any in progress assignments with unfinished engagements as incomplete
         assignments_marked_incomplete = WorkflowCollectionAssignment.objects.filter(
-            workflow_collection__category="SURVEY",
-            assigned_on__lte=timezone.now() - timedelta(days=30),
-        ).exclude(
+            workflow_collection__category__in=assignment_types,
+            assigned_on__lte=timezone.now() - timedelta(days=days_old)).exclude(
             status__in=(
                 WorkflowCollectionAssignment.CLOSED_COMPLETE,
-                WorkflowCollectionAssignment.CLOSED_INCOMPLETE,
-            )
-        ).exclude(
-            workflow_collection__code__in=self.excluded_workflow_collections
-        )
+                WorkflowCollectionAssignment.CLOSED_INCOMPLETE))
         for assignment in assignments_marked_incomplete:
-            logger.info(
-                "Assignment terminator marked assigment of collection %s to user %s as CLOSED_INCOMPLETE",
-                assignment.workflow_collection.code,
-                assignment.user,
-                extra=generate_extra(
-                    event_code="WORKFLOW_COLLECTION_ASSIGNMENT_MARKED_INCOMPLETE",
-                    workflow_collection_assignment=assignment
-                ),
-            )
+            print(f"Assignment Terminator marked assignment of collection \
+                {assignment.workflow_collection.code} to user{assignment.user} as CLOSED_INCOMPLETE ")
         assignments_marked_incomplete_count = assignments_marked_incomplete.update(
-            status=WorkflowCollectionAssignment.CLOSED_INCOMPLETE
-        )
+            status=WorkflowCollectionAssignment.CLOSED_INCOMPLETE)
 
-        # mark any engagements for closed incomplete assignments as finished
         engagements_marked_finished = WorkflowCollectionEngagement.objects.filter(
             finished__isnull=True,
-            workflowcollectionassignment__status=WorkflowCollectionAssignment.CLOSED_INCOMPLETE,
-        )
+            workflowcollectionassignment__status=WorkflowCollectionAssignment.CLOSED_INCOMPLETE)
         for engagement in engagements_marked_finished:
-            logger.info(
-                "Assignment terminator marked engagement of collection %s to user %s as finished",
-                engagement.workflow_collection.code,
-                engagement.user,
-                extra=generate_extra(
-                    event_code="WORKFLOW_COLLECTION_ENGAGEMENT_MARKED_COMPLETE",
-                    workflow_collection_engagement=engagement,
-                ),
-            )
+            print(f"Assignment Terminator marked engagement of collection \
+                {engagement.workflow_collection.code} to user{engagement.user} as finished. ")
         engagements_marked_finished_count = engagements_marked_finished.update(
-            finished=timezone.now(),
-        )
+            finished=timezone.now())
 
         print("Finished Assignment Terminator.", file=self.stdout)
-        print(
-            f"{assignments_marked_incomplete_count} WorkflowCollectionAssignments changed to CLOSED_INCOMPLETE.",
-            file=self.stdout,
-        )
-        print(
-            f"{assignments_marked_complete_count} WorkflowCollectionAssignments changed to CLOSED_COMPLETE.",
-            file=self.stdout,
-        )
+        print(f"{assignments_marked_incomplete_count} WorkflowCollectionAssignments changed to CLOSED_INCOMPLETE.",
+              file=self.stdout)
+        print(f"{assignments_marked_complete_count} WorkflowCollectionAssignments changed to CLOSED_COMPLETE.",
+              file=self.stdout)
+        print(f"{engagements_marked_finished_count} WorkflowCollectionEngagements changed to finished.",
+              file=self.stdout)
         print("I'll be back...", file=self.stdout)
-        logger.info(
-            "Finished assignment terminator: complete/incomplete %d/%d",
-            assignments_marked_complete_count,
-            assignments_marked_incomplete_count,
-            extra={
-                "event_code": "ASSIGNMENT_TERMINATOR",
-                "assignments_marked_complete_count": assignments_marked_complete_count,
-                "assignments_marked_incomplete_count": assignments_marked_incomplete_count,
-                "engagements_marked_finished_count": engagements_marked_finished_count,
-            },
-        )
