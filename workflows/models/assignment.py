@@ -19,20 +19,13 @@ class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
     assignment. The most typical example of this would be 
     a research survey.
 
-    Assignments
-    -----------
-    id : uuid
-        The unique UUID of the record.
-    workflow_collection : foreign key
-        The WorkflowCollection object associated with the Assignment.
-    user : foreign key
-        The User being assigned the Workflow.
-    assigned_on: datetime
-        The date of the Assignment.
-    status: charfield
-        Whether the assignment is active, stale, or complete
-    engagement: foreign key
-        Optional Engagement object
+    Attributes:
+        id (UUIDField): The unique UUID of the record.
+        workflow_collection (ForeignKey): The WorkflowCollection object associated with the Assignment.
+        user (ForeignKey): The User being assigned the Workflow.
+        assigned_on (DateField): The date of the assignment.
+        status (CharField): Whether the assignment is active, stale, or complete.
+        engagement (ForeignKey): Optional Engagement object
     """
     ASSIGNED = 'ASSIGNED'
     IN_PROGRESS = 'IN_PROGRESS'

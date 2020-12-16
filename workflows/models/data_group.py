@@ -7,14 +7,13 @@ from workflows.models.abstract_models import CreatedModifiedAbstractModel
 
 class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
     """
-    id : UUID
-        The UUID of the DataGroup
-    parent_group : UUID (foreign key)
-        the parent group of this folder. 'blank' signifies this DataGroup has no parent :'(
-    name : str
-        Human friendly name.
+    Definition of a WorkflowStepDataGroup
 
-
+    Attributes:
+        id (UUIDField): The UUID of the DataGroup
+        parent_group (ForeignKey): The parent group of this folder. 'blank' signifies this DataGroup has no parent
+        name (CharField): Human friendly name.
+        description (TextField): The description of the data group.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     parent_group = models.ForeignKey(

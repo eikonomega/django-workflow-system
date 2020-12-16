@@ -30,13 +30,9 @@ class WorkflowStepUITemplate(CreatedModifiedAbstractModel):
     indicate to various potential interfaces which design template a
     Workflow author intended to be used for a given Workflow step.
 
-    Attributes
-    ----------
-    id: uuid
-        The UUID for the database record.
-    name: CharField
-        The name of the step template
-
+    Attributes:
+        id (UUIDField): The UUID for the database record.
+        name (CharField): The name of the step template
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200, unique=True)
@@ -60,29 +56,20 @@ class WorkflowStep(CreatedModifiedAbstractModel):
     - Each Step MAY have one or more associated StepAudio objects.
     - Each Step MAY have one or more associated StepInput objects.
 
-    Attributes
-    ----------
+    Attributes:
+        id (UUIDField): The UUID for the database record.
+        workflow (ForeignKey): The Workflow associated with the step
+        code (CharField): The identifying code of the step
+        order (PositiveIntegerField): The order in which the step occurs
+        ui_template (ForeignKey): The ui template associated with the step
+        data_groups (ManyToMany): A list of workflow step data groups this step belongs to
 
-    id : uuid
-        The UUID for the database record.
-    workflow : UUID (foreign key)
-        The Workflow associated with the step
-    code : CharField
-        The identifying code of the step
-    order : PositiveIntergerField
-        The order in which the step occurs
-    ui_template : UUID (foreign key)
-        The ui template associated with the step
-    data_groups : Many to many relationship
-        A list of workflow step data groups this step belongs to
-
-    Notes
-    -----
-    There is some unusual syntax on "unique" constraints for this model that
-    developers may not be used to seeing. Essentially, we specify
-    that there are two separate uniqueness contraints to fulfill:
-        * workflow/code combination must be unique
-        * workflow/order combination must be unique
+    Notes:
+        There is some unusual syntax on "unique" constraints for this model that
+        developers may not be used to seeing. Essentially, we specify
+        that there are two separate uniqueness contraints to fulfill:
+            * workflow/code combination must be unique
+            * workflow/order combination must be unique
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
@@ -110,14 +97,10 @@ class WorkflowStepDependencyGroup(CreatedModifiedAbstractModel):
     This model allows multiple step dependencies to be grouped together as a
     logical set of dependencies.
 
-    Attributes
-    ----------
-    id : uuid
-        The unique UUID for the database record.
-    workflow_collection : UUID (foreign key)
-       The Workflow Collection of the Step's Workflow
-    workflow_step : UUID (foreign key)
-        The WorkflowStep object that will have a dependency.
+    Attributes:
+        id (UUIDField): The unique UUID for the database record.
+        workflow_collection (ForeignKey): The Workflow Collection of the Step's Workflow
+        workflow_step (ForeignKey): The WorkflowStep object that will have a dependency.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -153,17 +136,12 @@ class WorkflowStepDependencyDetail(CreatedModifiedAbstractModel):
     This model represents a single dependency specification
     within a dependency group.
 
-    Attributes
-    ----------
-    id : uuid
-        The unique UUID for the database record.
-    dependency_group : UUID (foreign key)
-        The Dependency Group the Step Dependency belongs to.
-    dependency_step : UUID (foreign key)
-        The WorkflowStep object that is being depended on.
-    required_response : JSONField
-        The user response that is required for the dependency to be
-        considered fulfilled.
+    Attributes:
+        id (UUIDField): The unique UUID for the database record.
+        dependency_group (ForeignKey): The Dependency Group the Step Dependency belongs to.
+        dependency_step (ForeignKey): The WorkflowStep object that is being depended on.
+        required_response (JSONField): The user response that is required for the dependency to be
+                                       considered fulfilled.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     dependency_group = models.ForeignKey(
@@ -256,22 +234,15 @@ class WorkflowStepText(CreatedModifiedAbstractModel):
     A WorkFlow author is allowed to specify an arbitrary number
     of text elements to a given WorkflowStep.
 
-    Attributes
-    ----------
-    id : uuid
-        The unique UUID for the database record.
-    workflow_step : ForeignKey
-        The WorkflowStep object that will own this object.
-    ui_identifier : CharField
-        A simple string which is used to indicate 
-        to a user interface where to display this object
-        within a template.
-    content : CharField
-        The actual text.
-    storage_value: PositiveIntergerField
-        The value that will be stored, in place of direct user input.
-        This is used when multiple WorkflowStepInputs are used to represent single-choice options.
-
+    Attributes:
+        id (UUIDField): The unique UUID for the database record.
+        workflow_step (ForeignKey): The WorkflowStep object that will own this object.
+        ui_identifier (CharField): A simple string which is used to indicate to a user interface
+                                   where to display this object within a template.
+        content (CharField): The actual text.
+        storage_value (IntegerField): The value that will be stored, in place of direct user input.
+                                      This is used when multiple WorkflowStepInputs are used to
+                                      represent single-choice options.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow_step = models.ForeignKey(
@@ -297,19 +268,13 @@ class WorkflowStepImage(CreatedModifiedAbstractModel):
     A WorkFlow author is allowed to specify an arbitrary number
     of images elements to a given WorkflowStep.
 
-    Attributes
-    -----------
-    id : uuid
-        The unique UUID for the database record.
-    workflow_step: ForeignKey
-        The Workflow Step associated with the Image
-    ui_identifier: CharField
-        A simple string which is used to indicate 
-        to a user interface where to display this object
-        within a template.
-    url: ImageField
-        The image location
-
+    Attributes:
+        id (UUIDField): The unique UUID for the database record.
+        workflow_step (ForeignKey): The Workflow Step associated with the Image
+        ui_identifier (CharField): A simple string which is used to indicate 
+                                   to a user interface where to display this object
+                                   within a template.
+        url (ImageField): The image location
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow_step = models.ForeignKey(
@@ -336,20 +301,14 @@ class WorkflowStepVideo(CreatedModifiedAbstractModel):
     A WorkFlow author is allowed to specify an arbitrary number
     of video elements to a given WorkflowStep.
 
-    Attributes
-    -----------
-    id: uuid
-        The UUID for the database record.
-    workflow_step: UUID(ForeignKey)
-        The Workflow Step associated with the video
-    ui_identifier: CharField
-        A simple string which is used to indicate 
-        to a user interface where to display this object
-        within a template.
-    preview_image_url: URLField
-        The location of an image to display before the video plays
-    url: URLField
-        The video location
+    Attributes:
+        id (UUIDField): The UUID for the database record.
+        workflow_step (ForeignKey): The Workflow Step associated with the video
+        ui_identifier (CharField): A simple string which is used to indicate 
+                                   to a user interface where to display this object
+                                   within a template.
+        preview_image_url (CharField): The location of an image to display before the video plays
+        url (URLField): The video location
 
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -375,18 +334,13 @@ class WorkflowStepAudio(CreatedModifiedAbstractModel):
     A WorkFlow author is allowed to specify an arbitrary number
     of audio elements to a given WorkflowStep.
 
-    Attributes
-    -----------
-    id: uuid
-        The UUID for the database record.
-    workflow_step: UUID(ForeignKey)
-        The Workflow Step associated with the audio
-    ui_identifier: CharField
-        A simple string which is used to indicate
-        to a user interface where to display this object
-        within a template.
-    url: FileField
-        The location of the audio
+    Attributes:
+        id (UUIDField): The UUID for the database record.
+        workflow_step (ForeignKey): The Workflow Step associated with the audio
+        ui_identifier (ForeignKey): A simple string which is used to indicate
+                                    to a user interface where to display this object
+                                    within a template.
+        url (FileField): The location of the audio
 
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -414,23 +368,16 @@ class WorkflowStepInput(CreatedModifiedAbstractModel):
     A WorkFlow author is allowed to specify an arbitrary number
     of question elements to a given WorkflowStep.
 
-    Attributes
-    ----------
-    id : uuid
-        The unique UUID for the database record.
-    workflow_step : ForeignKey
-        The WorkflowStep object that will own this object.
-    ui_identifier : CharField
-        A simple string which is used to indicate
-        to a user interface where to display this object
-        within a template.
-    content : CharField
-        The actual text of the question.
-    required: bool
-        True if a value is required for this input in the response JSON
-    response_schema : ForeignKey
-        An JSON Schema specification used to validate/reject user responses.
-
+    Attributes:
+        id (UUIDField): The unique UUID for the database record.
+        workflow_step (ForeignKey): The WorkflowStep object that will own this object.
+        ui_identifier (CharField): A simple string which is used to indicate
+                                   to a user interface where to display this object
+                                   within a template.
+        content (CharField): The actual text of the question.
+        required (BooleanField): True if a value is required for this input in the response JSON
+        response_schema (ForeignKey): A JSON Schema specification used to validate/reject user
+                                      responses.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow_step = models.ForeignKey(

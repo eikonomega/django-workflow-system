@@ -36,15 +36,13 @@ def collection_cover_image_location(instance, filename):
 class WorkflowCollectionTagOption(CreatedModifiedAbstractModel):
     """
     This table defines what options are available to use as tags.
+
     In simple terms, this table defines the set of available tags
     which are then referred to via foreign keys in WorkflowLabel objects.
 
-    Attributes
-    ----------
-    id : UUID
-        The unique UUID of the object.
-    text : str
-        The unique text of the tag.
+    Attributes:
+        id (UUIDField): The unique UUID of the object.
+        text (CharField): The unique text of the tag.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -66,38 +64,23 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
     to group/collect a set of individual Workflows
     into a sort of "meta-Workflow".
 
-    Attributes
-    -----------
-    id : uuid
-        The unique UUID of the record.
-    code : str
-        Code associated with the Workflow Collection.
-    name : str
-        The name of the Workflow Collection.
-    description : TextField
-        The description of the Workflow Collection.
-    ordered: boolean
-        Indicated whether the workflow runs in a certain order.
-    detail_image : str
-        Detail image associated with the collection.
-    home_image : str
-        Home image associated with the collection.
-    library_image : str
-        Library image associated with the collection.
-    version : int
-        The version of a Workflow Collection. Used to accommodate the
-        evolution of a Workflow over time.
-    created_by : UUID (foreign key)
-        Administrative user who created the Workflow in the database.
-    assignment_only : boolean
-        If True, the Workflow should only be accessible via assignment.
-    active : boolean
-        Indication of whether or not the Workflow Collection is
-        currently available for use.
-    category : str
-        The "type" of Workflow.
-    tags : WorkflowCollectionTagOption
-        A 'list' of tags associated to the collection
+    Attributes:
+        id (UUIDField): The unique UUID of the record.
+        code (CharField): Code associated with the Workflow Collection.
+        name (CharField): The name of the Workflow Collection.
+        description (TextField): The description of the Workflow Collection.
+        ordered (BooleanField): Indicated whether the workflow runs in a certain order.
+        detail_image (ImageField): Detail image associated with the collection.
+        home_image (ImageField): Home image associated with the collection.
+        library_image (ImageField): Library image associated with the collection.
+        version (PositiveIntegerField): The version of a Workflow Collection. Used to accommodate
+                                        the evolution of a Workflow over time.
+        created_by (ForeignKey): Administrative user who created the Workflow in the database.
+        assignment_only (BooleanField): If True, the Workflow should only be accessible via assignment.
+        active (BooleanField): Indication of whether or not the Workflow Collection is
+                               currently available for use.
+        category (CharField): The "type" of Workflow.
+        tags (ManyToMany): A 'list' of tags associated to the collection
     """
 
     HOME_IMAGE_SIZE = (975, 600)
@@ -171,17 +154,11 @@ class WorkflowCollectionMember(CreatedModifiedAbstractModel):
     """
     Definition of a Workflow Collection Member.
 
-    Attributes
-    -----------
-    id : uuid
-        The unique UUID of the record.
-    workflow : uuid(foreign key)
-        The workflow attached to the collection member.
-    workflow_collection : uuid(foreign key)
-        The workflow collection attached the the collection member.
-    order: int
-        The order of the WorkflowCollection.
-
+    Attributes:
+        id (UUIDField): The unique UUID of the record.
+        workflow (ForeignKey): The workflow attached to the collection member.
+        workflow_collection (ForeignKey): The workflow collection attached the the collection member.
+        order (PositiveIntegerField): The order of the WorkflowCollection.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)

@@ -19,24 +19,16 @@ class Workflow(CreatedModifiedAbstractModel):
     All other models in this application bear
     a direct/indirect relationship to this one.
 
-    Attributes
-    ----------
-    id : UUID
-        The UUID of the Workflow
-    code : str
-        An internal code for database level operations.
-    name : str
-        Human friendly name.
-    version : int
-        The version of a Workflow. Used to accomodate the 
-        evolution of a Workflow over time.
-    image : str
-        General image associated with the Workflow.
-    author : UUID (foreign key)
-        The author of the Workflow
-    created_by : UUID (foreign key)
-        Administrative user who created the Workflow
-        in the database.
+    Attributes:
+        id (UUIDField): The UUID of the Workflow
+        code (CharField): An internal code for database level operations.
+        name (CharField): Human friendly name.
+        version (PositiveIntegerField): The version of a Workflow. Used to accomodate the 
+                                        evolution of a Workflow over time.
+        image (ImageField): General image associated with the Workflow.
+        author (ForeignKey): The author of the Workflow
+        created_by (ForeignKey): Administrative user who created the Workflow
+                                 in the database.
     """
 
     IMAGE_SIZE = (600, 375)

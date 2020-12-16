@@ -24,33 +24,24 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
     where finished=None.
 
 
-    Attributes
-    -----------
-    id : uuid
-        The unique UUID of the record.
-    workflow_collection : foreign key
-        The WorkflowCollection object associated with the engagement.
-    user : foreign key
-        The User object who is engaging the Workflow.
-    started: datetime
-        The start date for the engagement.
-    finished: datetime
-        The finish date for the engagement.
-    state:
-        A dictionary of the following form:
-        {
-            'next_workflow_id': <uuid>,
-            'next_step_id': <uuid>,
-            'prev_step_id': <uuid>,
-            'prev_workflow_id': <uuid>,
-            'steps_completed_in_collection': <int>,
-            'steps_in_collection': <int>,
-            'steps_completed_in_workflow': <int>,
-            'steps_in_workflow': <int>,
-            'previously_completed_workflows': List[<uuid>],
-        }
-
-
+    Attributes:
+        id (UUIDField): The unique UUID of the record.
+        workflow_collection (ForeignKey): The WorkflowCollection object associated with the engagement.
+        user (ForeignKey): The User object who is engaging the Workflow.
+        started (DateTimeField): The start date for the engagement.
+        finished (DateTimeField): The finish date for the engagement.
+        state (dict): A dictionary of the following form:
+                    {
+                        'next_workflow_id': <uuid>,
+                        'next_step_id': <uuid>,
+                        'prev_step_id': <uuid>,
+                        'prev_workflow_id': <uuid>,
+                        'steps_completed_in_collection': <int>,
+                        'steps_in_collection': <int>,
+                        'steps_completed_in_workflow': <int>,
+                        'steps_in_workflow': <int>,
+                        'previously_completed_workflows': List[<uuid>],
+                    }
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow_collection = models.ForeignKey(
@@ -66,7 +57,10 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
         ordering = ['workflow_collection', 'started']
 
     def get_response(self, step__code, stepInputUIIdentifier):
-        """gets the value from the appropriate user_response in this engagement collection or raises a DoesNotExist"""
+        """
+        Gets the value from the appropriate user_response in this engagement collection or raises a 
+        DoesNotExist
+        """
         try:
             wced = self.workflowcollectionengagementdetail_set.get(step__code=step__code)
         except WorkflowCollectionEngagementDetail.DoesNotExist as e:
@@ -93,13 +87,11 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
         `prev_step` refers to the last completed step.
 
 
-        Returns
-        -------
-        dict
-            Containing the Workflow UUID, WorkflowStep UUID and
-            a list of previously_completed_workflows that
-            are needed by client UI's to present the correct
-            Workflow step to the user.
+        Returns:
+            dict: Containing the Workflow UUID, WorkflowStep UUID and
+                  a list of previously_completed_workflows that
+                  are needed by client UI's to present the correct
+                  Workflow step to the user.
         """
 
         prev_step: WorkflowStep = None
@@ -311,36 +303,29 @@ class WorkflowCollectionEngagementDetail(CreatedModifiedAbstractModel):
     WorkflowCollectionEngagementDetails should exclude instances
     where finished=None.
 
-    Attributes
-    -----------
-    id : uuid
-        The unique UUID of the record.
-    workflow_collection_engagement : foreign key
-        The WorkflowCollectionEngagement object associated with the engagement detail.
-    step : foreign key
-        The WorkflowStep assosciated with the engagement detail.
-    user_response: dict
-        Internal representation of JSON response from user.
-        If present, user_response is expected to be of the following form:
-        {
-            "questions": [
-                {
-                    "stepInputID": <uuid>,
-                    "stepInputUIIdentifier": "string",
-                    "response": <JSON>
-                },
-                {
-                    "stepInputID": <uuid>,
-                    "stepInputUIIdentifier": "string",
-                    "response": <JSON>
-                }
-            ]
-        }
-    started: datetime
-        The start date of the engagement detail.
-    finished: datetime
-        The finish date of the engagement detail.
-
+    Attributes:
+        id (UUIDField): The unique UUID of the record.
+        workflow_collection_engagement (ForeignKey): The WorkflowCollectionEngagement object
+                                                     associated with the engagement detail.
+        step (ForeignKey): The WorkflowStep assosciated with the engagement detail.
+        user_response (JSONField): Internal representation of JSON response from user.
+                                   If present, user_response is expected to be of the following form:
+                               {
+                                   "questions": [
+                                       {
+                                           "stepInputID": <uuid>,
+                                           "stepInputUIIdentifier": "string",
+                                           "response": <JSON>
+                                        },
+                                        {
+                                           "stepInputID": <uuid>,
+                                           "stepInputUIIdentifier": "string",
+                                           "response": <JSON>
+                                        }
+                                    ]
+                                }
+        started (DateTimeField): The start date of the engagement detail.
+        finished (DateTimeField): The finish date of the engagement detail.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow_collection_engagement = models.ForeignKey(
@@ -357,7 +342,9 @@ class WorkflowCollectionEngagementDetail(CreatedModifiedAbstractModel):
         ordering = ['workflow_collection_engagement', 'started']
 
     def get_response(self, stepInputUIIdentifier):
-        """gets the value for the given `stepInputUIIdentifier` from user_response or returns None"""
+        """
+        Gets the value for the given `stepInputUIIdentifier` from user_response or returns None
+        """
         user_response = self.user_response
 
         if 'questions' not in user_response:

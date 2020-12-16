@@ -12,23 +12,18 @@ class WorkflowCollectionSubscription(CreatedModifiedAbstractModel):
     Users who wish to engage in a Workflow Collection on a repeat basis
     can create a WorkflowCollectionSubscription.
 
-    Attributes
-    ----------
-    id : uuid
-        The unique UUID of the record.
-    workflow_collection : UUID (foreign key)
-        The WorkflowCollection object associated with the subscription.
-    user : UUID (foreign key)
-        The User object who owns the subscription.
-    active : boolean
-        Whether or not the subscription is active.
+    Attributes:
+        id (UUIDField): The unique UUID of the record.
+        workflow_collection (ForeignKey): The WorkflowCollection object associated with the 
+                                          subscription.
+        user (ForeignKey): The User object who owns the subscription.
+        active (BooleanField): Whether or not the subscription is active.
 
-    Notes
-    -----
-    * By itself, a WorkFlow Collection subscription object isn't of much value.
-    * It's value comes from the WorkflowCollectionSubscriptionSchedule objects
-      which reference it via foreign and define the details of the
-      subscription.
+    Notes:
+        * By itself, a WorkFlow Collection subscription object isn't of much value.
+        * It's value comes from the WorkflowCollectionSubscriptionSchedule objects
+        which reference it via foreign and define the details of the
+        subscription.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow_collection = models.ForeignKey(WorkflowCollection, on_delete=models.PROTECT)
@@ -54,38 +49,28 @@ class WorkflowCollectionSubscriptionSchedule(CreatedModifiedAbstractModel):
     to specify what days of the week (and on what interval of weeks)
     they want to be notified to engage in a subscribed Workflow.
 
-    Attributes
-    ----------
-    id : uuid
-        The unique UUID of the record.
+    Attributes:
+        id (UUIDField): The unique UUID of the record.
 
-    workflow_collection_subscription : UUID (foreign key)
-        The WorkflowCollectionSubscription object which is being
-        given a schedule.
+        workflow_collection_subscription (ForeignKey): The WorkflowCollectionSubscription object 
+                                                       which is being given a schedule.
+        time_of_day (TimeField): The User object who owns the subscription.
 
-    time_of_day : datetime.time
-        The User object who owns the subscription.
+        day_of_week (IntegerField): An int representing the day of the week the 
+                                    user desires to receive subscription notifications.
+                                    0 == Monday, 1 == Tuesday, etc
+        weekly_interval (IntegerField): On what weekly interval should the user
+                                        receive a notification from their subscription.
+                                        Defaults to 1 (every week).
 
-    day_of_week : int
-        An int representing the day of the week the 
-        user desires to receive subscription notifications.
-        0 == Monday, 1 == Tuesday, etc
+    Notes:
+        For each day of the week a user desires a subscription
+        notification, one of this objects must be created.
 
-    weekly_interval : int
-        On what weekly interval should the user
-        receive a notification from their subscription.
-        Defaults to 1 (every week).
-
-    Notes
-    -----
-    For each day of the week a user desires a subscription
-    notification, one of this objects must be created.
-
-    So, if a user wanted to receive notifications on 
-    Monday, Wednesday, and Friday they would need to
-    have 3 corresponding WorkflowCollectionSubscriptionSchedule
-    objects.
-
+        So, if a user wanted to receive notifications on 
+        Monday, Wednesday, and Friday they would need to
+        have 3 corresponding WorkflowCollectionSubscriptionSchedule
+        objects.
     """
     MONDAY = 0
     TUESDAY = 1

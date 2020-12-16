@@ -16,18 +16,12 @@ class JSONSchema(CreatedModifiedAbstractModel):
     """
     JSONSchema definitions for use within Workflows.
 
-    Attributes
-    ----------
-    id : uuid
-        The unique UUID for the database record.
-    code : str
-        A short-hand reference to the schema definition.
-    description : str
-        A human-friendly description of what is being
-        defined in the JSONSchema.
-    schema : dict
-        A valid JSONSchema specification.
-
+    Attributes:
+        id (UUIDField): The unique UUID for the database record.
+        code (CharField): A short-hand reference to the schema definition.
+        description (TextField): A human-friendly description of what is being
+                                 defined in the JSONSchema.
+        schema (JSONField): A valid JSONSchema specification.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
