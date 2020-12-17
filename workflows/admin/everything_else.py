@@ -9,11 +9,10 @@ from django.db.models import Case, When, Value, IntegerField, QuerySet, Count
 from django.http import HttpRequest
 from django.utils.safestring import mark_safe
 
-from ..admin_utils.admin_utils import (
+from ..utils.admin_utils import (
     EditLinkToInlineObject,
     MeOrAllFilter,
-    USER_SEARCH_FIELDS,
-    is_null_filter_factory)
+    USER_SEARCH_FIELDS)
 from ..models import (
     JSONSchema,
     Workflow,

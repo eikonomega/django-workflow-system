@@ -9,7 +9,7 @@ from django.contrib import admin
 from django.db import IntegrityError
 from django.db.models import OuterRef, Subquery
 
-from ..admin_utils.admin_utils import StepInCollectionFilter
+from ..utils.admin_utils import StepInCollectionFilter
 
 from ..models import (
     WorkflowCollection,

@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
-from ..admin_utils.admin_utils import IsActiveCollectionFilter
+from ..utils.admin_utils import IsActiveCollectionFilter
 from ..models import (
     Workflow,
     WorkflowCollection,
