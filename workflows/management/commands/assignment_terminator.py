@@ -56,8 +56,7 @@ class Command(BaseCommand):
             engagement__finished__isnull=False)
 
         for assignment in assignments_marked_complete:
-            print(f"Assignment Terminator marked assignment of collection \
-                {assignment.workflow_collection.code} to user {assignment.user} as CLOSED_COMPLETE")
+            print(f"Assignment Terminator marked assignment of collection {assignment.workflow_collection.code} to user {assignment.user} as CLOSED_COMPLETE")
 
         assignments_marked_complete_count = assignments_marked_complete.update(
             status=WorkflowCollectionAssignment.CLOSED_COMPLETE)
@@ -70,8 +69,7 @@ class Command(BaseCommand):
                 WorkflowCollectionAssignment.CLOSED_COMPLETE,
                 WorkflowCollectionAssignment.CLOSED_INCOMPLETE))
         for assignment in assignments_marked_incomplete:
-            print(f"Assignment Terminator marked assignment of collection \
-                {assignment.workflow_collection.code} to user{assignment.user} as CLOSED_INCOMPLETE ")
+            print(f"Assignment Terminator marked assignment of collection {assignment.workflow_collection.code} to user{assignment.user} as CLOSED_INCOMPLETE ")
         assignments_marked_incomplete_count = assignments_marked_incomplete.update(
             status=WorkflowCollectionAssignment.CLOSED_INCOMPLETE)
 
@@ -80,8 +78,7 @@ class Command(BaseCommand):
             finished__isnull=True,
             workflowcollectionassignment__status=WorkflowCollectionAssignment.CLOSED_INCOMPLETE)
         for engagement in engagements_marked_finished:
-            print(f"Assignment Terminator marked engagement of collection \
-                {engagement.workflow_collection.code} to user{engagement.user} as finished. ")
+            print(f"Assignment Terminator marked engagement of collection {engagement.workflow_collection.code} to user{engagement.user} as finished. ")
         engagements_marked_finished_count = engagements_marked_finished.update(
             finished=timezone.now())
 
