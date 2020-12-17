@@ -33,18 +33,13 @@ class Command(BaseCommand):
         Finally, this adds an end date for workflow collection engagements which are from
         assignments which have been closed incomplete
         """
-        print("Starting Assignment Terminator. Hasta la vista, Baby!", file=self.stdout)
-
         if options['type']:
             list_of_types = ["SURVEY", "ACTIVITY"]
             types = options['type'].split(',')
-            assignment_types = []
-            for item in types:
-                if item.upper() not in list_of_types:
-                    print(f'{item} not a valid type. Options are {list_of_types}')
-                    return
-                else:
-                    assignment_types.append(item.upper())
+            assignment_types = [item.upper() for item in types if item.upper() in list_of_types]
+            if not assignment_types:
+                print(f'No valid type of assignment provided. Options are {list_of_types}')
+                return
 
         if options['days_old']:
             try:
@@ -53,6 +48,7 @@ class Command(BaseCommand):
                 print(f"{options['days_old']} is not an integer.")
                 return
 
+        print("Starting Assignment Terminator. Hasta la vista, Baby!", file=self.stdout)
         # Mark any in progress assignments with finished engagements as complete
         assignments_marked_complete = WorkflowCollectionAssignment.objects.filter(
             workflow_collection__category__in=assignment_types,
