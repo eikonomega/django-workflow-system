@@ -9,9 +9,9 @@ from django.contrib import admin
 from django.db import IntegrityError
 from django.db.models import OuterRef, Subquery
 
-from website.utils.admin_site_utils import StepInCollectionFilter
+from ..admin_utils.admin_utils import StepInCollectionFilter
 
-from website.workflows.models import (
+from ..models import (
     WorkflowCollection,
     WorkflowStep,
     WorkflowStepInput,
@@ -21,8 +21,8 @@ from website.workflows.models import (
     WorkflowStepVideo,
     WorkflowStepUITemplate,
     WorkflowStepDependencyGroup,
-    WorkflowStepDependencyDetail,
-)
+    WorkflowStepDependencyDetail)
+
 
 class StepTextForm(forms.ModelForm):
     content = forms.CharField(widget=forms.Textarea)
@@ -125,7 +125,6 @@ class WorkflowUITemplateAdmin(admin.ModelAdmin):
     ordering = ["name"]
 
 
-
 class WorkflowStepDependencyDetailInLineFormSet(forms.BaseInlineFormSet):
     """
     A custom InLineFormSet which passes the parent WorkflowStepDependencyGroup instance
@@ -153,7 +152,8 @@ class WorkflowStepDependencyDetailInLineForm(forms.ModelForm):
                 workflow_collection = parent_object.workflow_collection
             except WorkflowCollection.DoesNotExist:
                 return
-            step_to_member = workflow_collection.workflowcollectionmember_set.filter(workflow=OuterRef('workflow'))
+            step_to_member = workflow_collection.workflowcollectionmember_set.filter(
+                workflow=OuterRef('workflow'))
             # take all steps\
             # in a workflow in the workflow collection
             # annotate the steps with the order of (a workflow_member (of their workflow) in the collection)
@@ -183,7 +183,8 @@ class WorkflowStepDependencyGroupForm(forms.ModelForm):
                 workflow_collection = self.instance.workflow_collection
             except WorkflowCollection.DoesNotExist:
                 return
-            step_to_member = workflow_collection.workflowcollectionmember_set.filter(workflow=OuterRef('workflow'))
+            step_to_member = workflow_collection.workflowcollectionmember_set.filter(
+                workflow=OuterRef('workflow'))
             self.fields['workflow_step'].queryset = WorkflowStep.objects \
                 .filter(workflow__workflowcollectionmember__workflow_collection=self.instance.workflow_collection) \
                 .annotate(wf_order=Subquery(step_to_member.values('order')[:1])) \
@@ -200,4 +201,3 @@ class WorkflowStepDependencyGroupAdmin(admin.ModelAdmin):
 @admin.register(WorkflowStepDependencyDetail)
 class WorkflowStepDependencyDetailAdmin(admin.ModelAdmin):
     list_display = ['dependency_group', 'dependency_step']
-

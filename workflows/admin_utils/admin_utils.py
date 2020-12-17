@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from .models import WorkflowCollection, WorkflowCollectionMember
+from ..models import WorkflowCollection, WorkflowCollectionMember
 
 
 class EditLinkToInlineObject(object):
@@ -26,12 +26,9 @@ class EditLinkToInlineObject(object):
         inlines = (MyModelInline, )
 
     """
-
     def edit_link(self, instance):
-        print(instance._meta.app_label, instance._meta.model_name)
-        print(instance.pk)
         url = reverse('admin:%s_%s_change' % (
-            instance._meta.app_label,  instance._meta.model_name),  args=[instance.pk])
+            instance._meta.app_label,  instance._meta.model_name),  args=[instance.pk] )
         if instance.pk:
             return mark_safe(u'<a href="{u}" target="_blank">edit</a>'.format(u=url))
         else:
@@ -168,5 +165,5 @@ USER_SEARCH_FIELDS = (
     "user__username",
     "user__first_name",
     "user__last_name",
-    "user__email",
+    "user__email"
 )

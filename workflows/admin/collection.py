@@ -9,8 +9,8 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
-from website.utils.admin_site_utils import IsActiveCollectionFilter
-from website.workflows.models import (
+from ..admin_utils.admin_utils import IsActiveCollectionFilter
+from ..models import (
     Workflow,
     WorkflowCollection,
     WorkflowCollectionMember,
@@ -19,7 +19,7 @@ from website.workflows.models import (
     WorkflowStepDependencyGroup,
     WorkflowStepDependencyDetail,
     WorkflowCollectionAssignment, WorkflowCollectionEngagement)
-from website.workflows.models.collection import WorkflowCollectionTagConnector
+from ..models.collection import WorkflowCollectionTag
 
 
 @admin.register(WorkflowCollectionTagOption)
@@ -33,7 +33,7 @@ class WorkflowCollectionMemberInline(admin.StackedInline):
     ordering = ["order"]
 
 class WorkflowCollectionTagOptionInline(admin.StackedInline):
-    model = WorkflowCollectionTagConnector
+    model = WorkflowCollectionTag
     extra = 1
 
 
@@ -47,7 +47,6 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
         "ordered",
         "active",
         "open_assignments",
-        "open_recommendations",
         "open_subscriptions",
     )
     fieldsets = [
@@ -72,7 +71,6 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
         "library_image_preview",
         "detail_image_preview",
         "open_assignments",
-        "open_recommendations",
         "open_subscriptions",
     ]
 
@@ -104,13 +102,6 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                 WorkflowCollectionAssignment.ASSIGNED,
                 WorkflowCollectionAssignment.IN_PROGRESS
             )
-        ).count()
-    
-    def open_recommendations(self, instance: WorkflowCollection):
-        now = timezone.now()
-        return instance.workflowcollectionrecommendation_set.filter(
-            Q(end__isnull=True) | Q(end__gte=now),
-            start__lte=now,
         ).count()
 
     def open_subscriptions(self, instance: WorkflowCollection):
@@ -281,16 +272,10 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                 workflowcollectionassignment__status=WorkflowCollectionAssignment.CLOSED_INCOMPLETE,
             ).update(finished=now)
 
-            # Close any workflow recommendations which have not ended yet
-            workflow_collection.workflowcollectionrecommendation_set.filter(
-                Q(end__isnull=True) | Q(end__gte=now),
-            ).update(end=now)
-
             # deactivate active workflow collection subscriptions
             workflow_collection.workflowcollectionsubscription_set.filter(
                 active=True
             ).update(active=False)
-
 
     kill_stragglers.short_description = "Close Remaining Connections"
     kill_stragglers.allowed_permissions = ("change", "delete")

@@ -9,13 +9,12 @@ from django.db.models import Case, When, Value, IntegerField, QuerySet, Count
 from django.http import HttpRequest
 from django.utils.safestring import mark_safe
 
-from website.utils.admin_site_utils import (
+from ..admin_utils.admin_utils import (
     EditLinkToInlineObject,
     MeOrAllFilter,
     USER_SEARCH_FIELDS,
-    is_null_filter_factory,
-)
-from website.workflows.models import (
+    is_null_filter_factory)
+from ..models import (
     JSONSchema,
     Workflow,
     WorkflowAuthor,
@@ -26,9 +25,7 @@ from website.workflows.models import (
     WorkflowCollectionSubscriptionSchedule,
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
-    WorkflowStepDataGroup,
-    WorkflowCollectionRecommendation,
-)
+    WorkflowStepDataGroup)
 
 # assignment.py
 
@@ -45,9 +42,7 @@ class WorkflowCollectionAssignmentAdmin(admin.ModelAdmin):
     list_filter = [
         MeOrAllFilter,
         "workflow_collection",
-        "status",
-        "user__portaluser__subject__groups",
-        "user__portaluser__subject__referral_code",
+        "status"
     ]
     search_fields = USER_SEARCH_FIELDS + ("workflow_collection__code",)
 
@@ -180,9 +175,7 @@ class WorkflowCollectionEngagementAdmin(admin.ModelAdmin):
         "workflow_collection",
         IsFinishedFilter,
         HasDetailsFilter,
-        MeOrAllFilter,
-        "user__portaluser__subject__groups",
-        "user__portaluser__subject__referral_code",
+        MeOrAllFilter
     ]
     inlines = [WorkflowCollectionEngagementDetailInline]
     search_fields = USER_SEARCH_FIELDS
@@ -193,7 +186,7 @@ class WorkflowCollectionEngagementDetailAdmin(admin.ModelAdmin):
     list_display = ["workflow_collection_engagement", "user", "step", "started", "finished"]
     search_fields = [
         "workflow_collection_engagement__" + field for field in USER_SEARCH_FIELDS
-    ] + ["workflow_collection_engagement__workflow_collection__code",]
+    ] + ["workflow_collection_engagement__workflow_collection__code", ]
 
     def user(self, obj: WorkflowCollectionEngagementDetail):
         return obj.workflow_collection_engagement.user.username
@@ -222,9 +215,7 @@ class WorkflowCollectionSubscriptionAdmin(admin.ModelAdmin):
     inlines = [WorkflowCollectionSubscriptionScheduleInline]
     list_filter = [
         "active",
-        "workflow_collection",
-        "user__portaluser__subject__groups",
-        "user__portaluser__subject__referral_code",
+        "workflow_collection"
     ]
     search_fields = USER_SEARCH_FIELDS + ("workflow_collection__code",)
 
@@ -317,16 +308,3 @@ class WorkflowAdmin(admin.ModelAdmin):
 
     copy.short_description = "Copy selected workflows"
     copy.allowed_permissions = ("add",)
-
-
-@admin.register(WorkflowCollectionRecommendation)
-class WorkflowCollectionRecommendationAdmin(admin.ModelAdmin):
-    list_display = ["workflow_collection", "user", "start", "end"]
-    list_filter = [
-        "workflow_collection",
-        MeOrAllFilter,
-        is_null_filter_factory("end"),
-        "user__portaluser__subject__groups",
-        "user__portaluser__subject__referral_code",
-    ]
-    search_fields = USER_SEARCH_FIELDS + ("workflow_collection__code",)
