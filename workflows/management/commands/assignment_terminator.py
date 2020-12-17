@@ -18,7 +18,7 @@ class Command(BaseCommand):
         parser.add_argument('-d', '--days_old', type=str, required=True,
                             help='How many days old an assignment will be CLOSED after')
         parser.add_argument('-t', '--type', type=str, required=True,
-                            help='Which type of Assignments to terminate. Options are ["SURVEY", "ACTIVITY"], for both type "survey,activity"')
+                            help='Which type of Assignments to terminate. Options are ["SURVEY", "ACTIVITY"]. For both types, input "survey,activity"')
 
     def handle(self, *args, **options):
         """
