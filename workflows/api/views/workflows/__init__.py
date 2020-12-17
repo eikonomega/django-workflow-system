@@ -7,6 +7,7 @@ from ..workflows.collection import (
     WorkflowCollectionsView, WorkflowCollectionView)
 from ..workflows.workflow import WorkflowsView, WorkflowView
 
+
 @api_view(['GET'])
 def workflow_api_root(request, format=None):
     """
@@ -17,6 +18,7 @@ def workflow_api_root(request, format=None):
         'workflow-authors': reverse('workflow-authors-v3', request=request, format=format),
         'workflow-collections': reverse('workflow-collections-v3', request=request, format=format),
     })
+
 
 __all__ = [
     'WorkflowAuthorsView',

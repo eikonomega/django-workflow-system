@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from ...serializers.workflows.workflow import (
     WorkflowSummarySerializer, WorkflowDetailedSerializer)
-from website.workflows.models import Workflow
+from ....models import Workflow
 
 
 class WorkflowsView(APIView):

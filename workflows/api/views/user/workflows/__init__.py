@@ -8,7 +8,6 @@ from .engagement_detail import (
 from .subscription import (
     WorkflowCollectionSubscriptionsView,
     WorkflowCollectionSubscriptionView)
-from .recommendation import WorkflowCollectionRecommendationsView, WorkflowCollectionRecommendationView
 
 __all__ = [
     'WorkflowCollectionAssignmentsView',
@@ -19,6 +18,5 @@ __all__ = [
     'WorkflowCollectionEngagementDetailView',
     'WorkflowCollectionSubscriptionsView',
     'WorkflowCollectionSubscriptionView',
-    'WorkflowCollectionRecommendationsView',
-    'WorkflowCollectionRecommendationView',
+    'WorkflowCollectionRecommendationsView'
 ]

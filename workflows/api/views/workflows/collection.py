@@ -11,7 +11,7 @@ from ...serializers.workflows.collection import (
     WorkflowCollectionDetailedSerializer, WorkflowCollectionWithStepsSerializer)
 from ....models import (
     WorkflowCollection, WorkflowCollectionAssignment,
-    WorkflowCollectionRecommendation, WorkflowCollectionSubscription)
+    WorkflowCollectionSubscription)
 
 
 class WorkflowCollectionsView(APIView):
