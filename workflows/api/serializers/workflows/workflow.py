@@ -6,7 +6,9 @@ from ....models import Workflow
 
 
 class WorkflowTerseSerializer(serializers.ModelSerializer):
-    """Terse level serializer for Workflow objects."""
+    """
+    Terse level serializer for Workflow objects.
+    """
 
     detail = serializers.HyperlinkedIdentityField(
         view_name='workflow-v3', lookup_field='id')
@@ -21,7 +23,9 @@ class WorkflowTerseSerializer(serializers.ModelSerializer):
 
 
 class WorkflowSummarySerializer(serializers.ModelSerializer):
-    """Summary level serializer for Workflow objects."""
+    """
+    Summary level serializer for Workflow objects.
+    """
 
     detail = serializers.HyperlinkedIdentityField(
         view_name='workflow-v3', lookup_field='id')
@@ -35,7 +39,9 @@ class WorkflowSummarySerializer(serializers.ModelSerializer):
 
 
 class WorkflowDetailedSerializer(serializers.ModelSerializer):
-    """Detailed level serializer for Workflow objects."""
+    """
+    Detailed level serializer for Workflow objects.
+    """
 
     author = WorkflowAuthorSummarySerializer()
     workflowstep_set = WorkflowStepSummarySerializer(many=True)
@@ -50,7 +56,9 @@ class WorkflowDetailedSerializer(serializers.ModelSerializer):
 
 
 class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
-    """Detailed level serializer for Workflow objects, but with detail instead of self-detail"""
+    """
+    Detailed level serializer for Workflow objects, but with detail instead of self-detail
+    """
 
     author = WorkflowAuthorSummarySerializer()
     workflowstep_set = WorkflowStepSummarySerializer(many=True)

@@ -10,7 +10,9 @@ from ....models import (
 
 
 class WorkflowStepTextSummarySerializer(serializers.ModelSerializer):
-    """Summary level serializer for WorkflowStepText objects."""
+    """
+    Summary level serializer for WorkflowStepText objects.
+    """
     class Meta:
         model = WorkflowStepText
         fields = (
@@ -21,7 +23,9 @@ class WorkflowStepTextSummarySerializer(serializers.ModelSerializer):
             'storage_value')
 
 class WorkflowStepInputSummarySerializer(serializers.ModelSerializer):
-    """Summary level serializer for WorkflowStepInput objects."""
+    """
+    Summary level serializer for WorkflowStepInput objects.
+    """
     class Meta:
         model = WorkflowStepInput
         fields = (
@@ -34,7 +38,9 @@ class WorkflowStepInputSummarySerializer(serializers.ModelSerializer):
 
 
 class WorkflowStepAudioSummarySerializer(serializers.ModelSerializer):
-    """Summary level serializer for WorkflowStepAudio  objects."""
+    """
+    Summary level serializer for WorkflowStepAudio  objects.
+    """
     class Meta:
         model = WorkflowStepAudio
         fields = (
@@ -45,7 +51,9 @@ class WorkflowStepAudioSummarySerializer(serializers.ModelSerializer):
 
 
 class WorkflowStepImageSummarySerializer(serializers.ModelSerializer):
-    """Summary level serializer for WorkflowStepImage objects."""
+    """
+    Summary level serializer for WorkflowStepImage objects.
+    """
     class Meta:
         model = WorkflowStepImage
         fields = (
@@ -56,7 +64,9 @@ class WorkflowStepImageSummarySerializer(serializers.ModelSerializer):
 
 
 class WorkflowStepVideoSummarySerializer(serializers.ModelSerializer):
-    """Summary level serializer for WorkflowStepVideo objects."""
+    """
+    Summary level serializer for WorkflowStepVideo objects.
+    """
     class Meta:
         model = WorkflowStepVideo
         fields = (
@@ -67,7 +77,9 @@ class WorkflowStepVideoSummarySerializer(serializers.ModelSerializer):
 
 
 class WorkflowStepSummarySerializer(serializers.ModelSerializer):
-    """Summary level serializer for WorkflowStep objects."""
+    """
+    Summary level serializer for WorkflowStep objects.
+    """
 
     ui_template = serializers.SlugRelatedField(
         slug_field='name', read_only=True)

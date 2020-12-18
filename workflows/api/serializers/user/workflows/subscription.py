@@ -75,27 +75,21 @@ class WorkflowCollectionSubscriptionSummarySerializer(serializers.ModelSerialize
         """
         Update WorkflowCollectionSubscription and WorkflowCollectionSubscriptionSchedule objects.
 
-        Notes
-        -----
-        We only allow the user to update the "active" property of an 
-        existing WorkflowCollectionSubscription object or the related
-        WorkflowCollectionSubscriptionSchedule objects. They cannot modify
-        other aspects of the original WorkflowCollectionSubscription object.
+        Notes:
+            We only allow the user to update the "active" property of an 
+            existing WorkflowCollectionSubscription object or the related
+            WorkflowCollectionSubscriptionSchedule objects. They cannot modify
+            other aspects of the original WorkflowCollectionSubscription object.
 
-        Parameters
-        ----------
-        instance : WorkflowCollectionSubscription
-            The object retrieved by DRF based on the URL route
-            being accessed by the user.
+        Parameters:
+            instance (WorkflowCollectionSubscription): The object retrieved by DRF based on the URL 
+                                                       route being accessed by the user.
+            validated_data (dict): A dictionary containing the parsed/validated data from 
+                                   the incoming HTTP request payload.
 
-        validated_data : dict
-            A dictionary containing the parsed/validated data from 
-            the incoming HTTP request payload.
-
-        Returns
-        -------
-        WorkflowCollectionSubscription
-            The modified WorkflowCollectionSubscription object.
+        Returns:
+            WorkflowCollectionSubscription
+                The modified WorkflowCollectionSubscription object.
 
         """
         instance.workflowcollectionsubscriptionschedule_set.all().delete()

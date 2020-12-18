@@ -107,15 +107,11 @@ class WorkflowCollectionEngagementBaseSerializer(serializers.ModelSerializer):
         This is needed to have the representation include
         the fully hyperlink necessary for "dumb" clients.
 
-        Parameters
-        ----------
-        instance : WorkflowCollectionEngagement
-            The object being serialized.
+        Parameters:
+            instance (WorkflowCollectionEngagement): The object being serialized.
 
-        Returns
-        -------
-        dict
-            Hyperlinked `state` property dictionary.
+        Returns:
+            dict: Hyperlinked `state` property dictionary.
         """
 
         def workflow_to_uri(workflow_id):
@@ -151,7 +147,9 @@ class WorkflowCollectionEngagementBaseSerializer(serializers.ModelSerializer):
 
 
 class WorkflowCollectionEngagementSummarySerializer(WorkflowCollectionEngagementBaseSerializer):
-    """Summary level Serializer for WorkflowCollectionEngagement objects."""
+    """
+    Summary level Serializer for WorkflowCollectionEngagement objects.
+    """
 
     detail = serializers.HyperlinkedIdentityField(
         view_name='user-workflow-collection-engagement-v3',
@@ -171,6 +169,9 @@ class WorkflowCollectionEngagementSummarySerializer(WorkflowCollectionEngagement
 
 
 class WorkflowCollectionEngagementAndDetailsSerializer(WorkflowCollectionEngagementSummarySerializer):
+    """
+    Summary level Serializer for WorkflowCollectionEngagementDetail objects.
+    """
 
     workflowcollectionengagementdetail_set = WorkflowCollectionEngagementDetailSummarySerializer(
         many=True,
@@ -193,14 +194,12 @@ class WorkflowCollectionEngagementDetailedSerializer(WorkflowCollectionEngagemen
     """
     Detailed serializer for WorkflowCollectionEngagement objects.
 
-    Notes
-    -----
-    It is easy to confuse this with a serializer for the
-    WorkflowUserEngagementDetail class, but it is not.
+    Notes:
+        It is easy to confuse this with a serializer for the
+        WorkflowUserEngagementDetail class, but it is not.
 
-    It is rather, a "detailed" serializer for the
-    WorkflowUserEngagement class.
-
+        It is rather, a "detailed" serializer for the
+        WorkflowUserEngagement class.
     """
 
     workflowcollectionengagementdetail_set = WorkflowCollectionEngagementDetailSummarySerializer(

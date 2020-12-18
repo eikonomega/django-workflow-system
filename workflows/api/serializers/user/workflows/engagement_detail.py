@@ -15,15 +15,13 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
     """
     Summary level serializer for WorkflowEngagementDetail objects.
 
-    Notes
-    -----
-    Because DRF does not natively support nested URL structures, I've
-    had to hack this a bit to get the correct URL for the `detail`
-    attribute.
+    Notes:
+        Because DRF does not natively support nested URL structures, I've
+        had to hack this a bit to get the correct URL for the `detail`
+        attribute.
 
-    I believe there are better ways out there, but I'm not currently
-    aware of what they may be. Feel free to improve.
-
+        I believe there are better ways out there, but I'm not currently
+        aware of what they may be. Feel free to improve.
     """
 
     detail = serializers.SerializerMethodField()
@@ -53,7 +51,6 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
 
     def validate(self, data):
         """
-
         First, we check if the the step being submitted is allowed in the state model.
         In order to maintain consistent state, a user can only submit an engagement for
         a step if it is the previous step or the next step, or it is the first step
@@ -76,7 +73,6 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                     then that's an error if the question was required
                 if the user gave an answer
                     it must be valid, regardless of whether the question was required or not
-
         """
 
         def getattr_patched(attr_name):

@@ -8,7 +8,9 @@ from ....models import (
 
 
 class WorkflowCollectionMemberSummarySerializer(serializers.ModelSerializer):
-    """Summary level serializer for WorkflowCollectionMember objects."""
+    """
+    Summary level serializer for WorkflowCollectionMember objects.
+    """
 
     workflow = WorkflowTerseSerializer()
 
@@ -20,7 +22,9 @@ class WorkflowCollectionMemberSummarySerializer(serializers.ModelSerializer):
         )
 
 class WorkflowCollectionMemberDetailedSerializer(serializers.ModelSerializer):
-    """Summary level serializer for WorkflowCollectionMember objects, but with steps."""
+    """
+    Summary level serializer for WorkflowCollectionMember objects, but with steps.
+    """
 
     workflow = ChildWorkflowDetailedSerializer()
 
@@ -34,7 +38,9 @@ class WorkflowCollectionMemberDetailedSerializer(serializers.ModelSerializer):
 
 
 class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
-    """Summary level serializer for WorkflowCollection objects."""
+    """
+    Summary level serializer for WorkflowCollection objects.
+    """
 
     authors = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
@@ -49,12 +55,10 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
         Returns a list of the Authors for all Workflows linked to a
         WorkflowCollection in JSON format.
 
-        Parameters
-        ----------
-            instance: WorkflowCollection object
+        Parameters:
+            instance (WorkflowCollection object)
 
-        Returns
-        -------
+        Returns:
             List of Author objects in JSON format.
         """
         return get_authors_helper(self.context['request'], instance)
@@ -75,7 +79,9 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
 
 
 class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
-    """Summary level serializer for WorkflowCollection objects."""
+    """
+    Summary level serializer for WorkflowCollection objects.
+    """
 
     detail = serializers.HyperlinkedIdentityField(
         view_name='workflow-collection-v3', lookup_field='id')
@@ -105,7 +111,9 @@ class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
 
 
 class WorkflowCollectionDetailedSerializer(WorkflowCollectionBaseSerializer):
-    """Detailed level serializer for WorkflowCollection objects."""
+    """
+    Detailed level serializer for WorkflowCollection objects.
+    """
 
     workflowcollectionmember_set = WorkflowCollectionMemberSummarySerializer(
         many=True)
@@ -139,7 +147,9 @@ class WorkflowCollectionDetailedSerializer(WorkflowCollectionBaseSerializer):
 
 
 class WorkflowCollectionWithStepsSerializer(WorkflowCollectionBaseSerializer):
-    """Detailed level serializer for WorkflowCollection objects, but with steps."""
+    """
+    Detailed level serializer for WorkflowCollection objects, but with steps.
+    """
 
     workflowcollectionmember_set = WorkflowCollectionMemberDetailedSerializer(
         many=True)
@@ -177,13 +187,11 @@ def get_authors_helper(request, instance):
     Helper method for gathering a list of the Authors for all Workflows
     linked to a WorkflowCollection in JSON format.
 
-    Parameters
-    ----------
+    Parameters:
         request : self.context['request']
         instance : WorkflowCollection object
 
-    Returns
-    -------
+    Returns:
         List of Author objects in JSON format.
     """
     authors = []
