@@ -28,28 +28,26 @@ class WorkflowsView(APIView):
         """
         Retrieve all Workflows.
 
-        Returns
-        -------
-            Response
-                A JSON object representation of all Workflows.
-                [
-                    {
-                        "id": "3ec6f24c-a578-4a78-9d22-4e67354891ed",
-                        "name": "Workflow III",
-                        "detail": "http://localhost:8000/api_v3/workflows/workflows/3ec6f24c-a578-4a78-9d22-4e67354891ed/",
-                        "author": {
-                            "id": "13972dc1-aa03-443e-a67e-1bdfe4c1c617",
-                            "user": {
-                                "first_name": "Brett",
-                                "last_name": "Fox"
-                            },
-                            "detail": "http://localhost:8000/api_v3/workflows/authors/13972dc1-aa03-443e-a67e-1bdfe4c1c617/",
-                            "title": "Mr.",
-                            "image": "http://localhost:8000/media/workflows/author/13972dc1-aa03-443e-a67e-1bdfe4c1c617/profileImage.png"
+        Returns:
+            A JSON object representation of all Workflows.
+            [
+                {
+                    "id": "3ec6f24c-a578-4a78-9d22-4e67354891ed",
+                    "name": "Workflow III",
+                    "detail": "http://localhost:8000/api_v3/workflows/workflows/3ec6f24c-a578-4a78-9d22-4e67354891ed/",
+                    "author": {
+                        "id": "13972dc1-aa03-443e-a67e-1bdfe4c1c617",
+                        "user": {
+                            "first_name": "Brett",
+                            "last_name": "Fox"
                         },
-                        "image": "http://localhost:8000/media/workflows/3ec6f24c-a578-4a78-9d22-4e67354891ed/cover-image.jpg",
-                    }
-                ]
+                        "detail": "http://localhost:8000/api_v3/workflows/authors/13972dc1-aa03-443e-a67e-1bdfe4c1c617/",
+                        "title": "Mr.",
+                        "image": "http://localhost:8000/media/workflows/author/13972dc1-aa03-443e-a67e-1bdfe4c1c617/profileImage.png"
+                    },
+                    "image": "http://localhost:8000/media/workflows/3ec6f24c-a578-4a78-9d22-4e67354891ed/cover-image.jpg",
+                }
+            ]
         """
         # TODO: filter only latest version of each workflow,
         #  unless the user needs a previous version,
@@ -80,46 +78,41 @@ class WorkflowView(APIView):
         """
         Retrieves a specific Workflow.
 
-        Parameters
-        ----------
-            id: str
-                id of Workflow
+        Parameters:
+            id (str): id of Workflow
 
-        Returns
-        -------
-            Response
-                A JSON object representation of the Workflow resource.
-                {
-                    "id": "6b6bfb2e-d227-4d0b-9141-1c8e9c29520a",
-                    "code": "BGA",
-                    "name": "Workflow I",
-                    "image": "http://localhost:8000/media/workflows/6b6bfb2e-d227-4d0b-9141-1c8e9c29520a/cover-image.png",
-                    "author": {
-                        "id": "13972dc1-aa03-443e-a67e-1bdfe4c1c617",
-                        "user": {
-                            "first_name": "Brett",
-                            "last_name": "Fox"
-                        },
-                        "detail": "http://localhost:8000/api_v3/workflows/authors/13972dc1-aa03-443e-a67e-1bdfe4c1c617/",
-                        "title": "Mr.",
-                        "image": "http://localhost:8000/media/workflows/author/13972dc1-aa03-443e-a67e-1bdfe4c1c617/profileImage.png"
+        Returns:
+            A JSON object representation of the Workflow resource.
+            {
+                "id": "6b6bfb2e-d227-4d0b-9141-1c8e9c29520a",
+                "code": "BGA",
+                "name": "Workflow I",
+                "image": "http://localhost:8000/media/workflows/6b6bfb2e-d227-4d0b-9141-1c8e9c29520a/cover-image.png",
+                "author": {
+                    "id": "13972dc1-aa03-443e-a67e-1bdfe4c1c617",
+                    "user": {
+                        "first_name": "Brett",
+                        "last_name": "Fox"
                     },
-                    "workflowstep_set": [
-                        {
-                            "code": "1000",
-                            "order": 1,
-                            "ui_template": "Cool Beans",
-                            "workflowstepinput_set": [],
-                            "workflowsteptext_set": [],
-                            "workflowstepaudio_set": [],
-                            "workflowstepimage_set": [],
-                            "workflowstepvideo_set": []
-                        }
-                    ]
-                }
+                    "detail": "http://localhost:8000/api_v3/workflows/authors/13972dc1-aa03-443e-a67e-1bdfe4c1c617/",
+                    "title": "Mr.",
+                    "image": "http://localhost:8000/media/workflows/author/13972dc1-aa03-443e-a67e-1bdfe4c1c617/profileImage.png"
+                },
+                "workflowstep_set": [
+                    {
+                        "code": "1000",
+                        "order": 1,
+                        "ui_template": "Cool Beans",
+                        "workflowstepinput_set": [],
+                        "workflowsteptext_set": [],
+                        "workflowstepaudio_set": [],
+                        "workflowstepimage_set": [],
+                        "workflowstepvideo_set": []
+                    }
+                ]
+            }
 
-        Raises
-        ------
+        Raises:
             drf_exceptions.NotFound
                 When no Workflow resources exists for the given 'id'.
 
