@@ -16,10 +16,9 @@ class WorkflowsView(APIView):
 
     * Get: Retrieve all Workflows representations.
 
-    Notes
-    -----
-    Workflows that are part of collections will not be displayed 
-    via this endpoint. They are access via the collection detail endpoint.
+    Notes:
+        Workflows that are part of collections will not be displayed 
+        via this endpoint. They are access via the collection detail endpoint.
     """
 
     required_scopes = ['read']
