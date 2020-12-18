@@ -33,30 +33,28 @@ class WorkflowCollectionSubscriptionsView(APIView):
         """
         Return all Workflow Collection Subscriptions for the current user.
 
-        Returns
-        -------
+        Returns:
             A HTTP response containing an array JSON representation
             of the subscriptions with a 200 status code.
-
-        [
-            {
-                "detail": "http://localhost:8000/api_v3/users/self/workflows/subscriptions/c01a4b11-76bf-4241-bdff-8148e694ea03/",
-                "workflow_collection": "http://localhost:8000/api_v3/workflows/collections/2f3b6d9a-f1a4-4cca-84c5-81e93a77a202/",
-                "active": true,
-                "workflowcollectionsubscriptionschedule_set": [
-                    {
-                        "time_of_day": "14:53:12",
-                        "day_of_week": 0,
-                        "weekly_interval": 1
-                    },
-                    {
-                        "time_of_day": "14:53:16",
-                        "day_of_week": 1,
-                        "weekly_interval": 1
-                    }
-                ]
-            }
-        ]
+            [
+                {
+                    "detail": "http://localhost:8000/api_v3/users/self/workflows/subscriptions/c01a4b11-76bf-4241-bdff-8148e694ea03/",
+                    "workflow_collection": "http://localhost:8000/api_v3/workflows/collections/2f3b6d9a-f1a4-4cca-84c5-81e93a77a202/",
+                    "active": true,
+                    "workflowcollectionsubscriptionschedule_set": [
+                        {
+                            "time_of_day": "14:53:12",
+                            "day_of_week": 0,
+                            "weekly_interval": 1
+                        },
+                        {
+                            "time_of_day": "14:53:16",
+                            "day_of_week": 1,
+                            "weekly_interval": 1
+                        }
+                    ]
+                }
+            ]
         """
         serializer = WorkflowCollectionSubscriptionSummarySerializer(
             WorkflowCollectionSubscription.objects.filter(user=request.user),
@@ -68,24 +66,17 @@ class WorkflowCollectionSubscriptionsView(APIView):
         """
         Create new WorkflowCollectionSubscription for the requesting user.
 
-        Body Parameters
-        ---------------
-            workflow_collection : UUID (foreign key)
-                The Workflow object associated with the subscription.
-            active : boolean
-                Whether or not the subscription is active
-            workflowcollectionsubscription_set : dict
-                The ability to set a workflow schedule.
-                Required fields: 'time_of_day'(timefield),
-                                 'day_of_week'(int),
-                                 'weekly_interval'(int)
+        Body Parameters:
+            workflow_collection (foreign key): The Workflow object associated with the subscription.
+            active (boolean): Whether or not the subscription is active
+            workflowcollectionsubscription_set (dict): The ability to set a workflow schedule.
+                                                       Required fields: 'time_of_day'(timefield),
+                                                       'day_of_week'(int),
+                                                       'weekly_interval'(int)
 
-        Returns
-        -------
-            Response
-                if successful: A JSON representation of all Subscription
-                for the requesting user.
-
+        Returns:
+            if successful: A JSON representation of all Subscription
+            for the requesting user.
             {
                 "detail": "http://localhost:8000/api_v3/users/self/workflows/subscriptions/c13e6da1-664f-479f-9e2c-d05a5e147b88/",
                 "workflow_collection": "http://localhost:8000/api_v3/workflows/collections/2b341c94-2cc9-4fa7-8b5a-9683f2f8be7c/",
@@ -99,14 +90,12 @@ class WorkflowCollectionSubscriptionsView(APIView):
                 ]
             }
 
-        Raises
-        ------
-                400: bad request
-                {
-                    "detail": "No matching workflow collection
-                    subscriptions found."
-                }
-
+        Raises:
+            400: bad request
+            {
+                "detail": "No matching workflow collection
+                subscriptions found."
+            }
         """
         serializer = WorkflowCollectionSubscriptionSummarySerializer(
             data=request.data, context={'request': request})
@@ -184,13 +173,10 @@ class WorkflowCollectionSubscriptionView(APIView):
         """
         Retrieve a WorkflowCollectionSubscription representation.
 
-        Path Parameters
-        ---------------
-            id : str
-                The UUID of the workflow collection subscription to retrieve.
+        Path Parameters:
+            id (str): The UUID of the workflow collection subscription to retrieve.
 
-        Returns
-        -------
+        Returns:
             A HTTP response containing a dict-like JSON representation
             of the workflow collection subscription with a 200 status code.
 
@@ -208,14 +194,11 @@ class WorkflowCollectionSubscriptionView(APIView):
             }
 
 
-        Raises
-        ------
+        Raises:
             drf_exceptions.NotFound
-
             {
                 "detail": "No matching workflow collection subscriptions found."
             }
-
         """
 
         workflow_collection_subscription = get_object_or_404(
@@ -235,27 +218,20 @@ class WorkflowCollectionSubscriptionView(APIView):
         Update a WorkflowCollectionSubscription and associated WorkflowCollectionSubscriptionSchedule
         resources owned by the requesting user.
 
-        Path Parameters
-        ---------------
-            id : str
-                The UUID of the user subscription to modify.
+        Path Parameters:
+            id (str): The UUID of the user subscription to modify.
 
-        Body Parameters
-        ---------------
-            workflow_collection : UUID (foreign key)
-                The Workflow Collection object associated with the subscription.
-            active : boolean
-                Whether or not the subscription is active
-            workflowcollectionsubscription_set : array
-                The ability to set a workflow collection schedule.
-                Required fields: 'time_of_day'(timefield),
-                                 'day_of_week'(int),
-                                 'weekly_interval'(int)
-        Returns
-        -------
-            Response
-                A HTTP response containing a dict-like JSON representation
-                of the subscription with a 200 status code.
+        Body Parameters:
+            workflow_collection (foreign key): The Workflow Collection object associated with the 
+                                               subscription.
+            active (boolean): Whether or not the subscription is active
+            workflowcollectionsubscription_set (array): The ability to set a workflow collection schedule.
+                                                        Required fields: 'time_of_day'(timefield),
+                                                        'day_of_week'(int),
+                                                        'weekly_interval'(int)
+        Returns:
+            A HTTP response containing a dict-like JSON representation
+            of the subscription with a 200 status code.
 
             {
                 "detail": "http://localhost:8000/api_v3/users/self/workflows/collection/subscriptions/c13e6da1-664f-479f-9e2c-d05a5e147b88/",
@@ -270,8 +246,7 @@ class WorkflowCollectionSubscriptionView(APIView):
                 ]
             }
 
-        Raises
-        ------
+        Raises:
             drf_exceptions.ValidationError
                 If the payload fails serializer validation.
 
@@ -280,7 +255,6 @@ class WorkflowCollectionSubscriptionView(APIView):
                         "Not a valid boolean."
                     ]
                 }
-
         """
 
         workflow_collection_subscription = get_object_or_404(

@@ -35,21 +35,15 @@ class WorkflowCollectionEngagementsView(APIView):
         """
         GET all WorkflowCollectionEngagement resources for current user
 
-        Parameters
-        ----------
-        start: optional datetime
-            lower bound for start time of engagements. defaults to None
-        end: optional datetime
-            upper bound for start time of engagements. defaults to None
-        include_finished: optional bool
-            defaults to false for compatibility reasons
-        collection_id: optional uuid
-            uuid of the collection for which to retrieve engagements
-        include_details: optional bool
-            whether or not to include engagement details, using the detailed serializer
+        Parameters:
+        start (optional datetime): lower bound for start time of engagements. defaults to None
+        end (optional datetime): upper bound for start time of engagements. defaults to None
+        include_finished (optional bool): defaults to false for compatibility reasons
+        collection_id (optional uuid): uuid of the collection for which to retrieve engagements
+        include_details (optional bool): whether or not to include engagement details, using the 
+                                         detailed serializer
 
-        Returns
-        -------
+        Returns:
             A HTTP response containing a list-like JSON representation
             of the subscription with a 200 status code.
 
@@ -72,9 +66,7 @@ class WorkflowCollectionEngagementsView(APIView):
                     }
                 }
             ]
-
         """
-
         ### Validation ###
         start = request.query_params.get('start', None)
         end = request.query_params.get('end', None)
@@ -146,20 +138,13 @@ class WorkflowCollectionEngagementsView(APIView):
         Create new WorkflowCollectionEngagement resource for the requesting
         user.
 
-        Body Parameters
-        ---------------
-            workflow : foreign key
-                The Workflow object associated with the engagement.
-            user : foreign key
-                The User object who is engaging the Workflow.
-            started: datetime
-                The start date for the engagement.
-            finished: datetime
-                The finish date for the engagement.
+        Body Parameters:
+            workflow (foreign key): The Workflow object associated with the engagement.
+            user (foreign key): The User object who is engaging the Workflow.
+            started (datetime): The start date for the engagement.
+            finished (datetime): The finish date for the engagement.
 
-        Returns
-        -------
-            Response
+        Returns:
             if successful: A JSON representation of all Engagement
             resources for the requesting user.
 
@@ -182,18 +167,15 @@ class WorkflowCollectionEngagementsView(APIView):
                 }
             }
 
-        Raises
-        ------
-            if not successful:
-                400: bad request
-                {
-                    "detail": "No workflow engagement found with that id."
-                }
-                409: engagement already exists
-                {
-                    "duplicate_resource": "An existing resource conflicts with the specified data."
-                }
-
+        Raises:
+            400: bad request
+            {
+                "detail": "No workflow engagement found with that id."
+            }
+            409: engagement already exists
+            {
+                "duplicate_resource": "An existing resource conflicts with the specified data."
+            }
         """
         serializer = WorkflowCollectionEngagementDetailedSerializer(
             data=request.data, context={'request': request})
@@ -257,13 +239,10 @@ class WorkflowCollectionEngagementView(APIView):
         """
         GET a WorkflowCollectionEngagement representation for current user.
 
-        Path Parameters
-        ---------------
-            id : str
-                The UUID of the WorkflowCollectionEngagement to retrieve.
+        Path Parameters:
+            id (str): The UUID of the WorkflowCollectionEngagement to retrieve.
 
-        Returns
-        -------
+        Returns:
             A HTTP response containing a dict-like JSON representation
             of the engagement target with a 200 status code.
 
@@ -282,8 +261,7 @@ class WorkflowCollectionEngagementView(APIView):
                 ]
             }
 
-        Raises
-        ------
+        Raises:
             drf_exceptions.NotFound
                 If the request WorkflowCollectionEngagement cannot be found
                 or isn't accessible for the requesting user.
@@ -291,7 +269,6 @@ class WorkflowCollectionEngagementView(APIView):
                 {
                     "detail": "No matching user engagement for current user."
                 }
-
         """
 
         user_engagement = get_object_or_404(
@@ -308,45 +285,36 @@ class WorkflowCollectionEngagementView(APIView):
         """
         PATCH Workflow User Engagement details update for current user.
 
-        Path Parameters
-        ---------------
-            id : str
-                The UUID of the workflow user engagement target to modify.
+        Path Parameters:
+            id (str): The UUID of the workflow user engagement target to modify.
 
-        Body Parameters
-        ---------------
-            workflow_collection : foreign key
-                The Workflow Collection object associated with the engagement.
-            user : foreign key
-                The User object who is engaging the Workflow.
-            started: datetime
-                The start date for the engagement.
-            finished: datetime
-                The finish date for the engagement.
+        Body Parameters:
+            workflow_collection (foreign key): The Workflow Collection object associated with the 
+                                               engagement.
+            user (foreign key): The User object who is engaging the Workflow.
+            started (datetime): The start date for the engagement.
+            finished (datetime): The finish date for the engagement.
 
-        Returns
-        -------
-            Response
-                A HTTP response object that depending on the result
-                of the operation will have varying status codes and payloads.
+        Returns:
+            A HTTP response object that depending on the result
+            of the operation will have varying status codes and payloads.
 
-                {
-                    "workflow_collection": "http://localhost:8000/api_v3/workflows/collections/db4029ae-9ff3-4f85-8129-69f85a3ba6ea/",
-                    "started": "2019-01-16T09:29:47-05:00",
-                    "finished": null,
-                    "workflowcollectionengagementdetail_set": [
-                        {
-                            "detail": "http://localhost:8000/api_v3/users/self/workflows/engagements/2b3fca55-a802-4b0f-b0df-215a17aac652/details/9b6240f7-a3ca-4c16-98ec-7c6ada508c72/",
-                            "step": "95a14611-1993-41e6-8464-4fd69aa4a028",
-                            "user_response": null,
-                            "started": "2019-01-07T06:00:00-05:00",
-                            "finished": null
-                        }
-                    ]
-                }
+            {
+                "workflow_collection": "http://localhost:8000/api_v3/workflows/collections/db4029ae-9ff3-4f85-8129-69f85a3ba6ea/",
+                "started": "2019-01-16T09:29:47-05:00",
+                "finished": null,
+                "workflowcollectionengagementdetail_set": [
+                    {
+                        "detail": "http://localhost:8000/api_v3/users/self/workflows/engagements/2b3fca55-a802-4b0f-b0df-215a17aac652/details/9b6240f7-a3ca-4c16-98ec-7c6ada508c72/",
+                        "step": "95a14611-1993-41e6-8464-4fd69aa4a028",
+                        "user_response": null,
+                        "started": "2019-01-07T06:00:00-05:00",
+                        "finished": null
+                    }
+                ]
+            }
 
-        Raises
-        ------
+        Raises:
             drf_exceptions.NotFound
                 If no resource exists for the provided `id`.
 
@@ -361,7 +329,6 @@ class WorkflowCollectionEngagementView(APIView):
                 {
                     "detail": "You do not have permission to perform this action."
                 }
-
         """
 
         user_engagement = get_object_or_404(

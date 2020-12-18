@@ -36,13 +36,10 @@ class WorkflowCollectionEngagementDetailsView(APIView):
         Retrieve WorkflowCollectionEngagementDetail representations
         associated with a given WorkflowEngagement for current user.
 
-        Path Parameters
-        ---------------
-            id : str
-                The UUID of the WorkflowEngagement to retrieve details on.
+        Path Parameters:
+            id (str): The UUID of the WorkflowEngagement to retrieve details on.
 
-        Returns
-        -------
+        Returns:
             A HTTP response containing a list-like JSON representation
             of the subscription with a 200 status code.
 
@@ -70,62 +67,51 @@ class WorkflowCollectionEngagementDetailsView(APIView):
         """
         Create a WorkflowCollectionEngagementDetail resource.
 
-        Path Parameters
-        ---------------
-            id : str
-                The UUID of the WorkflowEngagement for which to create
-                a new WorkflowCollectionEngagementDetail resource.
+        Path Parameters:
+            id (str): The UUID of the WorkflowEngagement for which to create
+                      a new WorkflowCollectionEngagementDetail resource.
 
-        Body Parameters
-        ---------------
-            workflow_collection_engagement : foreign key
-                The WorkflowCollectionEngagement object associated with the engagement detail.
-            step : foreign key
-                The WorkflowStep associated with the engagement detail.
-            user_response: dict
-                Internal representation of JSON response from user.
-            started: datetime
-                The start date of the engagement detail.
-            finished: datetime
-                The finish date of the engagement detail.
+        Body Parameters:
+            workflow_collection_engagement (foreign key): The WorkflowCollectionEngagement object 
+                                                          associated with the engagement detail.
+            step (foreign key): The WorkflowStep associated with the engagement detail.
+            user_response (dict): Internal representation of JSON response from user.   
+            started (datetime): The start date of the engagement detail.
+            finished (datetime): The finish date of the engagement detail.
 
-        Returns
-        -------
-            Response
-                A HTTP response containing a list-like JSON representation
-                of the subscription with a 201 status code
-                AND the engagement state which includes the previous and next steps.
+        Returns:
+            A HTTP response containing a list-like JSON representation
+            of the subscription with a 201 status code
+            AND the engagement state which includes the previous and next steps.
 
-                {
-                    'detail': 'http://testserver/api_v3/users/self/workflows/engagements/3e26ae35-046c-45c7-bf1c-7245e96f0942/details/e608aaee-4d44-434e-b20d-7446b3ec7be6/',
-                    'step': UUID('9acd8aac-b535-4a78-b332-1c30a2f75b8d'),
-                    'user_response': None,
-                    'started': '2019-09-13T10:20:00.081316-04:00',
-                    'finished': None,
-                    'state': {
-                        'next_workflow': 'http://testserver/api_v3/workflows/workflows/401eaf82-6117-4580-9cd0-e5a9df62f490/',
-                        'next_step_id': UUID('9acd8aac-b535-4a78-b332-1c30a2f75b8d'),
-                        'prev_workflow': None,
-                        'prev_step_id': None,
-                        'previously_completed_workflows': []
-                    }
+            {
+                'detail': 'http://testserver/api_v3/users/self/workflows/engagements/3e26ae35-046c-45c7-bf1c-7245e96f0942/details/e608aaee-4d44-434e-b20d-7446b3ec7be6/',
+                'step': UUID('9acd8aac-b535-4a78-b332-1c30a2f75b8d'),
+                'user_response': None,
+                'started': '2019-09-13T10:20:00.081316-04:00',
+                'finished': None,
+                'state': {
+                    'next_workflow': 'http://testserver/api_v3/workflows/workflows/401eaf82-6117-4580-9cd0-e5a9df62f490/',
+                    'next_step_id': UUID('9acd8aac-b535-4a78-b332-1c30a2f75b8d'),
+                    'prev_workflow': None,
+                    'prev_step_id': None,
+                    'previously_completed_workflows': []
                 }
+            }
 
 
-        Raises
-        ------
-                400: bad request
-                {
-                    "step": [
-                        "Not a valid uuid."
-                    ],
-                }
+        Raises:
+            400: bad request
+            {
+                "step": [
+                    "Not a valid uuid."
+                ],
+            }
 
-                409: duplicate resource
-                {
-                    "duplicate_resource": "An existing resource conflicts with the specified data."
-                }
-
+            409: duplicate resource
+            {
+                "duplicate_resource": "An existing resource conflicts with the specified data."
+            }
         """
 
         # The workflow_collection_engagement attribute needed by the serializer
@@ -195,21 +181,16 @@ class WorkflowCollectionEngagementDetailView(APIView):
         """
         Retrieve a WorkflowCollectionEngagementDetail representation for current user.
 
-        Path Parameters
-        ---------------
-            engagement_id : str
-                The UUID of the WorkflowEngagement that the
-                WorkflowCollectionEngagementDetail belongs to.
-            id : str
-                The UUID of the WorkflowCollectionEngagementDetail to retrieve.
+        Path Parameters:
+            engagement_id (str): The UUID of the WorkflowEngagement that the
+                                 WorkflowCollectionEngagementDetail belongs to.
+            id (str): The UUID of the WorkflowCollectionEngagementDetail to retrieve.
 
-        Notes
-        -----
+        Notes:
             The `engagement_id` parameter is not actually used, but is
             passed in because of the URL route structure.
 
-        Returns
-        -------
+        Returns:
             A HTTP response containing a dict-like JSON representation
             of the resource with a 200 status code.
 
@@ -221,8 +202,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
                 "finished": null
             }
 
-        Raises
-        ------
+        Raises:
             drf_exceptions.NotFound
                 If the specified resource cannot be found or is not
                 accessible by the requesting user.
@@ -230,7 +210,6 @@ class WorkflowCollectionEngagementDetailView(APIView):
                 {
                     "detail": "No matching Workflow Engagement Detail found."
                 }
-
         """
 
         engagement_detail = get_object_or_404(
@@ -248,49 +227,39 @@ class WorkflowCollectionEngagementDetailView(APIView):
         """
         PATCH Workflow User Engagement Detail update for current user.
 
-        Path Parameters
-        ----------
-            id : str
-                The UUID of the workflow user engagement detail to modify.
+        Path Parameters:
+            id (str): The UUID of the workflow user engagement detail to modify.
 
-        Body Parameters
-        ---------------
-            workflow_collection_engagement : foreign key
-                The WorkflowEngagement object associated with the engagement detail.
-            step : foreign key
-                The WorkflowStep assosciated with the engagement detail.
-            user_response: dict
-                Internal representation of JSON response from user.
-            started: datetime
-                The start date of the engagement detail.
-            finished: datetime
-                The finish date of the engagement detail.
+        Body Parameters:
+            workflow_collection_engagement (foreign key): The WorkflowEngagement object associated 
+                                                          with the engagement detail.
+            step (foreign key): The WorkflowStep assosciated with the engagement detail.
+            user_response (dict): Internal representation of JSON response from user.
+            started (datetime): The start date of the engagement detail.
+            finished (datetime): The finish date of the engagement detail.
 
-        Returns
-        -------
-            Response
-                A HTTP response object that depending on the result
-                of the operation will have varying status codes and payloads.
+        Returns:
+            A HTTP response object that depending on the result
+            of the operation will have varying status codes and payloads.
 
-                {
-                    'detail': 'http://testserver/api_v3/users/self/workflows/engagements/61ddea59-897f-4df9-a8fa-7da04b654125/details/94bbbb93-195c-471a-8173-ffda6d48e528/',
-                    'step': UUID('7d6bf291-0551-49c5-8636-d7df2fc2c800'),
-                    'user_response': None,
-                    'started': '2019-09-13T10:14:42.990323-04:00',
-                    'finished': '2019-09-13T10:17:02.329924-04:00',
-                    'state': {
-                        'next_workflow': None,
-                        'next_step_id': None,
-                        'prev_workflow': 'http://testserver/api_v3/workflows/workflows/dec836dd-c872-4fe7-964b-acd49b4e3b9f/',
-                        'prev_step_id': UUID('7d6bf291-0551-49c5-8636-d7df2fc2c800'),
-                        'previously_completed_workflows': [
-                            {'workflow': 'http://testserver/api_v3/workflows/workflows/dec836dd-c872-4fe7-964b-acd49b4e3b9f/'}
-                        ]
-                    }
+            {
+                'detail': 'http://testserver/api_v3/users/self/workflows/engagements/61ddea59-897f-4df9-a8fa-7da04b654125/details/94bbbb93-195c-471a-8173-ffda6d48e528/',
+                'step': UUID('7d6bf291-0551-49c5-8636-d7df2fc2c800'),
+                'user_response': None,
+                'started': '2019-09-13T10:14:42.990323-04:00',
+                'finished': '2019-09-13T10:17:02.329924-04:00',
+                'state': {
+                    'next_workflow': None,
+                    'next_step_id': None,
+                    'prev_workflow': 'http://testserver/api_v3/workflows/workflows/dec836dd-c872-4fe7-964b-acd49b4e3b9f/',
+                    'prev_step_id': UUID('7d6bf291-0551-49c5-8636-d7df2fc2c800'),
+                    'previously_completed_workflows': [
+                        {'workflow': 'http://testserver/api_v3/workflows/workflows/dec836dd-c872-4fe7-964b-acd49b4e3b9f/'}
+                    ]
                 }
+            }
 
-        Raises
-        ------
+        Raises:
             drf_exceptions.NotFound
                 If no resource exists for the provided `id`.
 
@@ -305,7 +274,6 @@ class WorkflowCollectionEngagementDetailView(APIView):
                 {
                     "detail": "You do not have permission to perform this action."
                 }
-
         """
         engagement_detail = get_object_or_404(
             WorkflowCollectionEngagementDetail,
