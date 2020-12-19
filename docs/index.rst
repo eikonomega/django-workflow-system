@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 django-workflow-system
-================
+======================
 ``django-workflow-system`` is an open-source Django package designed to help with the creation of surveys/activities.
 
 .. note::
@@ -20,7 +20,7 @@ django-workflow-system
    :caption: Contents
    :maxdepth: 2
 
-   workflow
+   models
 
 Indices
 ==================

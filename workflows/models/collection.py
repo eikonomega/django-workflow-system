@@ -38,7 +38,7 @@ class WorkflowCollectionTagOption(CreatedModifiedAbstractModel):
     This table defines what options are available to use as tags.
 
     In simple terms, this table defines the set of available tags
-    which are then referred to via foreign keys in WorkflowLabel objects.
+    which are then referred to via foreign keys in WorkflowTag objects.
 
     Attributes:
         id (UUIDField): The unique UUID of the object.
