@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta, date
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -121,8 +122,4 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-NOTIFICATION_SYSTEM_HANDLERS = [BASE_DIR / 'notification_handlers']
-
-TWILIO_ACCOUNT_SID = 'ACc945a26808dbc8b18c896760d5b74d8e'
-TWILIO_AUTH_TOKEN = '604f8c73835ce15028dd502647f997f5'
-TWILIO_SENDER = '5005550006'
+WORKFLOWS_DEFAULT_EXPIRATION = date.today() + timedelta(days=31)

@@ -2,6 +2,7 @@ import uuid
 from datetime import date
 
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -45,6 +46,7 @@ class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     # TODO why is this a datefield and not a datetime
     assigned_on = models.DateField(default=date.today)
+    expiration = models.DateField(default=settings.WORKFLOWS_DEFAULT_EXPIRATION) #TODO: FIX THIS
     status = models.CharField(choices=STATUS_CHOICES, max_length=17, default=ASSIGNED)
     engagement = models.OneToOneField(
         WorkflowCollectionEngagement,
