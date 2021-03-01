@@ -1,12 +1,12 @@
-import factory
 from datetime import timedelta
 
 from django.utils import timezone
+from factory.django import DjangoModelFactory
 
 from .....models import WorkflowCollectionAssignment
 
 
-class WorkflowCollectionAssignmentFactory(factory.DjangoModelFactory):
+class WorkflowCollectionAssignmentFactory(DjangoModelFactory):
     class Meta:
         model = WorkflowCollectionAssignment
         django_get_or_create = ('assigned_on', 'workflow_collection', 'user')

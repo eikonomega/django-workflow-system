@@ -1,13 +1,15 @@
 import factory
 import datetime
 
+from factory.django import DjangoModelFactory
+
 from .....models import (
     WorkflowCollectionSubscription,
     WorkflowCollectionSubscriptionSchedule,
 )
 
 
-class WorkflowCollectionSubscriptionFactory(factory.DjangoModelFactory):
+class WorkflowCollectionSubscriptionFactory(DjangoModelFactory):
     class Meta:
         model = WorkflowCollectionSubscription
         django_get_or_create = ("workflow_collection", "user")
@@ -27,7 +29,7 @@ class WorkflowCollectionSubscriptionFactory(factory.DjangoModelFactory):
             )
 
 
-class WorkflowCollectionSubscriptionScheduleFactory(factory.DjangoModelFactory):
+class WorkflowCollectionSubscriptionScheduleFactory(DjangoModelFactory):
     class Meta:
         model = WorkflowCollectionSubscriptionSchedule
         django_get_or_create = ("workflow_collection_subscription", "day_of_week")

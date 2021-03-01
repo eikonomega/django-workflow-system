@@ -1,10 +1,10 @@
 import factory
-
+from factory.django import DjangoModelFactory
 
 import workflows.models as models
 
 
-class WorkflowStepDataGroupFactory(factory.DjangoModelFactory):
+class WorkflowStepDataGroupFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepDataGroup
         django_get_or_create = ('name',)

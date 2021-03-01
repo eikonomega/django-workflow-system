@@ -1,5 +1,6 @@
 import factory
 from django.conf import settings
+from factory.django import DjangoModelFactory
 
 import workflows.models as models
 from .step import WorkflowStepFactory
@@ -7,15 +8,15 @@ from .authors import AuthorFactory
 from ..user import UserFactory
 
 
-class WorkflowFactory(factory.DjangoModelFactory):
+class WorkflowFactory(DjangoModelFactory):
     class Meta:
         model = models.Workflow
         exclude = ("steps",)
 
-    name = factory.sequence(lambda n: "workflow name {}".format(n))
-    code = factory.sequence(lambda n: "workflow_code_{}".format(n))
+    name = factory.sequence(lambda n: f"workflow name {n}")
+    code = factory.sequence(lambda n: f"workflow_code_{n}")
     version = 1
-    image = settings.MEDIA_ROOT + "/wumbo.jpg"
+    image = f"{settings.MEDIA_ROOT}/wumbo.jpg"
     author = factory.SubFactory(AuthorFactory)
     created_by = factory.SubFactory(UserFactory, is_staff=True)
 

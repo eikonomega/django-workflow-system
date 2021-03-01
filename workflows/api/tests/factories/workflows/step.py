@@ -1,12 +1,12 @@
 import factory
-
+from factory.django import DjangoModelFactory
 
 import workflows.models as models
 from .data_group import WorkflowStepDataGroupFactory
 from .json_schema import JSONSchemaFactory
 
 
-class WorkflowStepUITemplateFactory(factory.DjangoModelFactory):
+class WorkflowStepUITemplateFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepUITemplate
         django_get_or_create = ("name",)
@@ -14,7 +14,7 @@ class WorkflowStepUITemplateFactory(factory.DjangoModelFactory):
     name = factory.sequence(lambda n: "step_code_name_{}".format(n))
 
 
-class WorkflowStepFactory(factory.DjangoModelFactory):
+class WorkflowStepFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStep
         django_get_or_create = ("workflow", "code")
@@ -65,7 +65,7 @@ class WorkflowStepFactory(factory.DjangoModelFactory):
                 raise TypeError("data_group must be a dict or WorkflowStepDataGroup")
 
 
-class _WorkflowStepTextFactory(factory.DjangoModelFactory):
+class _WorkflowStepTextFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepText
         django_get_or_create = ["workflow_step", "ui_identifier"]
@@ -76,7 +76,7 @@ class _WorkflowStepTextFactory(factory.DjangoModelFactory):
     storage_value = factory.Sequence(lambda n: int(n + 1))
 
 
-class _WorkflowStepImageFactory(factory.DjangoModelFactory):
+class _WorkflowStepImageFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepImage
         django_get_or_create = ["workflow_step", "ui_identifier"]
@@ -86,7 +86,7 @@ class _WorkflowStepImageFactory(factory.DjangoModelFactory):
     url = factory.Faker("file_name", extension="png")
 
 
-class _WorkflowStepVideoFactory(factory.DjangoModelFactory):
+class _WorkflowStepVideoFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepVideo
         django_get_or_create = ["workflow_step", "ui_identifier"]
@@ -96,7 +96,7 @@ class _WorkflowStepVideoFactory(factory.DjangoModelFactory):
     url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
 
-class _WorkflowStepAudioFactory(factory.DjangoModelFactory):
+class _WorkflowStepAudioFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepAudio
         django_get_or_create = ["workflow_step", "ui_identifier"]
@@ -106,7 +106,7 @@ class _WorkflowStepAudioFactory(factory.DjangoModelFactory):
     url = factory.Faker("file_name", extension="mp3")
 
 
-class _WorkflowStepInputFactory(factory.DjangoModelFactory):
+class _WorkflowStepInputFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepInput
         django_get_or_create = ["workflow_step", "ui_identifier"]

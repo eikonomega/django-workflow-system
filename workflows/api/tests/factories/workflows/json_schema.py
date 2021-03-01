@@ -1,9 +1,10 @@
 import factory
+from factory.django import DjangoModelFactory
 
 from .....models import JSONSchema
 
 
-class JSONSchemaFactory(factory.DjangoModelFactory):
+class JSONSchemaFactory(DjangoModelFactory):
     class Meta:
         model = JSONSchema
         django_get_or_create = ("code", "description", "schema")

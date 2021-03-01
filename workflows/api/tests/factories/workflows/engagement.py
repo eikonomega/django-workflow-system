@@ -1,5 +1,6 @@
 import factory
 from django.utils import timezone
+from factory.django import DjangoModelFactory
 
 from .....models import (
     WorkflowCollectionEngagement,
@@ -7,7 +8,7 @@ from .....models import (
 )
 
 
-class WorkflowCollectionEngagementFactory(factory.DjangoModelFactory):
+class WorkflowCollectionEngagementFactory(DjangoModelFactory):
     class Meta:
         model = WorkflowCollectionEngagement
 
@@ -26,7 +27,7 @@ class WorkflowCollectionEngagementFactory(factory.DjangoModelFactory):
             )
 
 
-class WorkflowCollectionEngagementDetailFactory(factory.DjangoModelFactory):
+class WorkflowCollectionEngagementDetailFactory(DjangoModelFactory):
     class Meta:
         model = WorkflowCollectionEngagementDetail
         django_get_or_create = ("workflow_collection_engagement", "step")

@@ -1,7 +1,5 @@
-from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
-from rest_framework import exceptions as drf_exceptions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -18,7 +16,7 @@ class WorkflowsView(APIView):
 
     Notes:
         Workflows that are part of collections will not be displayed 
-        via this endpoint. They are access via the collection detail endpoint.
+        via this endpoint. They are accessed via the collection detail endpoint.
     """
 
     required_scopes = ['read']

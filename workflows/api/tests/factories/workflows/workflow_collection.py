@@ -1,12 +1,13 @@
 import factory
 from django.conf import settings
+from factory.django import DjangoModelFactory
 
 import workflows.models as models
 from .workflows import WorkflowFactory
 from ..user import UserFactory
 
 
-class WorkflowCollectionFactory(factory.DjangoModelFactory):
+class WorkflowCollectionFactory(DjangoModelFactory):
     """
     :param workflow_set: an iterable of Workflows to add to this collection.
     :param dependency_group_set: an iterable of dicts representing
@@ -75,7 +76,7 @@ class WorkflowCollectionFactory(factory.DjangoModelFactory):
                 self.tags.add(WorkflowCollectionTagOptionFactory(text=tag))
 
 
-class _WorkflowCollectionMemberFactory(factory.DjangoModelFactory):
+class _WorkflowCollectionMemberFactory(DjangoModelFactory):
     """
     This factory should never be invoked directly.
     Use `WorkflowCollectionFactory.create(workflows=[workflow1, workflow2,...])`
@@ -89,7 +90,7 @@ class _WorkflowCollectionMemberFactory(factory.DjangoModelFactory):
     order = factory.Sequence(lambda n: int(n + 1))
 
 
-class _WorkflowStepDependencyGroup(factory.DjangoModelFactory):
+class _WorkflowStepDependencyGroup(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepDependencyGroup
 
@@ -110,7 +111,7 @@ class _WorkflowStepDependencyGroup(factory.DjangoModelFactory):
             )
 
 
-class _WorkflowStepDependencyDetailFactory(factory.DjangoModelFactory):
+class _WorkflowStepDependencyDetailFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepDependencyDetail
 
@@ -119,7 +120,7 @@ class _WorkflowStepDependencyDetailFactory(factory.DjangoModelFactory):
     required_response = None  # Must be supplied in kwargs
 
 
-class WorkflowCollectionTagOptionFactory(factory.DjangoModelFactory):
+class WorkflowCollectionTagOptionFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowCollectionTagOption
         django_get_or_create = ['text']
