@@ -83,7 +83,7 @@ class TestWorkflowView(TestCase):
     def test_get__success(self):
         """Ensure returned data is as expected."""
         request = self.factory.get(
-            '/workflows/workflows/{}/'.format(self.workflow.id))
+            f"/workflows/workflows/{self.workflow.id}/")
         response = self.view(request, self.workflow.id)
         print('start')
         self.assertEqual(response.status_code, 200)
@@ -110,7 +110,7 @@ class TestWorkflowView(TestCase):
         """using non-existing workflow ID"""
         made_up_uuiid = '4f84f799-9cc5-43d3-0000-24840b7eb8ce'
         request = self.factory.get(
-            '/workflows/workflows/{}/'.format(made_up_uuiid))
+            f"/workflows/workflows/{made_up_uuiid}/")
         response = self.view(request, made_up_uuiid)
 
         self.assertEqual(response.status_code, 404)
@@ -119,6 +119,6 @@ class TestWorkflowView(TestCase):
         """test that having no image does not break things"""
         workflow = WorkflowFactory(image=None)
         request = self.factory.get(
-            '/workflows/workflows/{}/'.format(workflow.id))
+            f"/workflows/workflows/{workflow.id}/")
         response = self.view(request, workflow.id)
         self.assertEqual(response.data["image"], None)
