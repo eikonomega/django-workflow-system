@@ -17,11 +17,11 @@ class Command(BaseCommand):
         parser.add_argument('-wc', '--workflow_collection', type=str, required=True,
                             help='The name of the WorkflowCollection this assignment will be for.')
         parser.add_argument('-g', '--groups', type=str, required=True,
-                            help='Which group members to assign. For multiple groups use a comma seperated list. Ex: egg_group,sandwich_group')
+                            help='Which groups members. For multiple groups use a comma seperated list of the groups name . Ex: egg_group,sandwich_group')
 
     def handle(self, *args, **options):
         """
-        Welp.
+        This is what is being run by manage.py
         """
         if options['workflow_collection']:
             collection_name = options['workflow_collection']

@@ -5,6 +5,8 @@ from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
+
 
 from ...serializers.workflows.collection import (
     WorkflowCollectionSummarySerializer,
@@ -98,6 +100,8 @@ class WorkflowCollectionsView(APIView):
         """
 
         user = request.user
+        if not user.username:
+            return Response(data={"error": "Must be logged in."}, status=status.HTTP_400_BAD_REQUEST)
         now = timezone.now()
 
         # these three queries are used to determine which OLD versions the user should see.
