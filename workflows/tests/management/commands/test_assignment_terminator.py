@@ -3,19 +3,18 @@ from datetime import timedelta
 from django.core.management import call_command
 from django.test import TestCase
 from django.utils import timezone
-from django.utils.six import StringIO
+from io import StringIO
 
-from website.api_v2.tests.factories import (
+from ....api.tests.factories import (
     WorkflowCollectionAssignmentFactory,
     WorkflowCollectionAssignment2Factory, UserFactory)
-from website.workflows.models import (WorkflowCollectionEngagement,
-                                      WorkflowCollectionAssignment)
+from ....models import (WorkflowCollectionEngagement,
+                        WorkflowCollectionAssignment)
 
-from website.api_v2.tests.factories.workflows.workflow_collection import (
+from ....api.tests.factories.workflows.workflow_collection import (
     WorkflowCollectionFactory, WorkflowCollection2Factory)
 
-import website.api_v3.tests.factories as factories
-
+import workflows.api.tests.factories as factories
 
 
 class TestCommand(TestCase):
@@ -86,7 +85,7 @@ class TestCommand(TestCase):
         self.assignment_5 = WorkflowCollectionAssignmentFactory(
             engagement=self.workflow_collection_engagement_5,
             status=WorkflowCollectionAssignment.IN_PROGRESS,
-            assigned_on= timezone.now() - timedelta(days=4),
+            assigned_on=timezone.now() - timedelta(days=4),
             user=self.user_5)
 
     def test_command__success(self):
@@ -100,7 +99,7 @@ class TestCommand(TestCase):
         self.assertEqual(assignment_to_change.status, 'IN_PROGRESS')
 
         out = StringIO()
-        call_command('assignment_terminator', stdout=out)
+        call_command('assignment_terminator', days_old='30', type='SURVEY', stdout=out)
 
         assignment_to_change.refresh_from_db()
         self.assertEqual(assignment_to_change.status, 'CLOSED_INCOMPLETE')
