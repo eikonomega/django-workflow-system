@@ -77,13 +77,13 @@ class WorkflowCollectionEngagementsView(APIView):
         if start:
             try:
                 start = datetimeparser.isoparse(start)
-            except ValueError as e:
+            except ValueError:
                 errors["start"] = [ErrorDetail("Invalid datetime", "invalid")]
                 start = None
         if end:
             try:
                 end = datetimeparser.isoparse(end)
-            except ValueError as e:
+            except ValueError:
                 errors["end"] = [ErrorDetail("Invalid datetime", "invalid")]
                 end = None
 
@@ -99,7 +99,7 @@ class WorkflowCollectionEngagementsView(APIView):
         if collection_id:
             try:
                 uuid.UUID(collection_id)
-            except ValueError as e:
+            except ValueError:
                 errors["collection_id"] = [ErrorDetail("Badly formed UUID")]
             else:
                 if not WorkflowCollection.objects.filter(pk=collection_id):
