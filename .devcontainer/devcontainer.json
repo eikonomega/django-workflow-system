@@ -35,7 +35,8 @@
 		"github.vscode-pull-request-github",
 		"ms-vsliveshare.vsliveshare-pack",
 		"ms-python.vscode-pylance",
-		"gruntfuggly.todo-tree"
+		"gruntfuggly.todo-tree",
+		"njpwerner.autodocstring"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
