@@ -3,25 +3,15 @@ from django.utils import timezone
 
 from rest_framework.test import APIRequestFactory
 
-from website.api_v2.tests.factories import (
-    WorkflowCollectionAssignmentFactory,
-    WorkflowCollectionAssignment2Factory,
-    WorkflowCollectionAssignment3Factory,
-    UserFactory,
-    User2Factory,
-)
-from website.api_v3.classes import APIResourceCollectionAuthenticationRequiredTestCase
-from website.api_v3.tests import factories
-from website.api_v3.views.user.workflows import (
-    WorkflowCollectionAssignmentsView,
-    WorkflowCollectionAssignmentView,
-)
-from website.workflows.models import WorkflowCollectionAssignment
+from workflows.api.tests.factories import (WorkflowCollectionAssignmentFactory, UserFactory,
+                                           WorkflowCollectionFactory,
+                                           WorkflowCollectionEngagementFactory)
+from workflows.api.views.user.workflows import (WorkflowCollectionAssignmentsView,
+                                                WorkflowCollectionAssignmentView)
+from workflows.models import WorkflowCollectionAssignment
 
 
-class TestWorkflowAssignmentsView(
-    APIResourceCollectionAuthenticationRequiredTestCase, TestCase
-):
+class TestWorkflowAssignmentsView(TestCase):
     def setUp(self):
         self.view = WorkflowCollectionAssignmentsView.as_view()
         self.view_url = "/users/self/workflows/assignments/"
@@ -29,10 +19,32 @@ class TestWorkflowAssignmentsView(
         self.assigned_on = timezone.now().date()
 
         self.user = UserFactory()
-        self.workflow_assignment = WorkflowCollectionAssignmentFactory()
-        self.workflow_assignment_2 = WorkflowCollectionAssignment2Factory()
 
-        super(TestWorkflowAssignmentsView, self).setUp()
+        self.workflow_collection = WorkflowCollectionFactory()
+        self.workflow_engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=self.workflow_collection,
+            user=self.user
+        )
+        self.workflow_assignment = WorkflowCollectionAssignmentFactory(
+            user=self.user,
+            workflow_collection=self.workflow_collection,
+            engagement=self.workflow_engagement
+        )
+
+        self.workflow_collection_2 = WorkflowCollectionFactory()
+        self.workflow_engagement_2 = WorkflowCollectionEngagementFactory(
+            workflow_collection=self.workflow_collection_2,
+            user=self.user
+        )
+        self.workflow_assignment_2 = WorkflowCollectionAssignmentFactory(
+            user=self.user,
+            workflow_collection=self.workflow_collection_2,
+            engagement=self.workflow_engagement_2
+        )
+
+        self.welcome_assessment = WorkflowCollectionFactory(
+            code="demographics_survey_welcome_collection"
+        )
 
     def test_get__expected_payload(self):
         """Verify the payload conforms to expectations."""
@@ -45,7 +57,7 @@ class TestWorkflowAssignmentsView(
         # Assert Workflow Assignment 1
         self.assertEqual(
             response.data[0]["workflow_collection"],
-            f"http://testserver/api_v3/workflows/collections/{self.workflow_assignment.workflow_collection.id}/",
+            f"http://testserver/workflow_system/collections/{self.workflow_assignment.workflow_collection.id}/",
         )
         self.assertEqual(
             response.data[0]["assigned_on"], self.assigned_on.strftime("%Y-%m-%d")
@@ -53,15 +65,13 @@ class TestWorkflowAssignmentsView(
         self.assertEqual(response.data[0]["status"], "ASSIGNED")
         self.assertEqual(
             response.data[0]["engagement"],
-            "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(
-                self.workflow_assignment.engagement.id
-            ),
+            f"http://testserver/workflow_system/users/self/workflows/engagements/{self.workflow_assignment.engagement.id}/",
         )
 
         # Assert Workflow Assignment 2
         self.assertEqual(
             response.data[1]["workflow_collection"],
-            f"http://testserver/api_v3/workflows/collections/{self.workflow_assignment_2.workflow_collection.id}/",
+            f"http://testserver/workflow_system/collections/{self.workflow_assignment_2.workflow_collection.id}/",
         )
         self.assertEqual(
             response.data[1]["assigned_on"], self.assigned_on.strftime("%Y-%m-%d")
@@ -69,30 +79,7 @@ class TestWorkflowAssignmentsView(
         self.assertEqual(response.data[1]["status"], "ASSIGNED")
         self.assertEqual(
             response.data[1]["engagement"],
-            "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(
-                self.workflow_assignment_2.engagement.id
-            ),
-        )
-
-    def test_get__demographics_survey_welcome_collection_assigned(self):
-        welcome_assessment = factories.WorkflowCollectionFactory(
-            code="demographics_survey_welcome_collection"
-        )
-
-        self.assertFalse(
-            WorkflowCollectionAssignment.objects.filter(
-                workflow_collection=welcome_assessment, user=self.user,
-            )
-        )
-
-        request = self.factory.get(self.view_url)
-        request.user = self.user
-        response = self.view(request)
-
-        self.assertTrue(
-            WorkflowCollectionAssignment.objects.filter(
-                workflow_collection=welcome_assessment, user=self.user,
-            )
+            f"http://testserver/workflow_system/users/self/workflows/engagements/{self.workflow_assignment_2.engagement.id}/"
         )
 
 
@@ -103,24 +90,35 @@ class TestWorkflowAssignmentView(TestCase):
         self.assigned_on = timezone.now().date()
 
         self.user = UserFactory()
-        self.user_2 = User2Factory()
-        self.workflow_assignment = WorkflowCollectionAssignmentFactory()
-        self.workflow_assignment_2 = WorkflowCollectionAssignment2Factory()
-        self.workflow_assignment3 = WorkflowCollectionAssignment3Factory()
+        self.user_2 = UserFactory()
+        self.workflow_collection = WorkflowCollectionFactory()
+        self.workflow_engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=self.workflow_collection,
+            user=self.user
+        )
+        self.workflow_assignment = WorkflowCollectionAssignmentFactory(
+            user=self.user,
+            workflow_collection=self.workflow_collection,
+            engagement=self.workflow_engagement
+        )
+        self.workflow_assignment_3 = WorkflowCollectionAssignmentFactory(
+            user=self.user,
+            workflow_collection=self.workflow_collection,
+            engagement=self.workflow_engagement
+        )
 
     def test_get__unauthenticated_detail(self):
         """Unauthenticated users cannot access GET method."""
         request = self.factory.get(
-            "/users/self/workflows/assignments/{}/".format(self.workflow_assignment.id)
+            f"/users/self/workflows/assignments/{self.workflow_assignment.id}/"
         )
-        response = self.detail_view(request, self.workflow_assignment.id)
-
-        self.assertEqual(response.status_code, 403)
+        response = self.detail_view(request, self.workflow_assignment)
+        self.assertEqual(response.status_code, 404)
 
     def test_get__authenticated_detail(self):
         """Authenticated users can access GET method."""
         request = self.factory.get(
-            "/users/self/workflows/assignments/{}/".format(self.workflow_assignment.id)
+            f"/users/self/workflows/assignments/{self.workflow_assignment.id}/"
         )
         request.user = self.user
         response = self.detail_view(request, self.workflow_assignment.id)
@@ -130,7 +128,7 @@ class TestWorkflowAssignmentView(TestCase):
     def test_get__success_detail(self):
         """Checking for Assignment returned"""
         request = self.factory.get(
-            "/users/self/workflows/assignments/{}/".format(self.workflow_assignment.id)
+            f"/users/self/workflows/assignments/{self.workflow_assignment.id}/"
         )
         request.user = self.user
         response = self.detail_view(request, self.workflow_assignment.id)
@@ -138,7 +136,7 @@ class TestWorkflowAssignmentView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data["workflow_collection"],
-            f"http://testserver/api_v3/workflows/collections/{self.workflow_assignment.workflow_collection.id}/",
+            f"http://testserver/workflow_system/collections/{self.workflow_assignment.workflow_collection.id}/",
         )
         self.assertEqual(
             response.data["assigned_on"], self.assigned_on.strftime("%Y-%m-%d")
@@ -146,9 +144,7 @@ class TestWorkflowAssignmentView(TestCase):
         self.assertEqual(response.data["status"], self.workflow_assignment.status)
         self.assertEqual(
             response.data["engagement"],
-            "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(
-                self.workflow_assignment.engagement.id
-            ),
+            f"http://testserver/workflow_system/users/self/workflows/engagements/{self.workflow_assignment.engagement.id}/"
         )
 
     def test_get__assignment_id_nonexistent_detail(self):
@@ -175,25 +171,22 @@ class TestWorkflowAssignmentView(TestCase):
     def test_patch__valid_payload(self):
         """Patch current target to the one specified."""
         request = self.factory.patch(
-            "/users/self/workflows/assignments/{}/".format(
-                self.workflow_assignment3.id
-            ),
+            f"/users/self/workflows/assignments/{self.workflow_assignment_3.id}/",
             data={
                 "status": "IN_PROGRESS",
-                "engagement": "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(
-                    self.workflow_assignment.engagement.id
-                ),
+                "engagement": f"http://testserver/workflow_system/users/self/workflows/engagements/"
+                              f"{self.workflow_assignment.engagement.id}/"
             },
             format="json",
         )
         request.user = self.user
-        response = self.detail_view(request, self.workflow_assignment.id)
+        response = self.detail_view(request, self.workflow_assignment_3.id)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["status"], "IN_PROGRESS")
         self.assertEqual(
             response.data["engagement"],
-            "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(
+            "http://testserver/workflow_system/users/self/workflows/engagements/{}/".format(
                 self.workflow_assignment.engagement.id
             ),
         )
@@ -216,31 +209,31 @@ class TestWorkflowAssignmentView(TestCase):
     def test_patch__unauthenticated_user(self):
         """Return 403 error for unauthenticated users."""
         request = self.factory.patch(
-            "/users/self/workflows/assignments/{}/".format(self.workflow_assignment.id)
+            f"/users/self/workflows/assignments/{self.workflow_assignment.id}/"
         )
-        response = self.detail_view(request, self.workflow_assignment.id)
+        response = self.detail_view(request, self.workflow_assignment)
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
     def test_patch__assignment_does_not_belong_to_user(self):
         """Users should not have access to others assignments GET method."""
         request = self.factory.patch(
-            "/users/self/workflows/assignments/{}/".format(self.workflow_assignment.id),
+            f"/users/self/workflows/assignments/{self.workflow_assignment.id}/",
             data={"status": "ASSIGNED"},
             format="json",
         )
         request.user = self.user_2
-        response = self.detail_view(request, self.workflow_assignment.id)
+        response = self.detail_view(request, self.workflow_assignment_3.id)
 
         self.assertEqual(response.status_code, 404)
 
     def test_patch__valid_payload__completed(self):
         """Patch current target to the one specified."""
-        wc = factories.WorkflowCollectionFactory()
-        wca: WorkflowCollectionAssignment = factories.WorkflowCollectionAssignmentFactory(
+        wc = WorkflowCollectionFactory()
+        wca: WorkflowCollectionAssignment = WorkflowCollectionAssignmentFactory(
             user=self.user,
             workflow_collection=wc,
-            engagement=factories.WorkflowCollectionEngagementFactory(
+            engagement=WorkflowCollectionEngagementFactory(
                 workflow_collection=wc,
                 user=self.user,
                 finished=None,
@@ -261,9 +254,7 @@ class TestWorkflowAssignmentView(TestCase):
         self.assertEqual(response.data["status"], WorkflowCollectionAssignment.CLOSED_COMPLETE)
         self.assertEqual(
             response.data["engagement"],
-            "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(
-                wca.engagement.id
-            ),
+            f"http://testserver/workflow_system/users/self/workflows/engagements/{wca.engagement.id}/"
         )
         wca.refresh_from_db()
         self.assertTrue(wca.engagement.finished)
