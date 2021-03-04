@@ -17,9 +17,11 @@ from rest_framework.test import APIRequestFactory
 
 from workflows.api.tests.factories import UserFactory, WorkflowCollectionFactory
 from workflows.api.tests.factories.workflows import (JSONSchemaTrueFactory, JSONSchemaFactory,
-                                                     WorkflowCollectionEngagementFactory)
+                                                     WorkflowCollectionEngagementFactory,
+                                                     WorkflowCollectionEngagementDetailFactory)
 from workflows.api.views.user.workflows import (WorkflowCollectionEngagementsView,
-                                                WorkflowCollectionEngagementDetailsView)
+                                                WorkflowCollectionEngagementDetailsView,
+                                                WorkflowCollectionEngagementView)
 from workflows.models import (Workflow, WorkflowStep, WorkflowStepInput,
                               WorkflowCollectionEngagementDetail)
 
@@ -797,453 +799,447 @@ class TestWorkflowCollectionSurveys(TestCase):
             }
         )
 
-#     def test_multiple_workflow_step_dependency_groups_dog(self):
-#         # dog lover gets the special message
-#         collection = self.multiple_dependency_groups__survey_collection
-#         workflow = Workflow.objects.get(code="pet_quiz_workflow_with_bees")
-#         steps = workflow.workflowstep_set.order_by('order')
-#
-#         engagement = WorkflowCollectionEngagementFactory(
-#             workflow_collection=collection,
-#             user=self.user,
-#         )
-#         request = self.factory.post(
-#             '/users/self/workflows/engagements/{}/details/'.format(
-#                 engagement.id),
-#             data={
-#                 'workflow_collection_engagement':
-#                     "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(engagement.id),
-#                 'step': steps[0].id,
-#                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
-#                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
-#                 'user_response': {
-#                     "questions": [{
-#                         "stepInputID": str(steps[0].workflowstepinput_set.get().id),
-#                         "stepInputUIIdentifier": str(
-#                             steps[0].workflowstepinput_set.get().ui_identifier),
-#                         "response": 1
-#                     }]
-#                 }
-#             },
-#             format='json')
-#         request.user = self.user
-#         response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
-#
-#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-#         self.assertEqual(
-#             response.data['state'],
-#             {
-#                 "next_workflow": "http://testserver/api_v3/workflows/workflows/{}/".format(workflow.id),
-#                 "next_step_id": steps[1].id,
-#                 "prev_workflow": "http://testserver/api_v3/workflows/workflows/{}/".format(workflow.id),
-#                 "prev_step_id": steps[0].id,
-#                 "previously_completed_workflows": [],
-#                 'steps_completed_in_collection': 1,
-#                 'steps_completed_in_workflow': 1,
-#                 'steps_in_collection': 3,
-#                 'steps_in_workflow': 3,
-#             })
-#     def test_multiple_workflow_step_dependency_groups_bees(self):
-#         # bee lover does not get the special message
-#         collection = self.multiple_dependency_groups__survey_collection
-#         workflow = Workflow.objects.get(code="pet_quiz_workflow_with_bees")
-#         steps = workflow.workflowstep_set.order_by('order')
-#
-#         engagement = WorkflowCollectionEngagementFactory(
-#             workflow_collection=collection,
-#             user=self.user,
-#         )
-#         request = self.factory.post(
-#             '/users/self/workflows/engagements/{}/details/'.format(
-#                 engagement.id),
-#             data={
-#                 'workflow_collection_engagement':
-#                     "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(engagement.id),
-#                 'step': steps[0].id,
-#                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
-#                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
-#                 'user_response' : {
-#                     "questions": [{
-#                         "stepInputID": str(steps[0].workflowstepinput_set.get().id),
-#                         "stepInputUIIdentifier": str(
-#                             steps[0].workflowstepinput_set.get().ui_identifier),
-#                         "response": 2
-#                     }]
-#                 }
-#             },
-#             format='json')
-#         request.user = self.user
-#         response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
-#
-#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-#         self.assertEqual(
-#             response.data['state'],
-#             {
-#                 "next_workflow": "http://testserver/api_v3/workflows/workflows/{}/".format(workflow.id),
-#                 "next_step_id": steps[2].id,
-#                 "prev_workflow": "http://testserver/api_v3/workflows/workflows/{}/".format(workflow.id),
-#                 "prev_step_id": steps[0].id,
-#                 "previously_completed_workflows": [],
-#                 'steps_completed_in_collection': 2,
-#                 'steps_completed_in_workflow': 2,
-#                 'steps_in_collection': 3,
-#                 'steps_in_workflow': 3,
-#             })
-#
-#     def test_no_stepInputID_400(self):
-#         # a survey response with no stepInputId should 400
-#         collection = self.simple_survey__survey_collection
-#         workflow = Workflow.objects.get(code="simple_survey_workflow")
-#         steps = workflow.workflowstep_set.order_by('order')
-#
-#         engagement = WorkflowCollectionEngagementFactory(
-#             workflow_collection=collection,
-#             user=self.user,
-#         )
-#         request = self.factory.post(
-#             '/users/self/workflows/engagements/{}/details/'.format(
-#                 engagement.id),
-#             data={
-#                 'workflow_collection_engagement':
-#                     "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(engagement.id),
-#                 'step': steps[0].id,
-#                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
-#                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
-#                 'user_response': {
-#                     "questions": [{
-#                         # "stepInputID": str(steps[0].workflowstepinput_set.get().id),
-#                         "stepInputUIIdentifier": str(
-#                             steps[0].workflowstepinput_set.get().ui_identifier),
-#                         "response": 0
-#                     }]
-#                 }
-#             },
-#             format='json')
-#         request.user = self.user
-#         response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
-#
-#         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-#
-#     def test_no_stepInputUIIdentifier_400s(self):
-#         # a survey response with no stepInputUIIdentifier should 400
-#         collection = self.simple_survey__survey_collection
-#         workflow = Workflow.objects.get(code="simple_survey_workflow")
-#         steps = workflow.workflowstep_set.order_by('order')
-#
-#         engagement = WorkflowCollectionEngagementFactory(
-#             workflow_collection=collection,
-#             user=self.user,
-#         )
-#         request = self.factory.post(
-#             '/users/self/workflows/engagements/{}/details/'.format(
-#                 engagement.id),
-#             data={
-#                 'workflow_collection_engagement':
-#                     "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(engagement.id),
-#                 'step': steps[0].id,
-#                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
-#                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
-#                 'user_response': {
-#                     "questions": [{
-#                         "stepInputID": str(steps[0].workflowstepinput_set.get().id),
-#                         # "stepInputUIIdentifier": str(
-#                         #     steps[0].workflowstepinput_set.get().ui_identifier),
-#                         "response": 0
-#                     }]
-#                 }
-#             },
-#             format='json')
-#         request.user = self.user
-#         response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
-#
-#         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-#
-#     def test_invalid_step_id(self):
-#         # a survey response with an invalid step id should 400
-#         collection = self.simple_survey__survey_collection
-#         workflow = Workflow.objects.get(code="simple_survey_workflow")
-#         steps = workflow.workflowstep_set.order_by('order')
-#
-#         engagement = WorkflowCollectionEngagementFactory(
-#             workflow_collection=collection,
-#             user=self.user,
-#         )
-#         request = self.factory.post(
-#             '/users/self/workflows/engagements/{}/details/'.format(
-#                 engagement.id),
-#             data={
-#                 'workflow_collection_engagement':
-#                     "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(engagement.id),
-#                 'step': steps[0].id,
-#                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
-#                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
-#                 'user_response': {
-#                     "questions": [{
-#                         "stepInputID": 'hotdog',
-#                         "stepInputUIIdentifier": str(
-#                             steps[0].workflowstepinput_set.get().ui_identifier),
-#                         "response": 0
-#                     }]
-#                 }
-#             },
-#             format='json')
-#         request.user = self.user
-#         response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
-#
-#         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-#
-#     def test_ui_identifer_matches_step_input_id(self):
-#         # a survey response where step with the provided id has a different ui identifier should 400
-#         collection = self.simple_survey__survey_collection
-#         workflow = Workflow.objects.get(code="simple_survey_workflow")
-#         steps = workflow.workflowstep_set.order_by('order')
-#
-#         engagement = WorkflowCollectionEngagementFactory(
-#             workflow_collection=collection,
-#             user=self.user,
-#         )
-#         request = self.factory.post(
-#             '/users/self/workflows/engagements/{}/details/'.format(
-#                 engagement.id),
-#             data={
-#                 'workflow_collection_engagement':
-#                     "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(engagement.id),
-#                 'step': steps[0].id,
-#                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
-#                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
-#                 'user_response': {
-#                     "questions": [{
-#                         "stepInputID": str(steps[0].workflowstepinput_set.get().id),
-#                         "stepInputUIIdentifier": "burger",
-#                         "response": 0
-#                     }]
-#                 }
-#             },
-#             format='json')
-#         request.user = self.user
-#         response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
-#
-#         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-#
-#     def test_unfinished_step_counts_as_requirement_not_fulfilled(self):
-#         """"""
-#         collection = WorkflowCollectionFactory(**{
-#             "category": "SURVEY",
-#             "name": "rice_survey_collection",
-#             "workflow_set": [{
-#                 "name": "rice_survey_workflow",
-#                 "code": "rice_survey_workflow",
-#                 "workflowstep_set": [
-#                     {
-#                         "code": "have_rice",
-#                         "workflowsteptext_set": [
-#                             {"content": "yes", "storage_value": 1},
-#                             {"content": "no", "storage_value": 0}
-#                         ],
-#                         "workflowstepinput_set": [{
-#                             "content": "Do you have rice?",
-#                             "ui_identifier": "question_1",
-#                             "required": True,
-#                             "response_schema": JSONSchemaFactory(schema={"type": "number", "enum": [0, 1]})
-#                         }]
-#                     },
-#                     {
-#                         "code": "red_rice",
-#                         "workflowsteptext_set": [
-#                             {"content": "yes", "storage_value": 1},
-#                             {"content": "no", "storage_value": 0}
-#                         ],
-#                         "workflowstepinput_set": [{
-#                             "content": "Is your rice red?",
-#                             "ui_identifier": "question_1",
-#                             "required": True,
-#                             "response_schema": JSONSchemaFactory(schema={"type": "number", "enum": [0, 1]})
-#                         }]
-#                     },
-#                     {
-#                         "code": "nice_rice",
-#                         "workflowsteptext_set": [{
-#                             "content": "I like red rice!"
-#                         }]
-#                     },
-#                     {
-#                         "code": "final_step",
-#                         "workflowsteptext_set": [{
-#                             "content": "Thank you for completing the survey!"
-#                         }]
-#                     }
-#                 ]
-#             }],
-#             "workflowstepdependencygroup_set": [
-#                 {
-#                     "workflow_step": {
-#                         "workflow__code": "rice_survey_workflow",
-#                         "code": "red_rice"
-#                     },
-#                     "workflowstepdependencydetail_set": [{
-#                         "dependency_step": {"code": "have_rice"},
-#                         "required_response": {
-#                             "$schema": "http://json-schema.org/draft-07/schema#",
-#                             "type": "array",
-#                             "items": [
-#                                 {
-#                                     "type": "object",
-#                                     "required": [
-#                                         "stepInputID",
-#                                         "stepInputUIIdentifier",
-#                                         "response"
-#                                     ],
-#                                     "properties": {
-#                                         "stepInputID": {
-#                                             "type": "string"
-#                                         },
-#                                         "stepInputUIIdentifier": {
-#                                             "type": "string",
-#                                             "const": "question_1"
-#                                         },
-#                                         "response": {
-#                                             "type": "number",
-#                                             "const": 1
-#                                         }
-#                                     }
-#                                 }
-#                             ]
-#                         }
-#                     }]
-#                 },
-#                 {
-#                     "workflow_step": {
-#                         "workflow__code": "rice_survey_workflow",
-#                         "code": "nice_rice"
-#                     },
-#                     "workflowstepdependencydetail_set": [{
-#                         "dependency_step": {"code": "red_rice"},
-#                         "required_response": {
-#                             "$schema": "http://json-schema.org/draft-07/schema#",
-#                             "type": "array",
-#                             "items": [
-#                                 {
-#                                     "type": "object",
-#                                     "required": [
-#                                         "stepInputID",
-#                                         "stepInputUIIdentifier",
-#                                         "response"
-#                                     ],
-#                                     "properties": {
-#                                         "stepInputID": {
-#                                             "type": "string"
-#                                         },
-#                                         "stepInputUIIdentifier": {
-#                                             "type": "string",
-#                                             "const": "question_1"
-#                                         },
-#                                         "response": {
-#                                             "type": "number",
-#                                             "const": 1
-#                                         }
-#                                     }
-#                                 }
-#                             ]
-#                         }
-#                     }]
-#                 }
-#             ]
-#         })
-#
-#
-#         workflow = Workflow.objects.get(code="rice_survey_workflow")
-#         steps = workflow.workflowstep_set.order_by('order')
-#
-#         engagement = WorkflowCollectionEngagementFactory(
-#             workflow_collection=collection,
-#             user=self.user,
-#         )
-#         request = self.factory.post(
-#             '/users/self/workflows/engagements/{}/details/'.format(
-#                 engagement.id),
-#             data={
-#                 'workflow_collection_engagement':
-#                     "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(engagement.id),
-#                 'step': steps[0].id,
-#                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
-#                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
-#                 'user_response': {
-#                     "questions": [{
-#                         "stepInputID": str(steps[0].workflowstepinput_set.get().id),
-#                         "stepInputUIIdentifier": "question_1",
-#                         "response": 0
-#                     }]
-#                 }
-#             },
-#             format='json')
-#         request.user = self.user
-#         response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
-#
-#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-#         self.assertEqual(
-#             response.data['state'],
-#             {
-#                 "next_workflow": "http://testserver/api_v3/workflows/workflows/{}/".format(workflow.id),
-#                 "next_step_id": steps[3].id,
-#                 "prev_workflow": "http://testserver/api_v3/workflows/workflows/{}/".format(workflow.id),
-#                 "prev_step_id": steps[0].id,
-#                 "previously_completed_workflows": [],
-#                 'steps_completed_in_collection': 3,
-#                 'steps_completed_in_workflow': 3,
-#                 'steps_in_collection': 4,
-#                 'steps_in_workflow': 4,
-#             })
-#
-#     def test_submit_deletes_unfinished(self):
-#         collection = self.diamond_scenario__survey_collection
-#         workflow = Workflow.objects.get(name="pet_quiz_workflow")
-#         steps = workflow.workflowstep_set.order_by('order')
-#         steps = list(steps)  # don't be lazy!
-#
-#         engagement = WorkflowCollectionEngagementFactory(
-#             workflow_collection=collection,
-#             user=self.user,
-#         )
-#
-#         detail0 = WorkflowCollectionEngagementDetailFactory(
-#             workflow_collection_engagement=engagement,
-#             step=steps[0],
-#             user_response=0,
-#             started=timezone.now(),
-#             finished=timezone.now(),
-#         )
-#         detail1 = WorkflowCollectionEngagementDetailFactory(
-#             workflow_collection_engagement=engagement,
-#             step=steps[1],
-#             user_response="Garfield",
-#             started=timezone.now(),
-#             finished=timezone.now(),
-#         )
-#         detail2 = WorkflowCollectionEngagementDetailFactory(
-#             workflow_collection_engagement=engagement,
-#             step=steps[2],
-#             user_response="Corgi",
-#             started=timezone.now(),
-#             finished=None,
-#         )
-#         detail3 = WorkflowCollectionEngagementDetailFactory(
-#             workflow_collection_engagement=engagement,
-#             step=steps[3],
-#             started=timezone.now(),
-#             finished=timezone.now(),
-#         )
-#
-#         request = self.factory.patch(
-#             '/users/self/workflows/engagements/{}'.format(engagement.id),
-#             data={
-#                 "finished": timezone.now(),
-#             },
-#             format='json',
-#         )
-#         request.user = self.user
-#         response = WorkflowCollectionEngagementView.as_view()(request, engagement.id)
-#
-#         self.assertListEqual(
-#             list(WorkflowCollectionEngagementDetail.objects.filter(workflow_collection_engagement=engagement)),
-#             list(WorkflowCollectionEngagementDetail.objects.filter(workflow_collection_engagement=engagement, finished__isnull=False)))
-#
+    def test_multiple_workflow_step_dependency_groups_dog(self):
+        # dog lover gets the special message
+        collection = self.multiple_dependency_groups__survey_collection
+        workflow = Workflow.objects.get(code="pet_quiz_workflow_with_bees")
+        steps = workflow.workflowstep_set.order_by('order')
+
+        engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=collection,
+            user=self.user,
+        )
+        request = self.factory.post(
+            f"/users/self/workflows/engagements/{engagement.id}/details/",
+            data={
+                'workflow_collection_engagement':
+                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                'step': steps[0].id,
+                'started': timezone.now() + timezone.timedelta(milliseconds=1),
+                'finished': timezone.now() + timezone.timedelta(milliseconds=2),
+                'user_response': {
+                    "questions": [{
+                        "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                        "stepInputUIIdentifier": str(
+                            steps[0].workflowstepinput_set.get().ui_identifier),
+                        "response": 1
+                    }]
+                }
+            },
+            format='json')
+        request.user = self.user
+        response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            response.data['state'],
+            {
+                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "next_step_id": steps[1].id,
+                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "prev_step_id": steps[0].id,
+                "previously_completed_workflows": [],
+                'steps_completed_in_collection': 1,
+                'steps_completed_in_workflow': 1,
+                'steps_in_collection': 3,
+                'steps_in_workflow': 3,
+            })
+
+    def test_multiple_workflow_step_dependency_groups_bees(self):
+        # bee lover does not get the special message
+        collection = self.multiple_dependency_groups__survey_collection
+        workflow = Workflow.objects.get(code="pet_quiz_workflow_with_bees")
+        steps = workflow.workflowstep_set.order_by('order')
+
+        engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=collection,
+            user=self.user,
+        )
+        request = self.factory.post(
+            f"/users/self/workflows/engagements/{engagement.id}/details/",
+            data={
+                'workflow_collection_engagement':
+                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                'step': steps[0].id,
+                'started': timezone.now() + timezone.timedelta(milliseconds=1),
+                'finished': timezone.now() + timezone.timedelta(milliseconds=2),
+                'user_response' : {
+                    "questions": [{
+                        "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                        "stepInputUIIdentifier": str(
+                            steps[0].workflowstepinput_set.get().ui_identifier),
+                        "response": 2
+                    }]
+                }
+            },
+            format='json')
+        request.user = self.user
+        response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            response.data['state'],
+            {
+                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "next_step_id": steps[2].id,
+                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "prev_step_id": steps[0].id,
+                "previously_completed_workflows": [],
+                'steps_completed_in_collection': 2,
+                'steps_completed_in_workflow': 2,
+                'steps_in_collection': 3,
+                'steps_in_workflow': 3,
+            })
+
+    def test_no_stepInputID_400(self):
+        # a survey response with no stepInputId should 400
+        collection = self.simple_survey__survey_collection
+        workflow = Workflow.objects.get(code="simple_survey_workflow")
+        steps = workflow.workflowstep_set.order_by('order')
+
+        engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=collection,
+            user=self.user,
+        )
+        request = self.factory.post(
+            f"/users/self/workflows/engagements/{engagement.id}/details/",
+            data={
+                'workflow_collection_engagement':
+                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                'step': steps[0].id,
+                'started': timezone.now() + timezone.timedelta(milliseconds=1),
+                'finished': timezone.now() + timezone.timedelta(milliseconds=2),
+                'user_response': {
+                    "questions": [{
+                        # "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                        "stepInputUIIdentifier": str(
+                            steps[0].workflowstepinput_set.get().ui_identifier),
+                        "response": 0
+                    }]
+                }
+            },
+            format='json')
+        request.user = self.user
+        response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_no_stepInputUIIdentifier_400s(self):
+        # a survey response with no stepInputUIIdentifier should 400
+        collection = self.simple_survey__survey_collection
+        workflow = Workflow.objects.get(code="simple_survey_workflow")
+        steps = workflow.workflowstep_set.order_by('order')
+
+        engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=collection,
+            user=self.user,
+        )
+        request = self.factory.post(
+            f"/users/self/workflows/engagements/{engagement.id}/details/",
+            data={
+                'workflow_collection_engagement':
+                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                'step': steps[0].id,
+                'started': timezone.now() + timezone.timedelta(milliseconds=1),
+                'finished': timezone.now() + timezone.timedelta(milliseconds=2),
+                'user_response': {
+                    "questions": [{
+                        "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                        # "stepInputUIIdentifier": str(
+                        #     steps[0].workflowstepinput_set.get().ui_identifier),
+                        "response": 0
+                    }]
+                }
+            },
+            format='json')
+        request.user = self.user
+        response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_invalid_step_id(self):
+        # a survey response with an invalid step id should 400
+        collection = self.simple_survey__survey_collection
+        workflow = Workflow.objects.get(code="simple_survey_workflow")
+        steps = workflow.workflowstep_set.order_by('order')
+
+        engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=collection,
+            user=self.user,
+        )
+        request = self.factory.post(
+            f"/users/self/workflows/engagements/{engagement.id}/details/",
+            data={
+                'workflow_collection_engagement':
+                    f"http://testserver/api_v3/users/self/workflows/engagements/{engagement.id}/",
+                'step': steps[0].id,
+                'started': timezone.now() + timezone.timedelta(milliseconds=1),
+                'finished': timezone.now() + timezone.timedelta(milliseconds=2),
+                'user_response': {
+                    "questions": [{
+                        "stepInputID": 'hotdog',
+                        "stepInputUIIdentifier": str(
+                            steps[0].workflowstepinput_set.get().ui_identifier),
+                        "response": 0
+                    }]
+                }
+            },
+            format='json')
+        request.user = self.user
+        response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_ui_identifer_matches_step_input_id(self):
+        # a survey response where step with the provided id has a different ui identifier should 400
+        collection = self.simple_survey__survey_collection
+        workflow = Workflow.objects.get(code="simple_survey_workflow")
+        steps = workflow.workflowstep_set.order_by('order')
+
+        engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=collection,
+            user=self.user,
+        )
+        request = self.factory.post(
+            f"/users/self/workflows/engagements/{engagement.id}/details/",
+            data={
+                'workflow_collection_engagement':
+                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                'step': steps[0].id,
+                'started': timezone.now() + timezone.timedelta(milliseconds=1),
+                'finished': timezone.now() + timezone.timedelta(milliseconds=2),
+                'user_response': {
+                    "questions": [{
+                        "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                        "stepInputUIIdentifier": "burger",
+                        "response": 0
+                    }]
+                }
+            },
+            format='json')
+        request.user = self.user
+        response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_unfinished_step_counts_as_requirement_not_fulfilled(self):
+        """"""
+        collection = WorkflowCollectionFactory(**{
+            "category": "SURVEY",
+            "name": "rice_survey_collection",
+            "workflow_set": [{
+                "name": "rice_survey_workflow",
+                "code": "rice_survey_workflow",
+                "workflowstep_set": [
+                    {
+                        "code": "have_rice",
+                        "workflowsteptext_set": [
+                            {"content": "yes", "storage_value": 1},
+                            {"content": "no", "storage_value": 0}
+                        ],
+                        "workflowstepinput_set": [{
+                            "content": "Do you have rice?",
+                            "ui_identifier": "question_1",
+                            "required": True,
+                            "response_schema": JSONSchemaFactory(schema={"type": "number", "enum": [0, 1]})
+                        }]
+                    },
+                    {
+                        "code": "red_rice",
+                        "workflowsteptext_set": [
+                            {"content": "yes", "storage_value": 1},
+                            {"content": "no", "storage_value": 0}
+                        ],
+                        "workflowstepinput_set": [{
+                            "content": "Is your rice red?",
+                            "ui_identifier": "question_1",
+                            "required": True,
+                            "response_schema": JSONSchemaFactory(schema={"type": "number", "enum": [0, 1]})
+                        }]
+                    },
+                    {
+                        "code": "nice_rice",
+                        "workflowsteptext_set": [{
+                            "content": "I like red rice!"
+                        }]
+                    },
+                    {
+                        "code": "final_step",
+                        "workflowsteptext_set": [{
+                            "content": "Thank you for completing the survey!"
+                        }]
+                    }
+                ]
+            }],
+            "workflowstepdependencygroup_set": [
+                {
+                    "workflow_step": {
+                        "workflow__code": "rice_survey_workflow",
+                        "code": "red_rice"
+                    },
+                    "workflowstepdependencydetail_set": [{
+                        "dependency_step": {"code": "have_rice"},
+                        "required_response": {
+                            "$schema": "http://json-schema.org/draft-07/schema#",
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "stepInputID",
+                                        "stepInputUIIdentifier",
+                                        "response"
+                                    ],
+                                    "properties": {
+                                        "stepInputID": {
+                                            "type": "string"
+                                        },
+                                        "stepInputUIIdentifier": {
+                                            "type": "string",
+                                            "const": "question_1"
+                                        },
+                                        "response": {
+                                            "type": "number",
+                                            "const": 1
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }]
+                },
+                {
+                    "workflow_step": {
+                        "workflow__code": "rice_survey_workflow",
+                        "code": "nice_rice"
+                    },
+                    "workflowstepdependencydetail_set": [{
+                        "dependency_step": {"code": "red_rice"},
+                        "required_response": {
+                            "$schema": "http://json-schema.org/draft-07/schema#",
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "stepInputID",
+                                        "stepInputUIIdentifier",
+                                        "response"
+                                    ],
+                                    "properties": {
+                                        "stepInputID": {
+                                            "type": "string"
+                                        },
+                                        "stepInputUIIdentifier": {
+                                            "type": "string",
+                                            "const": "question_1"
+                                        },
+                                        "response": {
+                                            "type": "number",
+                                            "const": 1
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }]
+                }
+            ]
+        })
+
+
+        workflow = Workflow.objects.get(code="rice_survey_workflow")
+        steps = workflow.workflowstep_set.order_by('order')
+
+        engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=collection,
+            user=self.user,
+        )
+        request = self.factory.post(
+            f"/users/self/workflows/engagements/{engagement.id}/details/",
+            data={
+                'workflow_collection_engagement':
+                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                'step': steps[0].id,
+                'started': timezone.now() + timezone.timedelta(milliseconds=1),
+                'finished': timezone.now() + timezone.timedelta(milliseconds=2),
+                'user_response': {
+                    "questions": [{
+                        "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                        "stepInputUIIdentifier": "question_1",
+                        "response": 0
+                    }]
+                }
+            },
+            format='json')
+        request.user = self.user
+        response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            response.data['state'],
+            {
+                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "next_step_id": steps[3].id,
+                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "prev_step_id": steps[0].id,
+                "previously_completed_workflows": [],
+                'steps_completed_in_collection': 3,
+                'steps_completed_in_workflow': 3,
+                'steps_in_collection': 4,
+                'steps_in_workflow': 4,
+            })
+
+    def test_submit_deletes_unfinished(self):
+        collection = self.diamond_scenario__survey_collection
+        workflow = Workflow.objects.get(name="pet_quiz_workflow")
+        steps = workflow.workflowstep_set.order_by('order')
+        steps = list(steps)  # don't be lazy!
+
+        engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=collection,
+            user=self.user,
+        )
+
+        detail0 = WorkflowCollectionEngagementDetailFactory(
+            workflow_collection_engagement=engagement,
+            step=steps[0],
+            user_response=0,
+            started=timezone.now(),
+            finished=timezone.now(),
+        )
+        detail1 = WorkflowCollectionEngagementDetailFactory(
+            workflow_collection_engagement=engagement,
+            step=steps[1],
+            user_response="Garfield",
+            started=timezone.now(),
+            finished=timezone.now(),
+        )
+        detail2 = WorkflowCollectionEngagementDetailFactory(
+            workflow_collection_engagement=engagement,
+            step=steps[2],
+            user_response="Corgi",
+            started=timezone.now(),
+            finished=None,
+        )
+        detail3 = WorkflowCollectionEngagementDetailFactory(
+            workflow_collection_engagement=engagement,
+            step=steps[3],
+            started=timezone.now(),
+            finished=timezone.now(),
+        )
+
+        request = self.factory.patch(
+            '/users/self/workflows/engagements/{}'.format(engagement.id),
+            data={
+                "finished": timezone.now(),
+            },
+            format='json',
+        )
+        request.user = self.user
+        response = WorkflowCollectionEngagementView.as_view()(request, engagement.id)
+
+        self.assertListEqual(
+            list(WorkflowCollectionEngagementDetail.objects.filter(workflow_collection_engagement=engagement)),
+            list(WorkflowCollectionEngagementDetail.objects.filter(workflow_collection_engagement=engagement, finished__isnull=False)))
+
