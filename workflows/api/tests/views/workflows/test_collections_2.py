@@ -1,10 +1,20 @@
+# from django.test import TestCase
+# from rest_framework import status
+#
+# from rest_framework.test import APIRequestFactory
+#
+# from ....tests import factories
+# from ....views.workflows import WorkflowCollectionsView
+#
+#
 from django.test import TestCase
 from rest_framework import status
-
 from rest_framework.test import APIRequestFactory
 
-from ....tests import factories
-from ....views.workflows import WorkflowCollectionsView
+from workflows.api.tests.factories import (UserFactory, WorkflowCollectionFactory,
+                                           WorkflowCollectionSubscriptionFactory,
+                                           WorkflowCollectionAssignmentFactory)
+from workflows.api.views.workflows import WorkflowCollectionsView
 
 
 class TestWorkflowCollectionsView_2(TestCase):
@@ -12,31 +22,29 @@ class TestWorkflowCollectionsView_2(TestCase):
 
     maxDiff = 300
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.recommendable_practice_v1 = factories.WorkflowCollectionFactory(
-            active=False, code="recommendable_practice", version=1,
-        )
-        cls.recommendable_practice_v2 = factories.WorkflowCollectionFactory(
-            active=True, code="recommendable_practice", version=2,
-        )
-        cls.subscribable_practice_v1 = factories.WorkflowCollectionFactory(
-            active=False, code="subscribable_practice", version=1,
-        )
-        cls.subscribable_practice_v2 = factories.WorkflowCollectionFactory(
-            active=True, code="subscribable_practice", version=2,
-        )
-        cls.assignable_practice_v1 = factories.WorkflowCollectionFactory(
-            active=False, code="assignable_practice", version=1,
-        )
-        cls.assignable_practice_v2 = factories.WorkflowCollectionFactory(
-            active=True, code="assignable_practice", version=2,
-        )
-
     def setUp(self) -> None:
-        self.user = factories.UserFactory()
+        self.user = UserFactory()
         self.view = WorkflowCollectionsView.as_view()
         self.factory = APIRequestFactory()
+
+        self.recommendable_practice_v1 = WorkflowCollectionFactory(
+            active=False, code="recommendable_practice", version=1,
+        )
+        self.recommendable_practice_v2 = WorkflowCollectionFactory(
+            active=True, code="recommendable_practice", version=2,
+        )
+        self.subscribable_practice_v1 = WorkflowCollectionFactory(
+            active=False, code="subscribable_practice", version=1,
+        )
+        self.subscribable_practice_v2 = WorkflowCollectionFactory(
+            active=True, code="subscribable_practice", version=2,
+        )
+        self.assignable_practice_v1 = WorkflowCollectionFactory(
+            active=False, code="assignable_practice", version=1,
+        )
+        self.assignable_practice_v2 = WorkflowCollectionFactory(
+            active=True, code="assignable_practice", version=2,
+        )
 
     def test_no_history(self):
         request = self.factory.get("/workflows/collections/")
@@ -56,11 +64,10 @@ class TestWorkflowCollectionsView_2(TestCase):
             )
 
     def test_inactive_subscription(self):
-        factories.WorkflowCollectionSubscriptionFactory(
+        WorkflowCollectionSubscriptionFactory(
             workflow_collection=self.subscribable_practice_v1,
             user=self.user
         )
-
 
         request = self.factory.get("/workflows/collections/")
         request.user = self.user
@@ -80,12 +87,12 @@ class TestWorkflowCollectionsView_2(TestCase):
             if collection_dict["id"] == str(self.subscribable_practice_v1.id):
                 self.assertEqual(
                     collection_dict["newer_version"],
-                    f"http://testserver/api_v3/workflows/collections/{self.subscribable_practice_v2.id}/"
+                    f"http://testserver/workflow_system/collections/{self.subscribable_practice_v2.id}/"
                 )
 
     def test_inactive_assignment(self):
 
-        factories.WorkflowCollectionAssignmentFactory(
+        WorkflowCollectionAssignmentFactory(
             user=self.user,
             workflow_collection=self.assignable_practice_v1
         )
@@ -108,16 +115,15 @@ class TestWorkflowCollectionsView_2(TestCase):
             if collection_dict["id"] == str(self.assignable_practice_v1.id):
                 self.assertEqual(
                     collection_dict["newer_version"],
-                    f"http://testserver/api_v3/workflows/collections/{self.assignable_practice_v2.id}/"
+                    f"http://testserver/workflow_system/collections/{self.assignable_practice_v2.id}/"
                 )
 
     def test_inactive_recommendation(self):
 
-        factories.WorkflowCollectionAssignmentFactory(
+        WorkflowCollectionAssignmentFactory(
             user=self.user,
             workflow_collection=self.recommendable_practice_v1,
         )
-
 
         request = self.factory.get("/workflows/collections/")
         request.user = self.user
@@ -137,12 +143,11 @@ class TestWorkflowCollectionsView_2(TestCase):
             if collection_dict["id"] == str(self.recommendable_practice_v1.id):
                 self.assertEqual(
                     collection_dict["newer_version"],
-                    f"http://testserver/api_v3/workflows/collections/{self.recommendable_practice_v2.id}/"
+                    f"http://testserver/workflow_system/collections/{self.recommendable_practice_v2.id}/"
                 )
 
     def test_newer_is_inactive(self):
-
-        factories.WorkflowCollectionAssignmentFactory(
+        WorkflowCollectionAssignmentFactory(
             user=self.user,
             workflow_collection=self.recommendable_practice_v1,
         )
