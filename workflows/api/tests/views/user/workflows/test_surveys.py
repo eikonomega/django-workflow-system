@@ -2,17 +2,6 @@ from django.test import TestCase
 from django.utils import timezone
 from rest_framework import status
 
-# from rest_framework.test import APIRequestFactory
-#
-# from website.api_v3.tests.factories import WorkflowCollectionFactory, UserFactory, WorkflowStepFactory, WorkflowFactory, \
-#     WorkflowCollectionEngagementFactory
-# from website.api_v3.tests.factories.workflows.engagement import WorkflowCollectionEngagementDetailFactory
-# from website.api_v3.tests.factories.workflows.json_schema import JSONSchemaTrueFactory, JSONSchemaFactory
-# from website.api_v3.views.user.workflows import WorkflowCollectionEngagementDetailView, \
-#     WorkflowCollectionEngagementDetailsView, WorkflowCollectionEngagementView, WorkflowCollectionEngagementsView
-# from website.workflows.models import Workflow, WorkflowStep, WorkflowStepInput, WorkflowCollectionEngagementDetail
-#
-#
 from rest_framework.test import APIRequestFactory
 
 from workflows.api.tests.factories import UserFactory, WorkflowCollectionFactory

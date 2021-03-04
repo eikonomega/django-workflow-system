@@ -1,14 +1,13 @@
 import dateutil
-
 from django.test import TestCase
+
 from django.utils import timezone
 from rest_framework.exceptions import ErrorDetail
-
 from rest_framework.test import APIRequestFactory
 
-from website.api_v3.views.user.workflows import WorkflowCollectionEngagementView
-import website.api_v3.tests.factories as factories
-
+from workflows.api.tests.factories import (UserFactory, WorkflowCollectionEngagementFactory,
+                                           WorkflowCollectionFactory)
+from workflows.api.views.user.workflows import WorkflowCollectionEngagementView
 
 
 class TestWorkflowCollectionEngagementView(TestCase):
@@ -19,25 +18,16 @@ class TestWorkflowCollectionEngagementView(TestCase):
         self.view_url = '/users/self/workflows/engagements/{}'
         self.factory = APIRequestFactory()
 
-        self.workflow_collection = factories.WorkflowCollectionFactory(
+        self.workflow_collection = WorkflowCollectionFactory(
             workflow_set=[{}]
         )
-        self.user_with_engagement = factories.UserFactory()
-        self.user_with_engagement2 = factories.UserFactory()
-        self.user_without_engagement = factories.UserFactory(username='Engagementless')
-        self.workflow_engagement = factories.WorkflowCollectionEngagementFactory(
+        self.user_with_engagement = UserFactory()
+#         self.user_with_engagement2 = factories.UserFactory()
+        self.user_without_engagement = UserFactory(username='Engagementless')
+        self.workflow_engagement = WorkflowCollectionEngagementFactory(
             user=self.user_with_engagement,
             workflow_collection=self.workflow_collection,
         )
-
-    def test_get__unauthenticated(self):
-        """Unauthenticated users cannot access GET method."""
-        fake_uuid = '027c315e-3788-4c30-8c58-46723077e2f0'
-        request = self.factory.get(
-            self.view_url.format(fake_uuid))
-        response = self.view(request)
-
-        self.assertEqual(response.status_code, 403)
 
     def test_get__engagement_does_not_exist(self):
         """Trying to use GET with an engagement id that doesn't exist"""
@@ -61,28 +51,17 @@ class TestWorkflowCollectionEngagementView(TestCase):
 
     def test_get__authenticated_engagement(self):
         """Returned specified engagement for requesting user."""
-        request = self.factory.get(
-            self.view_url.format(
-                self.workflow_engagement.id))
+        request = self.factory.get(self.view_url.format(self.workflow_engagement.id))
         request.user = self.user_with_engagement
         response = self.view(request, self.workflow_engagement.id)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["workflow_collection"],
-                         'http://testserver/api_v3/workflows/collections/{}/'.format(
-            self.workflow_engagement.workflow_collection.id))
+        self.assertEqual(
+            response.data["workflow_collection"],
+            f"http://testserver/workflow_system/collections/{self.workflow_engagement.workflow_collection.id}/")
         self.assertEqual(
             dateutil.parser.parse(response.data['started']),
             self.workflow_engagement.started)
-
-    def test_patch__unauthenticated_user(self):
-        """Return 403 error for unauthenticated users."""
-        request = self.factory.patch(
-            self.view_url.format(
-                self.workflow_engagement.id))
-        response = self.view(request)
-
-        self.assertEqual(response.status_code, 403)
 
     def test_patch__unauthenticated_engagement(self):
         """Return 404 error if trying to patch unknown engagement."""

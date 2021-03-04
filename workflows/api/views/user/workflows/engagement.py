@@ -272,7 +272,7 @@ class WorkflowCollectionEngagementView(APIView):
         """
 
         user_engagement = get_object_or_404(
-            WorkflowCollectionEngagement, id=id, user=request.user
+            WorkflowCollectionEngagement, id=id, user=request.user.id
         )
 
         serializer = WorkflowCollectionEngagementDetailedSerializer(
@@ -332,7 +332,7 @@ class WorkflowCollectionEngagementView(APIView):
         """
 
         user_engagement = get_object_or_404(
-            WorkflowCollectionEngagement, id=id, user=request.user
+            WorkflowCollectionEngagement, id=id, user=request.user.id
         )
         originally_unfinished = not user_engagement.finished
 
