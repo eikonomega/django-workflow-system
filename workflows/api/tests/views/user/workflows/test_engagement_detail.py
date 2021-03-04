@@ -1,20 +1,34 @@
-import dateutil.parser
-
-from django.utils import timezone
+# import dateutil.parser
+#
+# from django.utils import timezone
+# from django.test import TestCase
+# from rest_framework import status
+#
+# from rest_framework.test import APIRequestFactory
+#
+# from website.api_v3.tests.factories import (
+#     UserFactory, WorkflowCollectionFactory, WorkflowCollectionEngagementFactory,
+#     WorkflowCollectionEngagementDetailFactory)
+#
+# from website.api_v3.tests.factories.workflows import json_schema
+# from website.api_v3.views.user.workflows import (
+#     WorkflowCollectionEngagementDetailsView,
+#     WorkflowCollectionEngagementDetailView)
+# from website.workflows.models import WorkflowStep, WorkflowStepInput, WorkflowCollection
+import dateutil
 from django.test import TestCase
+from django.utils import timezone
 from rest_framework import status
 
 from rest_framework.test import APIRequestFactory
 
-from website.api_v3.tests.factories import (
-    UserFactory, WorkflowCollectionFactory, WorkflowCollectionEngagementFactory,
-    WorkflowCollectionEngagementDetailFactory)
-
-from website.api_v3.tests.factories.workflows import json_schema
-from website.api_v3.views.user.workflows import (
-    WorkflowCollectionEngagementDetailsView,
-    WorkflowCollectionEngagementDetailView)
-from website.workflows.models import WorkflowStep, WorkflowStepInput, WorkflowCollection
+from workflows.api.tests.factories import (WorkflowCollectionFactory, UserFactory,
+                                           WorkflowCollectionEngagementFactory,
+                                           WorkflowCollectionEngagementDetailFactory)
+from workflows.api.tests.factories.workflows import json_schema
+from workflows.api.views.user.workflows import (WorkflowCollectionEngagementDetailsView,
+                                                WorkflowCollectionEngagementDetailView)
+from workflows.models import WorkflowCollection, WorkflowStep, WorkflowStepInput
 
 
 class TestWorkflowEngagementDetailsView(TestCase):
@@ -22,9 +36,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         self.view = WorkflowCollectionEngagementDetailsView.as_view()
         self.factory = APIRequestFactory()
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.single_activity_collection: WorkflowCollection = WorkflowCollectionFactory(**{
+        self.single_activity_collection: WorkflowCollection = WorkflowCollectionFactory(**{
             'category': 'ACTIVITY',
             "workflow_set": [{
                 'workflowstep_set': [{
@@ -34,10 +46,11 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 }]
             }]
         })
-        cls.single_activity_collection__workflow = cls.single_activity_collection.workflowcollectionmember_set.get().workflow
-        cls.single_activity_collection__step = cls.single_activity_collection__workflow.workflowstep_set.get()
 
-        cls.single_survey_collection: WorkflowCollection = WorkflowCollectionFactory(**{
+        self.single_activity_collection__workflow = self.single_activity_collection.workflowcollectionmember_set.get().workflow
+        self.single_activity_collection__step = self.single_activity_collection__workflow.workflowstep_set.get()
+
+        self.single_survey_collection: WorkflowCollection = WorkflowCollectionFactory(**{
             'category': 'SURVEY',
             "workflow_set": [{
                 'workflowstep_set': [{
@@ -49,29 +62,21 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 }]
             }]
         })
-        cls.single_survey_collection__workflow = cls.single_survey_collection.workflowcollectionmember_set.get().workflow
-        cls.single_survey_collection__step = cls.single_survey_collection__workflow.workflowstep_set.get()
-        cls.single_survey_collection__input = cls.single_survey_collection__step.workflowstepinput_set.get()
+        self.single_survey_collection__workflow = self.single_survey_collection.workflowcollectionmember_set.get().workflow
+        self.single_survey_collection__step = self.single_survey_collection__workflow.workflowstep_set.get()
+        self.single_survey_collection__input = self.single_survey_collection__step.workflowstepinput_set.get()
 
 
 
-        cls.user_with_activity_engagement = UserFactory()
-        cls.user_with_activity_engagement__engagement = WorkflowCollectionEngagementFactory(
-            workflow_collection=cls.single_activity_collection,
-            user=cls.user_with_activity_engagement,
+        self.user_with_activity_engagement = UserFactory()
+        self.user_with_activity_engagement__engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=self.single_activity_collection,
+            user=self.user_with_activity_engagement,
         )
-        cls.user_with_activity_engagement__detail = WorkflowCollectionEngagementDetailFactory(
-            workflow_collection_engagement=cls.user_with_activity_engagement__engagement,
-            step=cls.single_activity_collection__step,
+        self.user_with_activity_engagement__detail = WorkflowCollectionEngagementDetailFactory(
+            workflow_collection_engagement=self.user_with_activity_engagement__engagement,
+            step=self.single_activity_collection__step,
         )
-    def test_get__unauthenticated(self):
-        """Unauthenticated users cannot access GET method."""
-        request = self.factory.get(
-            '/users/self/workflows/engagements/{}/details/'.format(
-                self.user_with_activity_engagement__engagement.id))
-        response = self.view(request, self.user_with_activity_engagement__engagement.id)
-
-        self.assertEqual(response.status_code, 403)
 
     def test_get__user_has_no_engagement_details(self):
         """
@@ -79,8 +84,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         details.
         """
         request = self.factory.get(
-            '/users/self/workflows/engagements/{}/details/'.format(
-                self.user_with_activity_engagement__engagement.id))
+            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/")
         request.user = UserFactory()
         response = self.view(request, self.user_with_activity_engagement__engagement.id)
 
@@ -90,8 +94,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
     def test_get__user_has_engagement_details(self):
         """Return engagement details for the requesting user."""
         request = self.factory.get(
-            '/users/self/workflows/engagements/{}/details/'.format(
-                self.user_with_activity_engagement__engagement.id))
+            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/")
         request.user = self.user_with_activity_engagement
         response = self.view(request, self.user_with_activity_engagement__engagement.id)
 
@@ -102,9 +105,9 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 ['detail', 'step', 'user_response', 'started', 'finished'])
             self.assertEqual(
                 result['detail'],
-                'http://testserver/api_v3/users/self/workflows/engagements/{}/details/{}/'.format(
-                    self.user_with_activity_engagement__engagement.id,
-                    self.user_with_activity_engagement__detail.id))
+                f"http://testserver/workflow_system/users/self/workflows/engagements/"
+                f"{self.user_with_activity_engagement__engagement.id}/details/"
+                f"{self.user_with_activity_engagement__detail.id}/")
             self.assertEqual(
                 result['step'],
                 self.single_activity_collection__step.id)
@@ -112,24 +115,15 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 dateutil.parser.parse(result['started']),
                 self.user_with_activity_engagement__detail.started)
 
-    def test_post__unauthenticated(self):
-        """Unauthenticated users cannot access POST method."""
-        request = self.factory.post(
-            '/users/self/workflows/engagements/{}/details/'.format(
-                self.user_with_activity_engagement__engagement.id))
-        response = self.view(request, self.user_with_activity_engagement__engagement.id)
-
-        self.assertEqual(response.status_code, 403)
-
     def test_post__incomplete_payload(self):
         """Incomplete JSON payload returns a 400 error."""
-        user=UserFactory()
+        user = UserFactory()
         wce = WorkflowCollectionEngagementFactory(
             workflow_collection=self.single_activity_collection,
             user=user,
         )
         request = self.factory.post(
-            '/users/self/workflows/engagements/{}/details/'.format(wce.id),
+            f"/users/self/workflows/engagements/{wce.id}/details/",
             data={},
             format='json')
         request.user = user
@@ -140,11 +134,9 @@ class TestWorkflowEngagementDetailsView(TestCase):
     def test_post__duplicate_payload(self):
         """Duplicate JSON payload returns a 409."""
         request = self.factory.post(
-            '/users/self/workflows/engagements/{}/details/'.format(
-                self.user_with_activity_engagement__engagement.id),
+            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/",
             data={
-                'workflow_collection_engagement': "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(
-                    self.user_with_activity_engagement__engagement.id),
+                'workflow_collection_engagement': f"http://testserver/workflow_system/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/",
                 'step': self.single_activity_collection__step.id,
                 'started': timezone.now()
             },
@@ -163,10 +155,10 @@ class TestWorkflowEngagementDetailsView(TestCase):
             user=user,
         )
         request = self.factory.post(
-            '/users/self/workflows/engagements/{}/details/'.format(wce.id),
+            f"/users/self/workflows/engagements/{wce.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(wce.id),
+                    f"http://testserver/workflow_system/users/self/workflows/engagements/{wce.id}/",
                 'step': self.single_activity_collection__step.id,
                 'started': timezone.now()
             },
@@ -180,8 +172,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
 
         self.assertEqual(
             response.data['state']['next_workflow'],
-            "http://testserver/api_v3/workflows/workflows/{}/".format(
-                self.single_activity_collection__workflow.id))
+            f"http://testserver/workflow_system/workflows/{self.single_activity_collection__workflow.id}/")
 
     def test_post__not_in_collection(self):
         """Should not accept post if step is not in collection"""
@@ -192,10 +183,10 @@ class TestWorkflowEngagementDetailsView(TestCase):
             user=user,
         )
         request = self.factory.post(
-            '/users/self/workflows/engagements/{}/details/'.format(wce.id),
+            f"/users/self/workflows/engagements/{wce.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(wce.id),
+                    f"http://testserver/api_v3/users/self/workflows/engagements/{wce.id}/",
                 'step': self.single_survey_collection__step.id,
                 'started': timezone.now()
             },
@@ -204,7 +195,6 @@ class TestWorkflowEngagementDetailsView(TestCase):
         response = self.view(request, wce.id)
 
         self.assertEqual(response.status_code, 400)
-
 
     def test_post__not_finished(self):
         """Valid JSON payload returns a 201 when unfinished."""
@@ -216,10 +206,9 @@ class TestWorkflowEngagementDetailsView(TestCase):
         )
 
         request = self.factory.post(
-            '/users/self/workflows/engagements/{}/details/'.format(wce.id),
+            f"/users/self/workflows/engagements/{wce.id}/details/",
             data={
-                'workflow_collection_engagement': "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(
-                    wce.id),
+                'workflow_collection_engagement': f"http://testserver/workflow_system/users/self/workflows/engagements/{wce.id}/",
                 'step': self.single_activity_collection__step.id,
                 'started': timezone.now(),
                 'finished': None,
@@ -234,8 +223,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
 
         self.assertEqual(
             response.data['state']['next_workflow'],
-            "http://testserver/api_v3/workflows/workflows/{}/".format(
-                self.single_activity_collection__workflow.id))
+            f"http://testserver/workflow_system/workflows/{self.single_activity_collection__workflow.id}/")
 
     def test_post__required_inputs_no_user_response(self):
         """Step has required inputs but no user_response in request, returns a 400."""
@@ -246,11 +234,9 @@ class TestWorkflowEngagementDetailsView(TestCase):
             user=my_user,
         )
         request = self.factory.post(
-            '/users/self/workflows/engagements/{}/details/'.format(
-                my_workflow_engagement.id),
+            f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/",
             data={
-                'workflow_collection_engagement': "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(
-                    my_workflow_engagement.id),
+                'workflow_collection_engagement': f"http://testserver/workflow_system/users/self/workflows/engagements/{my_workflow_engagement.id}/",
                 'step': self.single_survey_collection__step.id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(minutes=5),
@@ -286,11 +272,9 @@ class TestWorkflowEngagementDetailsView(TestCase):
         )
 
         request = self.factory.post(
-            '/users/self/workflows/engagements/{}/details/'.format(
-                my_workflow_engagement.id),
+            f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/",
             data={
-                'workflow_collection_engagement': "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(
-                    my_workflow_engagement.id),
+                'workflow_collection_engagement': f"http://testserver/workflow_system/users/self/workflows/engagements/{my_workflow_engagement.id}/",
                 'step': my_step.id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(minutes=5),
@@ -315,7 +299,6 @@ class TestWorkflowEngagementDetailsView(TestCase):
             Step1 <- user starts here, submits a post
             Step2 <- next step should be here
         """
-        import website.api_v3.tests.factories as v3_factories
         collection_factory_spec = {
             "name": "two_workflow_survey",
             "category": "ACTIVITY",
@@ -350,20 +333,19 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 }
             ]
         }
-        collection = v3_factories.WorkflowCollectionFactory(**collection_factory_spec)
-        user = v3_factories.UserFactory()
-        engagement = v3_factories.WorkflowCollectionEngagementFactory(
+        collection = WorkflowCollectionFactory(**collection_factory_spec)
+        user = UserFactory()
+        engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=collection,
             user=user,
         )
         workflow2 = collection.workflowcollectionmember_set.order_by('order')[1].workflow
         step1, step2 = tuple(workflow2.workflowstep_set.order_by('order'))
         request = self.factory.post(
-            '/users/self/workflows/engagements/{}/details/'.format(
-                engagement.id),
+            f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(engagement.id),
+                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': step1.id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=1),
@@ -375,8 +357,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
             response.data['state']['next_workflow'],
-            "http://testserver/api_v3/workflows/workflows/{}/".format(
-                workflow2.id))
+            f"http://testserver/workflow_system/workflows/{workflow2.id}/")
         self.assertEqual(response.data['state']['next_step_id'], step2.id)
 
     def test_post_survey_must_be_started_on_first_step(self):
@@ -385,7 +366,6 @@ class TestWorkflowEngagementDetailsView(TestCase):
         Workflow <- user starts here, submits a post
             Step2 <- If the user submits this first, that's an error
         """
-        import website.api_v3.tests.factories as v3_factories
         collection_factory_spec = {
             "name": "two_workflow_survey",
             "category": "ACTIVITY",
@@ -409,20 +389,19 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 }
             ]
         }
-        collection = v3_factories.WorkflowCollectionFactory(**collection_factory_spec)
-        user = v3_factories.UserFactory()
-        engagement = v3_factories.WorkflowCollectionEngagementFactory(
+        collection = WorkflowCollectionFactory(**collection_factory_spec)
+        user = UserFactory()
+        engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=collection,
             user=user,
         )
         workflow = collection.workflowcollectionmember_set.all()[0].workflow
         step1, step2 = tuple(workflow.workflowstep_set.order_by('order'))
         request = self.factory.post(
-            '/users/self/workflows/engagements/{}/details/'.format(
-                engagement.id),
+            f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(engagement.id),
+                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': step2.id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=1),
@@ -442,7 +421,6 @@ class TestWorkflowEngagementDetailsView(TestCase):
             Step1 <- user starts here, submits a post
             Step2 <- next step should be here
         """
-        import website.api_v3.tests.factories as v3_factories
         collection_factory_spec = {
             "name": "two_workflow_survey",
             "category": "SURVEY",
@@ -477,20 +455,19 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 }
             ]
         }
-        collection = v3_factories.WorkflowCollectionFactory(**collection_factory_spec)
-        user = v3_factories.UserFactory()
-        engagement = v3_factories.WorkflowCollectionEngagementFactory(
+        collection = WorkflowCollectionFactory(**collection_factory_spec)
+        user = UserFactory()
+        engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=collection,
             user=user,
         )
         workflow2 = collection.workflowcollectionmember_set.order_by('order')[1].workflow
         step1, step2 = tuple(workflow2.workflowstep_set.order_by('order'))
         request = self.factory.post(
-            '/users/self/workflows/engagements/{}/details/'.format(
-                engagement.id),
+            f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    "http://testserver/api_v3/users/self/workflows/engagements/{}/".format(engagement.id),
+                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': step1.id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=1),
@@ -507,10 +484,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
     def setUp(self):
         self.view = WorkflowCollectionEngagementDetailView.as_view()
         self.factory = APIRequestFactory()
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.single_activity_collection: WorkflowCollection = WorkflowCollectionFactory(**{
+        self.single_activity_collection: WorkflowCollection = WorkflowCollectionFactory(**{
             'category': 'ACTIVITY',
             "workflow_set": [{
                 'workflowstep_set': [{
@@ -520,34 +494,24 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                 }]
             }]
         })
-        cls.single_activity_collection__workflow = cls.single_activity_collection.workflowcollectionmember_set.get().workflow
-        cls.single_activity_collection__step = cls.single_activity_collection__workflow.workflowstep_set.get()
+        self.single_activity_collection__workflow = self.single_activity_collection.workflowcollectionmember_set.get().workflow
+        self.single_activity_collection__step = self.single_activity_collection__workflow.workflowstep_set.get()
 
-        cls.user_with_engagement = UserFactory()
-        cls.user_with_engagement__engagement = WorkflowCollectionEngagementFactory(
-            workflow_collection=cls.single_activity_collection,
-            user=cls.user_with_engagement,
+        self.user_with_engagement = UserFactory()
+        self.user_with_engagement__engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=self.single_activity_collection,
+            user=self.user_with_engagement,
         )
-        cls.user_with_engagement__detail = WorkflowCollectionEngagementDetailFactory(
-            workflow_collection_engagement=cls.user_with_engagement__engagement,
-            step=cls.single_activity_collection__step,
+        self.user_with_engagement__detail = WorkflowCollectionEngagementDetailFactory(
+            workflow_collection_engagement=self.user_with_engagement__engagement,
+            step=self.single_activity_collection__step,
         )
-
-    def test_get__unauthenticated(self):
-        """Unauthenticated users cannot access GET method."""
-        fake_uuid = '027c315e-3788-4c30-8c58-46723077e2f0'
-        request = self.factory.get(
-            '/users/self/workflows/enngagements/{}/details/{}/'.format(fake_uuid, fake_uuid))
-        response = self.view(request)
-
-        self.assertEqual(response.status_code, 403)
 
     def test_get__engagement_does_not_exist(self):
         """
         Trying to use GET with an engagement id that doesn't exist
         results in 404 NOT FOUND
         """
-
         user = UserFactory()
         engagement = WorkflowCollectionEngagementFactory(
             user=user,
@@ -556,8 +520,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
 
         fake_uuid = '027c315e-3788-4c30-8c58-46723077e2f0'
         request = self.factory.get(
-            '/users/self/workflows/engagements/{}/details/{}/'.format(
-                engagement.id, fake_uuid))
+            f"/users/self/workflows/engagements/{engagement.id}/details/{fake_uuid}/")
         request.user = UserFactory()
         response = self.view(request, engagement.id, fake_uuid)
 
@@ -568,11 +531,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         Return 404 if user requests engagement they do not own,
         shows as NOT FOUND.
         """
-
         request = self.factory.get(
-            '/users/self/workflows/engagements/{}/details/{}/'.format(
-                self.user_with_engagement__engagement.id,
-                self.user_with_engagement__detail.id))
+            f"/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/")
         request.user = UserFactory()
         response = self.view(
             request,
@@ -584,9 +544,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
     def test_get__authenticated_engagement(self):
         """Returned specified engagement for requesting user."""
         request = self.factory.get(
-            '/users/self/workflows/engagements/{}/details/{}/'.format(
-                self.user_with_engagement__engagement.id,
-                self.user_with_engagement__detail.id))
+            f"/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/")
         request.user = self.user_with_engagement
         response = self.view(request,
                              self.user_with_engagement__engagement.id,
@@ -595,33 +553,18 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data['detail'],
-            "http://testserver/api_v3/users/self/workflows/engagements/{}/details/{}/".format(
-                self.user_with_engagement__engagement.id,
-                self.user_with_engagement__detail.id))
-
-    def test_patch__unauthenticated_user(self):
-        """Return 403 error for unauthenticated users."""
-        request = self.factory.patch(
-            '/users/self/workflows/engagements/{}/details/{}/'.format(
-                self.user_with_engagement__engagement.id,
-                self.user_with_engagement__detail.id))
-        response = self.view(request)
-
-        self.assertEqual(response.status_code, 403)
+            f"http://testserver/workflow_system/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/")
 
     def test_patch__unauthenticated_engagement(self):
         """Return 404 error if trying to patch unknown engagement."""
-        fake_uuiid = '4f84f799-9cc5-43d3-0000-24840b7eb8ce'
+        fake_uuid = '4f84f799-9cc5-43d3-0000-24840b7eb8ce'
 
         request = self.factory.patch(
-            '/users/self/workflows/engagements/{}/details/{}/'.format(
-                self.user_with_engagement__engagement.id, fake_uuiid),
+            f"/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{fake_uuid}/",
             data={},
             format='json')
         request.user = self.user_with_engagement
-        response = self.view(request,
-                             self.user_with_engagement__engagement.id,
-                             fake_uuiid)
+        response = self.view(request, self.user_with_engagement__engagement.id, fake_uuid)
 
         self.assertEqual(response.status_code, 404)
 
@@ -629,12 +572,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         """Patch current engagement to the one specified."""
         time_stamp = timezone.now()
         request = self.factory.patch(
-            '/users/self/workflows/engagements/{}/details/{}/'.format(
-                self.user_with_engagement__engagement.id,
-                self.user_with_engagement__engagement.id),
-            data={
-                "finished": time_stamp,
-            },
+            f"/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__engagement.id}/",
+            data={"finished": time_stamp,},
             format='json')
         request.user = self.user_with_engagement
         response = self.view(request,
@@ -675,9 +614,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
 
         time_stamp = timezone.now()
         request = self.factory.patch(
-            '/users/self/workflows/engagements/{}/details/{}/'.format(
-                my_workflow_engagement.id,
-                my_workflow_engagement_detail.id),
+            f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
                 'user_response': {
@@ -734,9 +671,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
 
         time_stamp = timezone.now()
         request = self.factory.patch(
-            '/users/self/workflows/engagements/{}/details/{}/'.format(
-                my_workflow_engagement.id,
-                my_workflow_engagement_detail.id),
+            f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
                 'user_response': {
@@ -792,9 +727,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         )
         time_stamp = timezone.now()
         request = self.factory.patch(
-            '/users/self/workflows/engagements/{}/details/{}/'.format(
-                my_workflow_engagement.id,
-                my_workflow_engagement_detail.id),
+            f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
                 'user_response': {
@@ -842,9 +775,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         time_stamp = timezone.now()
 
         request = self.factory.patch(
-            '/users/self/workflows/engagements/{}/details/{}/'.format(
-                my_workflow_engagement.id,
-                my_workflow_engagement_detail.id),
+            f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
                 'user_response': {"questions": []},
@@ -889,9 +820,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         time_stamp = timezone.now()
 
         request = self.factory.patch(
-            '/users/self/workflows/engagements/{}/details/{}/'.format(
-                my_workflow_engagement.id,
-                my_workflow_engagement_detail.id),
+            f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
                 'user_response': {"questions": []},
@@ -935,9 +864,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         time_stamp = timezone.now()
 
         request = self.factory.patch(
-            '/users/self/workflows/engagements/{}/details/{}/'.format(
-                my_workflow_engagement.id,
-                my_workflow_engagement_detail.id),
+            f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
                 'user_response': {"la": "mao"},

@@ -233,7 +233,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
         Body Parameters:
             workflow_collection_engagement (foreign key): The WorkflowEngagement object associated 
                                                           with the engagement detail.
-            step (foreign key): The WorkflowStep assosciated with the engagement detail.
+            step (foreign key): The WorkflowStep associated with the engagement detail.
             user_response (dict): Internal representation of JSON response from user.
             started (datetime): The start date of the engagement detail.
             finished (datetime): The finish date of the engagement detail.
