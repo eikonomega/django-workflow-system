@@ -44,9 +44,8 @@ class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
     # FK to Django user.
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
-    # TODO: This should be a datetime field to allow more precise controls over when assignment can be accessed.
+    # TODO: If time allows, we should make these datetime fields to allow users to have more precise control over assignements.
     assigned_on = models.DateField(default=date.today)
-    # TODO: Should also be a datetime field.
     expiration = models.DateField(default=settings.WORKFLOWS_DEFAULT_EXPIRATION)
     status = models.CharField(choices=STATUS_CHOICES, max_length=17, default=ASSIGNED)
 
