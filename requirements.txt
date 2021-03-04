@@ -4,7 +4,7 @@ djangorestframework==3.12.2         # Latest version of DRF
 jsonschema==3.0.1 
 Pillow==8.1.0
 
-
+black==20.8b1                       # Python Code Formatting
 Sphinx==3.3.1                       # Documentation Tool
 sphinx-rtd-theme==0.5.0             # Sphinx Theme
 sphinxcontrib-httpdomain==1.7.0     # API plugin for Readthedocs
