@@ -4,33 +4,31 @@ from django.test import TestCase
 
 from rest_framework.test import APIRequestFactory
 
-from website.api_v2.tests.factories import (
-    AuthorFactory, WorkflowCollectionSubscriptionFactory,
-    WorkflowCollectionSubscriptionScheduleFactory, UserFactory, User2Factory,
-    WorkflowCollectionFactory, WorkflowFactory)
-from website.api_v3.classes import (
-    APIResourceCollectionAuthenticationRequiredTestCase)
-from website.api_v3.views.user.workflows import (
-    WorkflowCollectionSubscriptionsView,
-    WorkflowCollectionSubscriptionView)
+from workflows.api.tests.factories import (UserFactory, WorkflowCollectionSubscriptionFactory,
+                                           WorkflowFactory, WorkflowCollectionFactory,
+                                           WorkflowCollectionSubscriptionScheduleFactory)
+from workflows.api.views.user.workflows import (WorkflowCollectionSubscriptionsView,
+                                                WorkflowCollectionSubscriptionView)
 
 
-class TestWorkflowSubscriptionsView(
-        APIResourceCollectionAuthenticationRequiredTestCase, TestCase):
+class TestWorkflowSubscriptionsView(TestCase):
     def setUp(self):
         self.view = WorkflowCollectionSubscriptionsView.as_view()
         self.view_url = '/users/self/workflows/subscriptions/'
         self.factory = APIRequestFactory()
 
         self.user_with_subscription = UserFactory()
-        self.user_without_subscription = User2Factory()
-        self.author = AuthorFactory()
+        self.user_without_subscription = UserFactory()
         self.workflow = WorkflowFactory()
         self.workflow_collection = WorkflowCollectionFactory()
-        self.workflow_collection_subscription = WorkflowCollectionSubscriptionFactory()
-        self.workflow_collection_subscription_schedule = WorkflowCollectionSubscriptionScheduleFactory()
+        self.workflow_collection_subscription = WorkflowCollectionSubscriptionFactory(
+            user=self.user_with_subscription,
+            workflow_collection=self.workflow_collection
+        )
+        self.workflow_collection_subscription_schedule = WorkflowCollectionSubscriptionScheduleFactory(
+            workflow_collection_subscription=self.workflow_collection_subscription
+        )
 
-        super(TestWorkflowSubscriptionsView, self).setUp()
 
     def test_get__user_has_no_subscriptions(self):
         """Return an empty list if requesting user has no subscriptions."""
@@ -69,7 +67,7 @@ class TestWorkflowSubscriptionsView(
         request = self.factory.post(
             self.view_url,
             data={
-                "workflow_collection": "http://testserver/api_v3/workflows/collections/{}/".format(self.workflow_collection.id),
+                "workflow_collection": f"http://testserver/workflow_system/collections/{self.workflow_collection.id}/",
                 "active": True,
                 "workflowcollectionsubscriptionschedule_set": [{
                     "time_of_day": "12:00:00+02:00",
@@ -91,7 +89,7 @@ class TestWorkflowSubscriptionsView(
         request = self.factory.post(
             self.view_url,
             data={
-                "workflow_collection": "http://testserver/api_v3/workflows/collections/{}/".format(self.workflow_collection.id),
+                "workflow_collection": f"http://testserver/workflow_system/collections/{self.workflow_collection.id}/",
                 "active": True,
                 "workflowcollectionsubscriptionschedule_set": [{
                     "time_of_day": self.workflow_collection_subscription_schedule.time_of_day,
@@ -111,29 +109,22 @@ class TestWorkflowCollectionSubscriptionView(TestCase):
         self.factory = APIRequestFactory()
 
         self.user_with_subscription = UserFactory()
-        self.user_without_subscription = User2Factory()
-        self.author = AuthorFactory()
+        self.user_without_subscription = UserFactory()
         self.workflow = WorkflowFactory()
         self.workflow_collection = WorkflowCollectionFactory()
-        self.workflow_collection_subscription = WorkflowCollectionSubscriptionFactory()
-        self.workflow_collection_subscription_schedule = WorkflowCollectionSubscriptionScheduleFactory()
-
-    def test_get__unauthenticated(self):
-        """Unauthenticated users cannot access GET method."""
-        fake_uuid = '027c315e-3788-4c30-8c58-46723077e2f0'
-        request = self.factory.get(
-            '/users/self/workflows/subscriptions/{}'.format(fake_uuid))
-        response = self.view(request)
-
-        self.assertEqual(response.status_code, 403)
+        self.workflow_collection_subscription = WorkflowCollectionSubscriptionFactory(
+            user=self.user_with_subscription,
+            workflow_collection=self.workflow_collection
+        )
+        self.workflow_collection_subscription_schedule = WorkflowCollectionSubscriptionScheduleFactory(
+            workflow_collection_subscription=self.workflow_collection_subscription
+        )
 
     def test_get__subscription_does_not_exist(self):
         """Trying to use GET with a subscription id that doesn't exist"""
-        fake_uuid = '027c315e-3788-4c30-8c58-46723077e2f0'
+        fake_uuid = '027c315e-3788-4c30-8c58-46723077e5f0'
         request = self.factory.get(
-            '/users/self/workflows/subscriptions/{}'.format(
-                fake_uuid))
-        request.user = self.user_without_subscription
+            f"/users/self/workflows/subscription/{fake_uuid}")
         response = self.view(request, fake_uuid)
 
         self.assertEqual(response.status_code, 404)
@@ -141,8 +132,7 @@ class TestWorkflowCollectionSubscriptionView(TestCase):
     def test_get__user_does_not_own_subscription(self):
         """Return 404 if user requests subscription they do not own."""
         request = self.factory.get(
-            '/users/self/workflows/subscriptions/{}'.format(
-                self.workflow_collection_subscription.id))
+            f"/users/self/workflows/subscriptions/{self.workflow_collection_subscription.id}")
         request.user = self.user_without_subscription
         response = self.view(request, self.workflow_collection_subscription.id)
 
@@ -151,20 +141,18 @@ class TestWorkflowCollectionSubscriptionView(TestCase):
     def test_get__authenticated_subscription(self):
         """Returned specified subscription for requesting user."""
         request = self.factory.get(
-            '/users/self/workflows/subscriptions/{}'.format(
-                self.workflow_collection_subscription.id))
+            f"/users/self/workflows/subscriptions/{self.workflow_collection_subscription.id}")
         request.user = self.user_with_subscription
         response = self.view(request, self.workflow_collection_subscription.id)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data['detail'],
-            "http://testserver/api_v3/users/self/workflows/subscriptions/{}/".format(
-                self.workflow_collection_subscription.id))
+            f"http://testserver/workflow_system/users/self/workflows/subscriptions/"
+            f"{self.workflow_collection_subscription.id}/")
         self.assertEqual(
             response.data["workflow_collection"],
-            "http://testserver/api_v3/workflows/collections/{}/".format(
-                self.workflow_collection.id))
+            f"http://testserver/workflow_system/collections/{self.workflow_collection.id}/")
         self.assertEqual(
             response.data['active'], self.workflow_collection_subscription.active)
         self.assertEqual(
@@ -178,10 +166,9 @@ class TestWorkflowCollectionSubscriptionView(TestCase):
     def test_put__authenticated(self):
         """Authenticated users can update data via PUT."""
         request = self.factory.put(
-            '/users/self/workflows/subscriptions/{}'.format(
-                self.workflow_collection_subscription.id),
+            f"/users/self/workflows/subscriptions/{self.workflow_collection_subscription.id}",
             data={
-                "workflow_collection": "http://testserver/api_v3/workflows/collections/{}/".format(self.workflow_collection.id),
+                "workflow_collection": f"http://testserver/workflow_system/collections/{self.workflow_collection.id}/",
                 "active": False,
                 "workflowcollectionsubscriptionschedule_set": [
                     {
@@ -204,8 +191,7 @@ class TestWorkflowCollectionSubscriptionView(TestCase):
     def test_put__validation_error(self):
         """PUT to populate workflow that doesn't exist."""
         request = self.factory.put(
-            '/users/self/workflows/subscriptions/{}'.format(
-                self.workflow_collection_subscription.id),
+            f"/users/self/workflows/subscriptions/{self.workflow_collection_subscription.id}",
             data={
                 "workflow_collection": "Ain't Gonna Work",
                 "active": True,

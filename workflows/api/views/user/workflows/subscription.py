@@ -2,7 +2,6 @@ import logging
 
 from django.shortcuts import get_object_or_404
 
-from rest_framework import exceptions as drf_exceptions
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -204,7 +203,7 @@ class WorkflowCollectionSubscriptionView(APIView):
         workflow_collection_subscription = get_object_or_404(
             WorkflowCollectionSubscription,
             id=id,
-            user=request.user,
+            user=request.user.id,
         )
 
         serializer = WorkflowCollectionSubscriptionSummarySerializer(
