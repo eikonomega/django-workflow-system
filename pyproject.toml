@@ -3,3 +3,6 @@ line-length = 88
 target-version = ['py37']
 include = '\.pyi?$'
 exclude = '.*\/migrations\/.*.py$'
+
+[tool.pylint]
+load-plugins = pylint_django
