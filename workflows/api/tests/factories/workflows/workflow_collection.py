@@ -19,7 +19,7 @@ class WorkflowCollectionFactory(DjangoModelFactory):
 
     name = factory.sequence(lambda n: 'workflow collection name {}'.format(n))
     code = factory.sequence(lambda n: 'workflow_collection_code_{}'.format(n))
-    description = ""
+    description = "Blank"
     ordered = True
     detail_image = settings.MEDIA_ROOT + '/wumbo.jpg'
     home_image = settings.MEDIA_ROOT + '/wumbo.jpg'

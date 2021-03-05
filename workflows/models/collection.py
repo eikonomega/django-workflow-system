@@ -1,8 +1,10 @@
 """Django model definition."""
+import re
 import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
@@ -31,6 +33,14 @@ def collection_cover_image_location(instance, filename):
     return "workflows/collections/{}/cover-image.{}".format(
         instance.id, filename.rpartition(".")[2]
     )
+
+def validate_code(code):
+    """
+    Ensure that the code provided follows python_variable_naming_syntax.
+    """
+    regex = '^[a-z_][a-z0-9_]+$'
+    if not re.search(regex, code):
+        raise ValidationError("code must be in 'python_variable_naming_syntax'")
 
 
 class WorkflowCollectionTagOption(CreatedModifiedAbstractModel):
@@ -78,8 +88,7 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
 
     # When taken together the next two fields uniquely identify a given collection.
     # We use code instead of name for this purpose because it has a stricter syntax.
-    # TODO: Add a custom validator to code to enforce python_variable_naming_syntax
-    code = models.CharField(max_length=200, unique=False)
+    code = models.CharField(max_length=200, unique=False, validators=[validate_code])
     version = models.PositiveIntegerField(default=1)
 
     # Human friendly name for the collection.
@@ -138,7 +147,8 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+        self.full_clean()
+        super(WorkflowCollection, self).save(*args, **kwargs)
 
     def source_identifier(self):
         return f"{self.code}_v{self.version}"
