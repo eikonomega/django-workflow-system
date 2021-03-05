@@ -199,15 +199,15 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflows.workflow'),
         ),
         migrations.CreateModel(
-            name='WorkflowCollectionTag',
+            name='WorkflowCollectionTagAssignment',
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('workflow_collection', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflows.workflowcollection')),
                 ('workflow_collection_tag', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='workflows.workflowcollectiontagoption')),
             ],
             options={
-                'verbose_name_plural': 'Workflow Collections Tags',
-                'db_table': 'workflow_system_collection_tag',
+                'verbose_name_plural': 'Workflow Collections Tag Assignments',
+                'db_table': 'workflow_system_collection_tag_assignment',
             },
         ),
         migrations.CreateModel(
@@ -232,7 +232,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='workflowcollection',
             name='tags',
-            field=models.ManyToManyField(through='workflows.WorkflowCollectionTag', to='workflows.WorkflowCollectionTagOption'),
+            field=models.ManyToManyField(through='workflows.WorkflowCollectionTagAssignment', to='workflows.WorkflowCollectionTagOption'),
         ),
         migrations.CreateModel(
             name='WorkflowAuthor',

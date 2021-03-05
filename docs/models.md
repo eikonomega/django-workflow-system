@@ -142,7 +142,7 @@ This model is what allows you to tie Workflows to WorkflowCollections.
 
 ## WorkflowCollectionTagOption
 
-This table defines what options are available to use as tags. In simple terms, this table defines the set of available tags which are then referred to via foreign keys in WorkflowCollectionTag objects.
+This table defines what options are available to use as tags. In simple terms, this table defines the set of available tags which are then referred to via foreign keys in WorkflowCollectionTagAssignment objects.
 
 ### Attributes
 
@@ -160,23 +160,23 @@ This table defines what options are available to use as tags. In simple terms, t
     workflow_tag_option_2 = WorkflowCollectionTagOption.objects.create(
         text="rad")
 
-## WorkflowCollectionTag
+## WorkflowCollectionTagAssignment
 
 This table is what ties tags to a workflow collection.
 
 ### Attributes
 
-| Key                     | Type       | Description                             |
-|-------------------------|------------|-----------------------------------------|
-| id                      | UUIDField  | The UUID of the WorkflowCollectionTag.  |
-| workflow_collection     | ForeignKey | The workflow collection this tag is in. |
-| workflow_collection_tag | ForeignKey | The tag associated with this object.    |
+| Key                     | Type       | Description                                       |
+|-------------------------|------------|---------------------------------------------------|
+| id                      | UUIDField  | The UUID of the WorkflowCollectionTagAssignment.  |
+| workflow_collection     | ForeignKey | The workflow collection this tag is in.           |
+| workflow_collection_tag | ForeignKey | The tag associated with this object.              |
 
-### Example: Creating a WorkflowCollectionTag
+### Example: Creating a WorkflowCollectionTagAssignment
 
     from django_workflow_system.models import (
         WorkflowCollection,
-        WorkflowCollectionTag, 
+        WorkflowCollectionTagAssignment, 
         WorkflowCollectionTagOption)
     
     workflow_tag_option_1 = WorkflowCollectionTagOption.objects.get(
@@ -187,11 +187,11 @@ This table is what ties tags to a workflow collection.
     workflow_collection = WorkflowCollection.objects.get(code="42")
 
     # The following will associate two tags with the WorkflowCollection
-    workflow_collection_tag_1 = WorkflowCollectionTag.objects.create(
+    workflow_collection_tag_1 = WorkflowCollectionTagAssignment.objects.create(
         workflow_collection=workflow_collection,
         workflow_tag=workflow_tag_option_1)
     
-    workflow_collection_tag_2 = WorkflowCollectionTag.objects.create(
+    workflow_collection_tag_2 = WorkflowCollectionTagAssignment.objects.create(
         workflow_collection=workflow_collection,
         workflow_tag=workflow_tag_option_1)
     
