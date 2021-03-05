@@ -19,7 +19,7 @@ from ..models import (
     WorkflowStepDependencyGroup,
     WorkflowStepDependencyDetail,
     WorkflowCollectionAssignment, WorkflowCollectionEngagement)
-from ..models.collection import WorkflowCollectionTag
+from ..models.collection import WorkflowCollectionTagAssignment
 
 
 @admin.register(WorkflowCollectionTagOption)
@@ -33,7 +33,7 @@ class WorkflowCollectionMemberInline(admin.StackedInline):
     ordering = ["order"]
 
 class WorkflowCollectionTagOptionInline(admin.StackedInline):
-    model = WorkflowCollectionTag
+    model = WorkflowCollectionTagAssignment
     extra = 1
 
 

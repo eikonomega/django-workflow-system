@@ -120,7 +120,7 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
     category = models.CharField(default=None, choices=COLLECTION_TYPES, max_length=8)
 
     tags = models.ManyToManyField(
-        WorkflowCollectionTagOption, through="WorkflowCollectionTag"
+        WorkflowCollectionTagOption, through="WorkflowCollectionTagAssignment"
     )
 
     class Meta:
@@ -144,8 +144,7 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
         return f"{self.code}_v{self.version}"
 
 
-# TODO: GH 16
-class WorkflowCollectionTag(models.Model):
+class WorkflowCollectionTagAssignment(models.Model):
     """Assign tags to collections."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -157,8 +156,8 @@ class WorkflowCollectionTag(models.Model):
     )
 
     class Meta:
-        db_table = "workflow_system_collection_tag"
-        verbose_name_plural = "Workflow Collections Tags"
+        db_table = "workflow_system_collection_tag_assignment"
+        verbose_name_plural = "Workflow Collections Tag Assignments"
 
 
 class WorkflowCollectionMember(CreatedModifiedAbstractModel):
