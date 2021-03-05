@@ -2,20 +2,12 @@ from django.test import TestCase
 
 from rest_framework.test import APIRequestFactory
 
-from website.api_v2.tests.factories import (
-    UserFactory,
-    WorkflowCollectionFactory,
-    WorkflowCollectionMemberFactory,
-    WorkflowCollectionMember2Factory,
-    WorkflowCollection2Factory,
-    WorkflowTagOptionFactory,
-    WorkflowFactory,
-)
-from website.api_v3.views.workflows.collection import (
-    WorkflowCollectionsView,
-    WorkflowCollectionView,
-)
-from ... import factories
+from workflows.api.tests.factories import (UserFactory, WorkflowCollectionFactory,
+                                           WorkflowCollectionTagOptionFactory, WorkflowFactory)
+from workflows.api.tests.factories.workflows.workflow_collection import \
+    _WorkflowCollectionMemberFactory
+from workflows.api.views.workflows import WorkflowCollectionsView, WorkflowCollectionView
+
 
 class TestWorkflowCollectionsView(TestCase):
     """Test WorkflowCollectionsView class."""
@@ -26,30 +18,23 @@ class TestWorkflowCollectionsView(TestCase):
 
         self.user = UserFactory()
         self.workflow_collection = WorkflowCollectionFactory()
-        self.workflow_collection_member = WorkflowCollectionMemberFactory()
-        self.workflow_collection_2 = WorkflowCollection2Factory()
-        self.workflow_collection_member_2 = WorkflowCollectionMember2Factory()
-
-        self.workflow_collection_tag_option = WorkflowTagOptionFactory()
-        self.workflow_collection_tag_option2 = WorkflowTagOptionFactory(
-            text="Wilder and crazier tag"
-        )
-        self.workflow_collection_tag_option3 = WorkflowTagOptionFactory(
-            text="Wildest and craziest tag"
-        )
-
+        self.workflow_collection_tag_option = WorkflowCollectionTagOptionFactory(text="The Tag")
+        self.workflow_collection_tag_option_2 = WorkflowCollectionTagOptionFactory(text="The Tag 2")
+        self.workflow_collection.tags.add(self.workflow_collection_tag_option_2)
         self.workflow_collection.tags.add(self.workflow_collection_tag_option)
 
-        self.workflow_collection_2.tags.add(
-            self.workflow_collection_tag_option2, self.workflow_collection_tag_option3,
-        )
+        self.workflow_collection_2 = WorkflowCollectionFactory()
+        self.workflow_collection_tag_option_3 = WorkflowCollectionTagOptionFactory(text="The Tag 3")
+        self.workflow_collection_tag_option_4 = WorkflowCollectionTagOptionFactory(text="The Tag 4")
+        self.workflow_collection_2.tags.add(self.workflow_collection_tag_option_3)
+        self.workflow_collection_2.tags.add(self.workflow_collection_tag_option_4)
 
     def test_get__unauthenticated(self):
         """Unauthenticated users cannot access GET method."""
         request = self.factory.get("/workflows/collections/")
         response = self.view(request)
 
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 400)
 
     def test_get__authenticated(self):
         """Authenticated users can access GET method."""
@@ -66,7 +51,7 @@ class TestWorkflowCollectionsView(TestCase):
         response = self.view(request)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data[1]["tags"]), 2)
+        self.assertEqual(len(response.data[0]["tags"]), 2)
         for result in response.data:
             self.assertListEqual(
                 list(result.keys()),
@@ -98,38 +83,30 @@ class TestWorkflowCollectionsView(TestCase):
         self.assertEqual(
             response.data[0]["category"], self.workflow_collection.category
         )
-        self.assertEqual(
-            response.data[0]["tags"][0], self.workflow_collection_tag_option.text
+        self.assertCountEqual(
+            response.data[0]["tags"], [self.workflow_collection_tag_option.text,
+                                       self.workflow_collection_tag_option_2.text]
         )
-
         self.assertEqual(response.data[1]["code"], self.workflow_collection_2.code)
         self.assertEqual(response.data[1]["name"], self.workflow_collection_2.name)
-        self.assertEqual(
-            response.data[1]["ordered"], self.workflow_collection_2.ordered
-        )
+        self.assertEqual(response.data[1]["ordered"], self.workflow_collection_2.ordered)
         self.assertEqual(
             response.data[1]["category"], self.workflow_collection_2.category
         )
-        self.assertEqual(
-            response.data[1]["authors"][0]["user"]["first_name"], self.user.first_name
-        )
-        self.assertEqual(
-            response.data[1]["authors"][0]["user"]["last_name"], self.user.last_name
-        )
-        self.assertEqual(
-            response.data[1]["tags"][0], self.workflow_collection_tag_option2.text
-        )
-        self.assertEqual(
-            response.data[1]["tags"][1], self.workflow_collection_tag_option3.text
+        self.assertCountEqual(
+            response.data[1]["tags"], [self.workflow_collection_tag_option_3.text,
+                                       self.workflow_collection_tag_option_4.text]
         )
 
 
 class TestWorkflowCollectionView(TestCase):
     """Test WorkflowCollectionView class."""
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.simple_survey__survey_collection = factories.WorkflowCollectionFactory(**{
+    def setUp(self):
+        self.view = WorkflowCollectionView.as_view()
+        self.factory = APIRequestFactory()
+
+        self.simple_survey__survey_collection = WorkflowCollectionFactory(**{
             "name": "simple_survey",
             "category": "SURVEY",
             "workflow_set": [{
@@ -143,43 +120,19 @@ class TestWorkflowCollectionView(TestCase):
             }]
         })
 
-        cls.workflow = WorkflowFactory()
-        cls.workflow_collection = WorkflowCollectionFactory()
-        cls.workflow_collection_member = WorkflowCollectionMemberFactory()
-
-        cls.workflow_collection_tag_option = WorkflowTagOptionFactory()
-        cls.workflow_collection.tags.add(cls.workflow_collection_tag_option)
-
-    def setUp(self):
-        self.view = WorkflowCollectionView.as_view()
-        self.factory = APIRequestFactory()
-        self.user = UserFactory()
-
-    def test_get__unauthenticated(self):
-        """Unauthenticated users cannot access GET method."""
-        request = self.factory.get(
-            "/workflows/collections/{}/".format(self.workflow_collection.id)
-        )
-        response = self.view(request, self.workflow_collection.id)
-
-        self.assertEqual(response.status_code, 403)
-
-    def test_get__authenticated(self):
-        """Authenticated users can access GET method."""
-        request = self.factory.get(
-            "/workflows/collections/{}/".format(self.workflow_collection.id)
-        )
-        request.user = self.user
-        response = self.view(request, self.workflow_collection.id)
-
-        self.assertEqual(response.status_code, 200)
+        self.workflow = WorkflowFactory()
+        self.workflow_collection = WorkflowCollectionFactory()
+        self.workflow_collection_member = _WorkflowCollectionMemberFactory(
+            workflow=self.workflow,
+            workflow_collection=self.workflow_collection)
+        self.workflow_collection_tag_option = WorkflowCollectionTagOptionFactory(text="tag")
+        self.workflow_collection.tags.add(self.workflow_collection_tag_option)
 
     def test_get__success(self):
         """Ensure response payload is as expected."""
         request = self.factory.get(
             "/workflows/collections/{}/".format(self.workflow_collection.id)
         )
-        request.user = self.user
         response = self.view(request, self.workflow_collection.id)
 
         self.assertEqual(response.status_code, 200)
@@ -214,17 +167,17 @@ class TestWorkflowCollectionView(TestCase):
         self.assertEqual(response.data["category"], self.workflow_collection.category)
         self.assertEqual(
             response.data["workflowcollectionmember_set"][0]["workflow"]["detail"],
-            "http://testserver/api_v3/workflows/workflows/{}/".format(self.workflow.id),
+            "http://testserver/workflow_system/workflows/{}/".format(self.workflow.id),
         )
         self.assertEqual(
             response.data["workflowcollectionmember_set"][0]["order"],
             self.workflow_collection_member.order,
         )
         self.assertEqual(
-            response.data["authors"][0]["user"]["first_name"], self.user.first_name
+            response.data["authors"][0]["user"]["first_name"], self.workflow.author.user.first_name
         )
         self.assertEqual(
-            response.data["authors"][0]["user"]["last_name"], self.user.last_name
+            response.data["authors"][0]["user"]["last_name"], self.workflow.author.user.last_name
         )
         self.assertEqual(
             response.data["tags"][0], self.workflow_collection_tag_option.text
@@ -234,7 +187,6 @@ class TestWorkflowCollectionView(TestCase):
         """Attempts to retrieve a non-existent collection result in a 404."""
         made_up_uuiid = "4f84f799-9cc5-43d3-0000-24840b7eb8ce"
         request = self.factory.get("/workflows/collections/{}/".format(made_up_uuiid))
-        request.user = self.user
         response = self.view(request, made_up_uuiid)
 
         self.assertEqual(response.status_code, 404)
@@ -243,9 +195,8 @@ class TestWorkflowCollectionView(TestCase):
         """Ensure response payload is as expected."""
         request = self.factory.get(
             "/workflows/collections/{}/".format(self.simple_survey__survey_collection.id),
-            data={"include_steps":"true"}
+            data={"include_steps": "true"}
         )
-        request.user = self.user
         response = self.view(request, self.simple_survey__survey_collection.id)
 
         self.assertEqual(response.status_code, 200)
@@ -317,9 +268,8 @@ class TestWorkflowCollectionView(TestCase):
         """Ensure response payload is as expected."""
         request = self.factory.get(
             "/workflows/collections/{}/".format(self.simple_survey__survey_collection.id),
-            data={"include_steps":"beef"}
+            data={"include_steps": "beef"}
         )
-        request.user = self.user
         response = self.view(request, self.simple_survey__survey_collection.id)
 
         self.assertEqual(response.status_code, 400)

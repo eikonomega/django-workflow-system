@@ -1,38 +1,58 @@
+# from datetime import timedelta
+#
+# from django.core.management import call_command
+# from django.test import TestCase
+# from django.utils import timezone
+# from io import StringIO
+#
+# from ....api.tests.factories import (
+#     WorkflowCollectionAssignmentFactory,
+#     WorkflowCollectionAssignment2Factory, UserFactory)
+# from ....models import (WorkflowCollectionEngagement,
+#                         WorkflowCollectionAssignment)
+#
+# from ....api.tests.factories.workflows.workflow_collection import (
+#     WorkflowCollectionFactory, WorkflowCollection2Factory)
+#
+# import workflows.api.tests.factories as factories
+#
+#
+from io import StringIO
 from datetime import timedelta
 
 from django.core.management import call_command
 from django.test import TestCase
 from django.utils import timezone
-from io import StringIO
 
-from ....api.tests.factories import (
-    WorkflowCollectionAssignmentFactory,
-    WorkflowCollectionAssignment2Factory, UserFactory)
-from ....models import (WorkflowCollectionEngagement,
-                        WorkflowCollectionAssignment)
-
-from ....api.tests.factories.workflows.workflow_collection import (
-    WorkflowCollectionFactory, WorkflowCollection2Factory)
-
-import workflows.api.tests.factories as factories
+from workflows.api.tests.factories import (WorkflowCollectionFactory,
+                                           WorkflowCollectionAssignmentFactory, UserFactory,
+                                           WorkflowCollectionEngagementFactory)
+from workflows.models import WorkflowCollectionEngagement, WorkflowCollectionAssignment
 
 
 class TestCommand(TestCase):
-
     def setUp(self):
-        self.workflow_collection = WorkflowCollectionFactory()
-        self.workflow_collection2 = WorkflowCollection2Factory()
+        self.workflow_collection = WorkflowCollectionFactory(
+            category="SURVEY"
+        )
+        self.workflow_collection2 = WorkflowCollectionFactory(
+            category="SURVEY"
+        )
+        self.user = UserFactory()
 
         # Engagement + Assignment that gets closed
-        self.workflow_collection_engagement_1 = \
-            WorkflowCollectionEngagement.objects.create(
-                workflow_collection=self.workflow_collection,
-                user=self.workflow_collection.created_by,
-                started=timezone.now()-timedelta(days=42))
+        self.workflow_collection_engagement_1 = WorkflowCollectionEngagement.objects.create(
+            workflow_collection=self.workflow_collection,
+            user=self.workflow_collection.created_by,
+            started=timezone.now()-timedelta(days=42)
+            )
         self.assignment_1 = WorkflowCollectionAssignmentFactory(
+            user=self.workflow_collection.created_by,
             engagement=self.workflow_collection_engagement_1,
             assigned_on=timezone.now()-timedelta(days=42),
-            status=WorkflowCollectionAssignment.IN_PROGRESS)
+            status=WorkflowCollectionAssignment.IN_PROGRESS,
+            workflow_collection=self.workflow_collection
+        )
 
         # Engagement + Assignment that doesn't get closed due to Collection
         # being ACTIVITY
@@ -42,9 +62,12 @@ class TestCommand(TestCase):
                 user=self.workflow_collection2.created_by,
                 started=timezone.now()-timedelta(days=32))
 
-        self.assignment_2 = WorkflowCollectionAssignment2Factory(
+        self.assignment_2 = WorkflowCollectionAssignmentFactory(
             engagement=self.workflow_collection_engagement_2,
-            status=WorkflowCollectionAssignment.IN_PROGRESS)
+            user=self.workflow_collection2.created_by,
+            status=WorkflowCollectionAssignment.IN_PROGRESS,
+            workflow_collection=self.workflow_collection2
+        )
 
         # Engagement + Assignment that doesn't get closed because the
         # engagement is finished.
@@ -54,11 +77,14 @@ class TestCommand(TestCase):
                 workflow_collection=self.workflow_collection,
                 user=self.user_3,
                 started=timezone.now()-timedelta(days=42),
-                finished=timezone.now()-timedelta(days=15))
-        self.assignment_3 = WorkflowCollectionAssignment2Factory(
+                finished=timezone.now()-timedelta(days=15)
+            )
+        self.assignment_3 = WorkflowCollectionAssignmentFactory(
             engagement=self.workflow_collection_engagement_3,
             status=WorkflowCollectionAssignment.CLOSED_COMPLETE,
-            user=self.user_3)
+            user=self.user_3,
+            workflow_collection=self.workflow_collection
+        )
 
         # Engagement + Assignment that doesn't get closed because the
         # assignment is not active.
@@ -67,11 +93,14 @@ class TestCommand(TestCase):
             WorkflowCollectionEngagement.objects.create(
                 workflow_collection=self.workflow_collection,
                 user=self.user_4,
-                started=timezone.now() - timedelta(days=41))
+                started=timezone.now() - timedelta(days=41)
+            )
         self.assignment_4 = WorkflowCollectionAssignmentFactory(
             user=self.user_4,
             engagement=self.workflow_collection_engagement_4,
-            status=WorkflowCollectionAssignment.CLOSED_COMPLETE)
+            status=WorkflowCollectionAssignment.CLOSED_COMPLETE,
+            workflow_collection=self.workflow_collection,
+        )
 
         # Engagement + Assignment that gets closed because the
         # engagement is finished.
@@ -81,12 +110,15 @@ class TestCommand(TestCase):
                 workflow_collection=self.workflow_collection,
                 user=self.user_5,
                 started=timezone.now() - timedelta(days=3),
-                finished=timezone.now() - timedelta(days=15))
+                finished=timezone.now() - timedelta(days=15)
+            )
         self.assignment_5 = WorkflowCollectionAssignmentFactory(
             engagement=self.workflow_collection_engagement_5,
             status=WorkflowCollectionAssignment.IN_PROGRESS,
             assigned_on=timezone.now() - timedelta(days=4),
-            user=self.user_5)
+            user=self.user_5,
+            workflow_collection=self.workflow_collection,
+        )
 
     def test_command__success(self):
         """
@@ -116,7 +148,7 @@ class TestCommand(TestCase):
         self.assertEqual(assignment.status, 'IN_PROGRESS')
 
         out = StringIO()
-        call_command('assignment_terminator', stdout=out)
+        call_command('assignment_terminator', days_old='30', type='SURVEY', stdout=out)
 
         assignment.refresh_from_db()
         self.assertEqual(assignment.status, 'IN_PROGRESS')
@@ -132,7 +164,7 @@ class TestCommand(TestCase):
         self.assertEqual(assignment.status, 'CLOSED_COMPLETE')
 
         out = StringIO()
-        call_command('assignment_terminator', stdout=out)
+        call_command('assignment_terminator', days_old='30', type='SURVEY', stdout=out)
 
         assignment.refresh_from_db()
         self.assertEqual(assignment.status, 'CLOSED_COMPLETE')
@@ -149,7 +181,7 @@ class TestCommand(TestCase):
         self.assertEqual(assignment.status, 'CLOSED_COMPLETE')
 
         out = StringIO()
-        call_command('assignment_terminator', stdout=out)
+        call_command('assignment_terminator', days_old='30', type='SURVEY', stdout=out)
 
         assignment.refresh_from_db()
         self.assertEqual(assignment.status, 'CLOSED_COMPLETE')
@@ -165,23 +197,23 @@ class TestCommand(TestCase):
         self.assertEqual(assignment.status, 'IN_PROGRESS')
 
         out = StringIO()
-        call_command('assignment_terminator', stdout=out)
+        call_command('assignment_terminator', days_old='30', type='SURVEY', stdout=out)
 
         assignment.refresh_from_db()
         self.assertEqual(assignment.status, 'CLOSED_COMPLETE')
 
     def test_command__set_finished_time(self):
-        user = factories.UserFactory()
-        workflow_collection = factories.WorkflowCollectionFactory(
+        user = UserFactory()
+        workflow_collection = WorkflowCollectionFactory(
             category='SURVEY'
         )
-        wce = factories.WorkflowCollectionEngagementFactory(
+        wce = WorkflowCollectionEngagementFactory(
             workflow_collection=workflow_collection,
             user=user,
             started=timezone.now() - timedelta(days=300),
             finished=None,
         )
-        assignment = factories.WorkflowCollectionAssignmentFactory(
+        assignment = WorkflowCollectionAssignmentFactory(
             workflow_collection=workflow_collection,
             user=user,
             engagement=wce,
@@ -189,40 +221,10 @@ class TestCommand(TestCase):
             status=WorkflowCollectionAssignment.IN_PROGRESS
         )
 
-        call_command('assignment_terminator', stdout=StringIO())
+        call_command('assignment_terminator', days_old='30', type='SURVEY', stdout=StringIO())
 
         assignment.refresh_from_db()
         wce.refresh_from_db()
 
         self.assertEqual(assignment.status, WorkflowCollectionAssignment.CLOSED_INCOMPLETE)
         self.assertIsNotNone(wce.finished)
-
-
-class TestCommandTwo(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.demographics_survey_welcome_collection = factories.WorkflowCollectionFactory(
-            code='demographics_survey_welcome_collection',
-            category='SURVEY',
-        )
-
-    def setUp(self) -> None:
-        self.user = factories.UserFactory()
-
-    def call_command(self):
-        call_command("assignment_terminator")
-
-    def test_excludes_demographics_survey_welcome_collection(self):
-        assignment = factories.WorkflowCollectionAssignmentFactory(
-            user=self.user,
-            workflow_collection=self.demographics_survey_welcome_collection,
-            status=WorkflowCollectionAssignment.ASSIGNED,
-            assigned_on=(timezone.now() - timedelta(300)).date(),
-        )
-
-        self.call_command()
-
-        assignment_after = WorkflowCollectionAssignment.objects.get(pk=assignment.pk)
-
-        self.assertEqual(assignment_after.status, WorkflowCollectionAssignment.ASSIGNED)

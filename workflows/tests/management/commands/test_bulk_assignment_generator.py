@@ -1,14 +1,19 @@
-from django.contrib.auth import get_user_model
+# from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.management import call_command
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
 from io import StringIO
-
-
-from ....api.tests.factories.workflows.workflow_collection import (
-    WorkflowCollectionFactory)
-from ....models import WorkflowCollectionAssignment
+#
+#
+# from ....api.tests.factories.workflows.workflow_collection import (
+#     WorkflowCollectionFactory)
+# from ....models import WorkflowCollectionAssignment
+#
+#
+from workflows.api.tests.factories import WorkflowCollectionFactory
+from workflows.models import WorkflowCollectionAssignment
 
 
 class TestCommand(TestCase):
@@ -64,7 +69,7 @@ class TestCommand(TestCase):
 
     def test_command__no_group_match(self):
         """
-        Demonstrate that if no groups are found with the provided name, 
+        Demonstrate that if no groups are found with the provided name,
         no assignments are created
         """
         # Check the count of assignments prior
@@ -80,10 +85,10 @@ class TestCommand(TestCase):
         # Check that no assignments have been created
         assignments_post = WorkflowCollectionAssignment.objects.all()
         self.assertEqual(len(assignments_post), 0)
-    
+
     def test_command__no_workflow_match(self):
         """
-        Demonstrate that if a workflow collection isn't found with the provided name, 
+        Demonstrate that if a workflow collection isn't found with the provided name,
         no assignments are created
         """
         # Create a group
@@ -103,7 +108,7 @@ class TestCommand(TestCase):
         # Check that no assignments have been created
         assignments_post = WorkflowCollectionAssignment.objects.all()
         self.assertEqual(len(assignments_post), 0)
-    
+
     def test_command__user_in_multiple_groups(self):
         """
         Demonstrate that if a User is in multiple groups that the command is run on,

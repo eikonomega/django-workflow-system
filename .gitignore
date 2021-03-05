@@ -134,3 +134,9 @@ dmypy.json
 # IDE Stuff
 .vscode/
 .vscode/*
+
+# Pycharm
+.idea/
+
+# Workflow Author Image Folder
+workflows/authors

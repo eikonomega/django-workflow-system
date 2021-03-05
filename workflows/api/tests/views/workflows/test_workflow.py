@@ -1,14 +1,10 @@
 from django.test import TestCase
-
 from rest_framework.test import APIRequestFactory
 
-from website.api_v2.tests.factories import (
-    AuthorFactory, Author2Factory, UserFactory, User2Factory,
-    WorkflowFactory, Workflow2Factory, WorkflowStepFactory,
-    WorkflowStepVideoFactory)
-from website.api_v3.tests import factories
-from website.api_v3.views.workflows import (
-    WorkflowView, WorkflowsView)
+from workflows.api.tests.factories import WorkflowFactory, WorkflowStepFactory
+from workflows.api.tests.factories.workflows.step import _WorkflowStepVideoFactory
+from workflows.api.views.workflows import WorkflowsView, WorkflowView
+from workflows.models import WorkflowAuthor
 
 
 class TestWorkflowsView(TestCase):
@@ -17,137 +13,96 @@ class TestWorkflowsView(TestCase):
     def setUp(self):
         self.view = WorkflowsView.as_view()
         self.factory = APIRequestFactory()
-
-        self.user = UserFactory()
-        self.user_2 = User2Factory()
-        self.author = AuthorFactory()
-        self.author_2 = Author2Factory()
         self.workflow = WorkflowFactory()
-        self.workflow_2 = Workflow2Factory()
-
-    def test_get__unauthenticated(self):
-        """Unauthenticated users cannot access GET method."""
-        request = self.factory.get('/workflows/workflows/')
-        response = self.view(request)
-
-        self.assertEqual(response.status_code, 403)
-
-    def test_get__authenticated(self):
-        """Authenticated users can access GET method."""
-        request = self.factory.get('/workflows/workflows/')
-        request.user = self.user
-        response = self.view(request)
-
-        self.assertEqual(response.status_code, 200)
+        self.workflow_2 = WorkflowFactory()
 
     def test_get__success(self):
         """Ensure expected Workflow data is returned."""
         request = self.factory.get('/workflows/workflows/')
-        request.user = self.user
         response = self.view(request)
 
         self.assertEqual(response.status_code, 200)
 
         # Correct number of workflows are returned
         self.assertEqual(len(response.data), 2)
-
         for result in response.data:
-
             # Ensure all expected data parameters are present.
             self.assertListEqual(
                 list(result.keys()),
                 ["id", "name", "detail", "author", "image"])
 
+            author_obj = WorkflowAuthor.objects.get(id=result['author']["id"])
+
             # Validate the content of each returned Workflow
             if result['name'] == self.workflow.name:
                 self.assertEqual(
                     result['image'],
-                    'http://testserver/media/' + str(self.workflow.image))
+                    f"http://testserver{str(self.workflow.image)}")
                 self.assertEqual(
                     result['author']['title'],
-                    self.author.title)
+                    author_obj.title)
                 self.assertEqual(
                     result['author']['image'],
-                    'http://testserver/media/' + str(self.author.image))
+                    f"http://testserver/{str(author_obj.image)}")
                 self.assertEqual(
                     result['author']['user']['first_name'],
-                    self.user.first_name)
+                    author_obj.user.first_name)
                 self.assertEqual(
                     result['author']['user']['last_name'],
-                    self.user.last_name)
+                    author_obj.user.last_name)
 
             elif result['name'] == self.workflow_2.name:
                 self.assertEqual(
                     result['image'],
-                    'http://testserver/media/' + str(self.workflow_2.image))
+                    f"http://testserver{str(self.workflow_2.image)}")
                 self.assertEqual(
                     result['author']['title'],
-                    self.author_2.title)
+                    author_obj.title)
                 self.assertEqual(
                     result['author']['image'],
-                    'http://testserver/media/' + str(self.author_2.image))
+                    f"http://testserver/{str(author_obj.image)}")
                 self.assertEqual(
                     result['author']['user']['first_name'],
-                    self.user_2.first_name)
+                    author_obj.user.first_name)
                 self.assertEqual(
                     result['author']['user']['last_name'],
-                    self.user_2.last_name)
+                    author_obj.user.last_name)
 
 
 class TestWorkflowView(TestCase):
     """Test WorkflowView class."""
-
+#
     def setUp(self):
         self.view = WorkflowView.as_view()
         self.factory = APIRequestFactory()
 
-        self.user = UserFactory()
-        self.author = AuthorFactory()
         self.workflow = WorkflowFactory()
-        self.workflow_step = WorkflowStepFactory()
-        self.workflow_step_video = WorkflowStepVideoFactory()
-
-    def test_get__unauthenticated(self):
-        """Unauthenticated users cannot access GET method."""
-        request = self.factory.get(
-            '/workflows/workflows/{}/'.format(self.workflow.id))
-        response = self.view(request, self.workflow.id)
-
-        self.assertEqual(response.status_code, 403)
-
-    def test_get__authenticated(self):
-        """Authenticated users can access GET method."""
-        request = self.factory.get(
-            '/workflows/workflows/{}/'.format(self.workflow.id))
-        request.user = self.user
-        response = self.view(request, self.workflow.id)
-
-        self.assertEqual(response.status_code, 200)
+        self.workflow_step = WorkflowStepFactory(workflow=self.workflow)
+        self.workflow_step_video = _WorkflowStepVideoFactory(workflow_step=self.workflow_step)
 
     def test_get__success(self):
         """Ensure returned data is as expected."""
         request = self.factory.get(
-            '/workflows/workflows/{}/'.format(self.workflow.id))
-        request.user = self.user
+            f"/workflows/workflows/{self.workflow.id}/")
         response = self.view(request, self.workflow.id)
-
+        print('start')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['code'], self.workflow.code)
         self.assertEqual(response.data['name'], self.workflow.name)
         self.assertEqual(
             response.data['image'],
-            'http://testserver/media/picture.png')
-        self.assertEqual(response.data['author']['title'], self.author.title)
+            f"http://testserver{str(self.workflow.image)}")
+        self.assertEqual(response.data['author']['title'], self.workflow.author.title)
         self.assertEqual(
             response.data['author']['image'],
-            'http://testserver/media/' + str(self.author.image))
+            f"http://testserver/{str(self.workflow.author.image)}")
         self.assertEqual(response.data['author']['user']['first_name'],
-                         self.user.first_name)
+                         self.workflow.author.user.first_name)
         self.assertEqual(response.data['author']['user']['last_name'],
-                         self.user.last_name)
-        self.assertEqual(response.data['workflowstep_set'][0]
-                         ['workflowstepvideo_set'][0]['ui_identifier'],
-                         self.workflow_step_video.ui_identifier)
+                         self.workflow.author.user.last_name)
+        self.assertEqual(
+            response.data['workflowstep_set'][0]['workflowstepvideo_set'][0]['ui_identifier'],
+            self.workflow_step_video.ui_identifier)
         self.assertEqual(response.data['workflowstep_set'][0]['code'],
                          self.workflow_step.code)
 
@@ -155,17 +110,15 @@ class TestWorkflowView(TestCase):
         """using non-existing workflow ID"""
         made_up_uuiid = '4f84f799-9cc5-43d3-0000-24840b7eb8ce'
         request = self.factory.get(
-            '/workflows/workflows/{}/'.format(made_up_uuiid))
-        request.user = self.user
+            f"/workflows/workflows/{made_up_uuiid}/")
         response = self.view(request, made_up_uuiid)
 
         self.assertEqual(response.status_code, 404)
 
     def test_no_image(self):
         """test that having no image does not break things"""
-        workflow = factories.WorkflowFactory(image=None)
+        workflow = WorkflowFactory(image=None)
         request = self.factory.get(
-            '/workflows/workflows/{}/'.format(workflow.id))
-        request.user = self.user
+            f"/workflows/workflows/{workflow.id}/")
         response = self.view(request, workflow.id)
         self.assertEqual(response.data["image"], None)

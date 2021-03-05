@@ -1,10 +1,18 @@
-from django.core.exceptions import ValidationError
+# from django.core.exceptions import ValidationError
+# from django.test import TestCase
+#
+# from website.api_v3.tests.factories import WorkflowCollectionEngagementFactory, UserFactory, WorkflowCollectionFactory
+# from website.api_v3.tests.factories.workflows.json_schema import JSONSchemaOneToFiveFactory
+# from website.chronological_user_profiles.models import ChronologicalUserDataCategory
+# from website.workflows.models import WorkflowCollectionEngagementDetail
+#
+#
 from django.test import TestCase
 
-from website.api_v3.tests.factories import WorkflowCollectionEngagementFactory, UserFactory, WorkflowCollectionFactory
-from website.api_v3.tests.factories.workflows.json_schema import JSONSchemaOneToFiveFactory
-from website.chronological_user_profiles.models import ChronologicalUserDataCategory
-from website.workflows.models import WorkflowCollectionEngagementDetail
+from workflows.api.tests.factories import UserFactory, WorkflowCollectionFactory
+from workflows.api.tests.factories.workflows import (JSONSchemaOneToFiveFactory,
+                                                     WorkflowCollectionEngagementFactory)
+from workflows.models import WorkflowCollectionEngagementDetail
 
 
 class TestGetResponse(TestCase):
@@ -12,14 +20,7 @@ class TestGetResponse(TestCase):
     def setUp(self) -> None:
         self.user = UserFactory()
 
-    @classmethod
-    def setUpTestData(cls):
-        ChronologicalUserDataCategory.objects.create(
-            code="test_wellbeing_dimension",
-            label="WellBeing Dimension",
-        )
-
-        cls.simple_survey__survey_collection = WorkflowCollectionFactory(**{
+        self.simple_survey__survey_collection = WorkflowCollectionFactory(**{
             "name": "simple_survey",
             "category": "SURVEY",
             "workflow_set": [{
@@ -38,9 +39,9 @@ class TestGetResponse(TestCase):
             }]
         })
 
-        cls.workflow = cls.simple_survey__survey_collection.workflowcollectionmember_set.get().workflow
-        cls.step = cls.workflow.workflowstep_set.get()
-        cls.input = cls.step.workflowstepinput_set.get()
+        self.workflow = self.simple_survey__survey_collection.workflowcollectionmember_set.get().workflow
+        self.step = self.workflow.workflowstep_set.get()
+        self.input = self.step.workflowstepinput_set.get()
 
     def test_get_response_sanity_check(self):
         wce = WorkflowCollectionEngagementFactory(

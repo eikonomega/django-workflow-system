@@ -23,7 +23,7 @@ class Workflow(CreatedModifiedAbstractModel):
         id (UUIDField): The UUID of the Workflow
         code (CharField): An internal code for database level operations.
         name (CharField): Human friendly name.
-        version (PositiveIntegerField): The version of a Workflow. Used to accomodate the 
+        version (PositiveIntegerField): The version of a Workflow. Used to accommodate the
                                         evolution of a Workflow over time.
         image (ImageField): General image associated with the Workflow.
         author (ForeignKey): The author of the Workflow

@@ -1,10 +1,11 @@
 import factory
+from factory.django import DjangoModelFactory
 
 from ..user import UserFactory
 from .....models import WorkflowAuthor
 
 
-class AuthorFactory(factory.DjangoModelFactory):
+class AuthorFactory(DjangoModelFactory):
     class Meta:
         model = WorkflowAuthor
         django_get_or_create = ('user', 'title')
