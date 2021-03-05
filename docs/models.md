@@ -184,7 +184,7 @@ This table is what ties tags to a workflow collection.
     workflow_tag_option_2 = WorkflowCollectionTagOption.objects.get(
         text="rad")
     
-    workflow_collection = WorkflowCollection.objects.get(code="42")
+    workflow_collection = WorkflowCollection.objects.get(code="workflow_collection_1")
 
     # The following will associate two tags with the WorkflowCollection
     workflow_collection_tag_1 = WorkflowCollectionTagAssignment.objects.create(
