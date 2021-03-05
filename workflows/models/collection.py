@@ -35,9 +35,9 @@ def collection_cover_image_location(instance, filename):
     )
 
 def validate_code(code):
-    # There are a few ways I could do this, but it seems like your comment is looking for
-    # all lowercase with _'s as well. I think Python has a built in method called isidentifier()
-    # that we could use here but that allows for things like 'howdyYall' or 'sOmeThInGlIkEtHiS'.
+    """
+    Ensure that the code provided follows python_variable_naming_syntax.
+    """
     regex = '^[a-z_][a-z0-9_]+$'
     if not re.search(regex, code):
         raise ValidationError("code must be in 'python_variable_naming_syntax'")
@@ -147,7 +147,8 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
         return self.name
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+        self.full_clean()
+        super(WorkflowCollection, self).save(*args, **kwargs)
 
     def source_identifier(self):
         return f"{self.code}_v{self.version}"
