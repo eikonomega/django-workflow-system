@@ -10,8 +10,9 @@ from django.db.models import Subquery, OuterRef, Q
 from django.utils import timezone
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
+from workflows.models.collection_member import WorkflowCollectionMember
 from workflows.models.step import WorkflowStep, WorkflowStepDependencyGroup
-from workflows.models.collection import WorkflowCollection, WorkflowCollectionMember
+from workflows.models.collection import WorkflowCollection
 
 
 class EngagementStateType(TypedDict):

@@ -5,10 +5,9 @@ import uuid
 from django.contrib.auth.models import User
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
-from workflows.models.workflow import Workflow
+from workflows.models.collection_tag import WorkflowCollectionTagOption
 
 
 def collection_detail_image_location(instance, filename):
@@ -34,6 +33,7 @@ def collection_cover_image_location(instance, filename):
         instance.id, filename.rpartition(".")[2]
     )
 
+
 def validate_code(code):
     """
     Ensure that the code provided follows python_variable_naming_syntax.
@@ -41,27 +41,6 @@ def validate_code(code):
     regex = '^[a-z_][a-z0-9_]+$'
     if not re.search(regex, code):
         raise ValidationError("code must be in 'python_variable_naming_syntax'")
-
-
-class WorkflowCollectionTagOption(CreatedModifiedAbstractModel):
-    """
-    This model defines tags that may be associated with collections.
-
-    In simple terms, this table defines the set of available tags
-    which are then referred to via foreign keys in WorkflowTag objects.
-    """
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    text = models.CharField(max_length=50, unique=True)
-    # TODO: Add foreign key to new WorkflowCollectionTagType model. See Github issue for more detail.
-
-    class Meta:
-        db_table = "workflow_system_collection_tag_option"
-        verbose_name_plural = "Workflow Collection Tags"
-
-    def __str__(self):
-        # TODO: Update this when foreign key is in-place to new model.
-        return self.text
 
 
 class WorkflowCollection(CreatedModifiedAbstractModel):
@@ -119,7 +98,8 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
     # Is collection on available via assignment?
     assignment_only = models.BooleanField(default=False)
 
-    # TODO: Add `recommendable` to indicate if collection is eligible for recommendations.
+    # Indicate if collection is eligible for recommendations.
+    recommendable = models.BooleanField()
 
     # Indicates if collection is ready for use.
     active = models.BooleanField()
@@ -153,40 +133,3 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
     def source_identifier(self):
         return f"{self.code}_v{self.version}"
 
-
-class WorkflowCollectionTagAssignment(models.Model):
-    """Assign tags to collections."""
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow_collection = models.ForeignKey(
-        WorkflowCollection, on_delete=models.CASCADE
-    )
-    workflow_collection_tag = models.ForeignKey(
-        WorkflowCollectionTagOption, on_delete=models.CASCADE
-    )
-
-    class Meta:
-        db_table = "workflow_system_collection_tag_assignment"
-        verbose_name_plural = "Workflow Collections Tag Assignments"
-
-
-class WorkflowCollectionMember(CreatedModifiedAbstractModel):
-    """Workflow collections are made of individual workflows, which are called members."""
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
-    workflow_collection = models.ForeignKey(
-        WorkflowCollection, on_delete=models.CASCADE
-    )
-    order = models.PositiveIntegerField(validators=[MinValueValidator(1)])
-
-    class Meta:
-        db_table = "workflow_system_collection_member"
-        unique_together = [
-            ["workflow", "workflow_collection"],
-            ["workflow_collection", "order"],
-        ]
-        verbose_name_plural = "Workflow Collection Members"
-
-    def __str__(self):
-        return "{} - {}".format(self.workflow.name, self.workflow_collection.name)

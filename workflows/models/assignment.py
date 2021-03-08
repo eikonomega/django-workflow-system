@@ -71,7 +71,7 @@ class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
 
     def clean(self, *args, **kwargs):
         """
-        Check assignment contraints.
+        Check assignment constraints.
 
         (1) We have to ensure that no pre-existing assignment exists with a status
         of ASSIGNED or IN_PROGRESS other than the current instance. This is
