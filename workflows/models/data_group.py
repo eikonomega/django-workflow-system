@@ -1,3 +1,4 @@
+"""Django model definition."""
 import uuid
 
 from django.db import models
@@ -15,9 +16,10 @@ class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
         name (CharField): Human friendly name.
         description (TextField): The description of the data group.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     parent_group = models.ForeignKey(
-        'self',
+        "self",
         default=None,
         null=True,
         blank=True,
@@ -28,14 +30,14 @@ class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
 
     class Meta:
         db_table = "workflow_system_data_group"
-        verbose_name_plural = 'Workflow Step Data Groups'
+        verbose_name_plural = "Workflow Step Data Groups"
 
     def __str__(self):
         return self.full_path
 
     @property
     def full_path(self):
-        return '<'.join(reversed(self.name_list))
+        return "<".join(reversed(self.name_list))
 
     @property
     def name_list(self):
