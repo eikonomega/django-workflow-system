@@ -5,4 +5,4 @@ include = '\.pyi?$'
 exclude = '.*\/migrations\/.*.py$'
 
 [tool.pylint]
-load-plugins = pylint_django
+load-plugins = 'pylint_django'
