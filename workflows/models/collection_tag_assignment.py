@@ -3,7 +3,8 @@ import uuid
 
 from django.db import models
 
-from workflows.models import WorkflowCollection, WorkflowCollectionTagOption
+from workflows.models.collection import WorkflowCollection
+from workflows.models.collection_tag import WorkflowCollectionTagOption
 
 
 class WorkflowCollectionTagAssignment(models.Model):

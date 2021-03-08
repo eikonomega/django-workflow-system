@@ -4,7 +4,9 @@ import uuid
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from workflows.models import CreatedModifiedAbstractModel, Workflow, WorkflowCollection
+from workflows.models.collection import WorkflowCollection
+from workflows.models.workflow import Workflow
+from workflows.models.abstract_models import CreatedModifiedAbstractModel
 
 
 class WorkflowCollectionMember(CreatedModifiedAbstractModel):

@@ -7,9 +7,11 @@ from workflows.models.engagement import (
 )
 from workflows.models.collection import (
     WorkflowCollection,
-    WorkflowCollectionMember,
     WorkflowCollectionTagOption,
 )
+
+from workflows.models.collection_member import WorkflowCollectionMember
+
 from workflows.models.json_schema import JSONSchema
 from workflows.models.step import (
     WorkflowStep,

@@ -3,7 +3,7 @@ import uuid
 
 from django.db import models
 
-from workflows.models import CreatedModifiedAbstractModel
+from workflows.models.abstract_models import CreatedModifiedAbstractModel
 
 
 class WorkflowCollectionTagOption(CreatedModifiedAbstractModel):
