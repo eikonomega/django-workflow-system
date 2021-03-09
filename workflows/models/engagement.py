@@ -11,7 +11,9 @@ from django.utils import timezone
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.collection_member import WorkflowCollectionMember
-from workflows.models.step import WorkflowStep, WorkflowStepDependencyGroup
+from workflows.models.step import WorkflowStep
+from workflows.models.step_dependency_group import WorkflowStepDependencyGroup
+
 from workflows.models.collection import WorkflowCollection
 from workflows.models.engagement_detail import WorkflowCollectionEngagementDetail
 
