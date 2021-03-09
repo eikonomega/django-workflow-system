@@ -3,6 +3,7 @@ import uuid
 
 from django.db import models
 
+from workflows.models.collection_tag_type import WorkflowCollectionTagType
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 
 
@@ -16,12 +17,11 @@ class WorkflowCollectionTagOption(CreatedModifiedAbstractModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     text = models.CharField(max_length=50, unique=True)
-    # TODO: Add foreign key to new WorkflowCollectionTagType model. See Github issue for more detail.
+    type = models.ForeignKey(WorkflowCollectionTagType, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "workflow_system_collection_tag_option"
         verbose_name_plural = "Workflow Collection Tags"
 
     def __str__(self):
-        # TODO: Update this when foreign key is in-place to new model.
-        return self.text
+        return f"{self.type}: {self.text}"
