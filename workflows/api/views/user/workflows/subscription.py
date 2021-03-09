@@ -37,17 +37,12 @@ class WorkflowCollectionSubscriptionsView(APIView):
             of the subscriptions with a 200 status code.
             [
                 {
-                    "detail": "http://localhost:8000/api_v3/users/self/workflows/subscriptions/c01a4b11-76bf-4241-bdff-8148e694ea03/",
-                    "workflow_collection": "http://localhost:8000/api_v3/workflows/collections/2f3b6d9a-f1a4-4cca-84c5-81e93a77a202/",
+                    "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/subscriptions/ef78f851-78f1-4a2d-a81a-4382f2438ab2/",
+                    "workflow_collection": "http://127.0.0.1:8000/workflow_system/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/",
                     "active": true,
                     "workflowcollectionsubscriptionschedule_set": [
                         {
-                            "time_of_day": "14:53:12",
-                            "day_of_week": 0,
-                            "weekly_interval": 1
-                        },
-                        {
-                            "time_of_day": "14:53:16",
+                            "time_of_day": "19:37:13",
                             "day_of_week": 1,
                             "weekly_interval": 1
                         }
@@ -77,13 +72,13 @@ class WorkflowCollectionSubscriptionsView(APIView):
             if successful: A JSON representation of all Subscription
             for the requesting user.
             {
-                "detail": "http://localhost:8000/api_v3/users/self/workflows/subscriptions/c13e6da1-664f-479f-9e2c-d05a5e147b88/",
-                "workflow_collection": "http://localhost:8000/api_v3/workflows/collections/2b341c94-2cc9-4fa7-8b5a-9683f2f8be7c/",
+                "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/subscriptions/ef78f851-78f1-4a2d-a81a-4382f2438ab2/",
+                "workflow_collection": "http://127.0.0.1:8000/workflow_system/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/",
                 "active": true,
                 "workflowcollectionsubscriptionschedule_set": [
                     {
-                        "time_of_day": "14:53:12",
-                        "day_of_week": 0,
+                        "time_of_day": "19:37:13",
+                        "day_of_week": 1,
                         "weekly_interval": 1
                     }
                 ]

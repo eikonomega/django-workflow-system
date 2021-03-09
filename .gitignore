@@ -140,3 +140,9 @@ dmypy.json
 
 # Workflow Author Image Folder
 workflows/authors
+
+# Collection  Image Folder
+workflows/collections
+
+# Workflow  Image Folder
+workflows/workflows

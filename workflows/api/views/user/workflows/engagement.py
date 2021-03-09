@@ -46,24 +46,12 @@ class WorkflowCollectionEngagementsView(APIView):
         Returns:
             A HTTP response containing a list-like JSON representation
             of the subscription with a 200 status code.
-
             [
                 {
-                    'detail': 'http://testserver/api_v3/users/self/workflows/engagements/f1ef2ed0-6e42-4f55-a09f-c46a51058914/',
-                    'workflow_collection': 'http://testserver/api_v3/workflows/collections/038141f6-6117-493a-b3bc-4eee6754d5f4/',
-                    'started': '2019-11-12T11:10:13.776766-05:00',
-                    'finished': None,
-                    'state': {
-                        'next_step_id': UUID('1d6972ee-29f7-49c6-9aed-3395aa406651'),
-                        'prev_step_id': None,
-                        'steps_completed_in_collection': 0,
-                        'steps_in_collection': 3,
-                        'steps_completed_in_workflow': 0,
-                        'steps_in_workflow': 3,
-                        'previously_completed_workflows': [],
-                        'next_workflow': 'http://testserver/api_v3/workflows/workflows/eeb3b02e-daa9-40f8-8091-edcf9e3d55d1/',
-                        'prev_workflow': None
-                    }
+                    "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/",
+                    "workflow_collection": "http://127.0.0.1:8000/workflow_system/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/",
+                    "started": "2021-03-09T19:36:52Z",
+                    "finished": null
                 }
             ]
         """
@@ -147,23 +135,32 @@ class WorkflowCollectionEngagementsView(APIView):
         Returns:
             if successful: A JSON representation of all Engagement
             resources for the requesting user.
-
             {
-                'self_detail': 'http://testserver/api_v3/users/self/workflows/engagements/a01dfbee-61bd-4548-b160-5de262675237/',
-                'workflow_collection': 'http://testserver/api_v3/workflows/collections/028d645b-b527-4d7a-8b2d-04fb65573d31/',
-                'started': '2019-11-12T10:58:54.205653-05:00',
-                'finished': None,
-                'workflowcollectionengagementdetail_set': [],
-                'state': {
-                    'next_step_id': UUID('abb16ec0-435e-42a2-b43c-a9aaa4c752e6'),
-                    'prev_step_id': None,
-                    'steps_completed_in_collection': 0,
-                    'steps_in_collection': 3,
-                    'steps_completed_in_workflow': 0,
-                    'steps_in_workflow': 3,
-                    'previously_completed_workflows': [],
-                    'next_workflow': 'http://testserver/api_v3/workflows/workflows/040cee2c-6e3a-445d-bc94-b460c385a459/',
-                    'prev_workflow': None
+                "self_detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/",
+                "workflow_collection": "http://127.0.0.1:8000/workflow_system/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/",
+                "started": "2021-04-09T19:36:52Z",
+                "finished": null,
+                "workflowcollectionengagementdetail_set": [
+                    {
+                        "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
+                        "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
+                        "user_response": {
+                            "example_response": "this is the response"
+                        },
+                        "started": "2021-03-09T21:06:57Z",
+                        "finished": null
+                    }
+                ],
+                "state": {
+                    "next_step_id": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
+                    "prev_step_id": null,
+                    "steps_completed_in_collection": 0,
+                    "steps_in_collection": 1,
+                    "steps_completed_in_workflow": 0,
+                    "steps_in_workflow": 1,
+                    "previously_completed_workflows": [],
+                    "next_workflow": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/",
+                    "prev_workflow": null
                 }
             }
 
@@ -245,20 +242,33 @@ class WorkflowCollectionEngagementView(APIView):
         Returns:
             A HTTP response containing a dict-like JSON representation
             of the engagement target with a 200 status code.
-
             {
-                "workflow_collection": "http://localhost:8000/api_v3/workflows/collections/db4029ae-9ff3-4f85-8129-69f85a3ba6ea/",
-                "started": "2019-01-16T09:29:47-05:00",
+                "self_detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/",
+                "workflow_collection": "http://127.0.0.1:8000/workflow_system/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/",
+                "started": "2021-04-09T19:36:52Z",
                 "finished": null,
                 "workflowcollectionengagementdetail_set": [
                     {
-                            "detail": "http://localhost:8000/api_v3/users/self/workflows/engagements/2b3fca55-a802-4b0f-b0df-215a17aac652/details/9b6240f7-a3ca-4c16-98ec-7c6ada508c72/",
-                            "step": "95a14611-1993-41e6-8464-4fd69aa4a028",
-                            "user_response": null,
-                            "started": "2019-01-07T06:00:00-05:00",
-                            "finished": null
+                        "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
+                        "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
+                        "user_response": {
+                            "example_response": "this is the response"
+                        },
+                        "started": "2021-03-09T21:06:57Z",
+                        "finished": null
                     }
-                ]
+                ],
+                "state": {
+                    "next_step_id": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
+                    "prev_step_id": null,
+                    "steps_completed_in_collection": 0,
+                    "steps_in_collection": 1,
+                    "steps_completed_in_workflow": 0,
+                    "steps_in_workflow": 1,
+                    "previously_completed_workflows": [],
+                    "next_workflow": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/",
+                    "prev_workflow": null
+                }
             }
 
         Raises:
@@ -298,20 +308,33 @@ class WorkflowCollectionEngagementView(APIView):
         Returns:
             A HTTP response object that depending on the result
             of the operation will have varying status codes and payloads.
-
             {
-                "workflow_collection": "http://localhost:8000/api_v3/workflows/collections/db4029ae-9ff3-4f85-8129-69f85a3ba6ea/",
-                "started": "2019-01-16T09:29:47-05:00",
+                "self_detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/",
+                "workflow_collection": "http://127.0.0.1:8000/workflow_system/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/",
+                "started": "2021-04-09T19:36:52Z",
                 "finished": null,
                 "workflowcollectionengagementdetail_set": [
                     {
-                        "detail": "http://localhost:8000/api_v3/users/self/workflows/engagements/2b3fca55-a802-4b0f-b0df-215a17aac652/details/9b6240f7-a3ca-4c16-98ec-7c6ada508c72/",
-                        "step": "95a14611-1993-41e6-8464-4fd69aa4a028",
-                        "user_response": null,
-                        "started": "2019-01-07T06:00:00-05:00",
+                        "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
+                        "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
+                        "user_response": {
+                            "example_response": "this is the response"
+                        },
+                        "started": "2021-03-09T21:06:57Z",
                         "finished": null
                     }
-                ]
+                ],
+                "state": {
+                    "next_step_id": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
+                    "prev_step_id": null,
+                    "steps_completed_in_collection": 0,
+                    "steps_in_collection": 1,
+                    "steps_completed_in_workflow": 0,
+                    "steps_in_workflow": 1,
+                    "previously_completed_workflows": [],
+                    "next_workflow": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/",
+                    "prev_workflow": null
+                }
             }
 
         Raises:

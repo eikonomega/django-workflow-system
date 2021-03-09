@@ -32,23 +32,14 @@ class WorkflowCollectionAssignmentsView(APIView):
         Returns:
             A list-like JSON representation of all Workflow
             Collection Assignments for the requesting user.
-
             [
                 {
-                    "id": "3af7f218-3c91-4389-985e-1dd1b7bc634c",
-                    "workflow_collection": "29f70d1b-958f-495c-9a24-bde87bcda7d7",
-                    "detail": "http://localhost:8000/api_v3/users/self/workflows/assignments/3af7f218-3c91-4389-985e-1dd1b7bc634c/",
-                    "engagement": "http://localhost:8000/api_v3/users/self/workflows/engagements/3668b857-63fc-480d-8c34-bcf7ccef9f37/",
-                    "assigned_on": "2019-02-06",
-                    "status": "ASSIGNED"
-                },
-                {
-                    "id": "1181321e-7bed-481d-a2d8-b0e265a571b5",
-                    "workflow_collection": "1189c917-6ee0-448c-a13c-6301df243180",
-                    "detail": "http://localhost:8000/api_v3/users/self/workflows/assignments/1181321e-7bed-481d-a2d8-b0e265a571b5/",
+                    "id": "f9ddca6b-513b-4436-b6e3-cd2c51c6458a",
+                    "workflow_collection": "http://127.0.0.1:8000/workflow_system/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/",
+                    "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/assignments/f9ddca6b-513b-4436-b6e3-cd2c51c6458a/",
                     "engagement": null,
-                    "assigned_on": "2019-02-06",
-                    "status": "IN_PROGRESS"
+                    "assigned_on": "2021-03-09",
+                    "status": "ASSIGNED"
                 }
             ]
         """
@@ -103,14 +94,13 @@ class WorkflowCollectionAssignmentView(APIView):
         Returns:
             A HTTP response containing a dict-like JSON representation
             of the notification target with a 200 status code.
-
             {
-                "id": "8b03d086-14ba-4616-a8cf-dbf308f6e38b",
-                "workflow_collection": "c971e924-3898-4304-bb0a-2d903669faeb",
-                "detail": "http://localhost:8000/api_v3/users/self/workflows/assignments/8b03d086-14ba-4616-a8cf-dbf308f6e38b/",
-                "engagement": "http://localhost:8000/api_v3/users/self/workflows/engagements/270e8ad2-cabb-4623-a047-32a40e6ee640/",
-                "assigned_on": "2019-02-06",
-                "status": "IN_PROGRESS"
+                "id": "f9ddca6b-513b-4436-b6e3-cd2c51c6458a",
+                "workflow_collection": "http://127.0.0.1:8000/workflow_system/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/",
+                "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/assignments/f9ddca6b-513b-4436-b6e3-cd2c51c6458a/",
+                "engagement": null,
+                "assigned_on": "2021-03-09",
+                "status": "ASSIGNED"
             }
 
         Raises:

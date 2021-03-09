@@ -42,14 +42,17 @@ class WorkflowCollectionEngagementDetailsView(APIView):
         Returns:
             A HTTP response containing a list-like JSON representation
             of the subscription with a 200 status code.
-
-            {
-                "detail": "http://localhost:8000/api_v3/users/self/workflows/engagements/2b3fca55-a802-4b0f-b0df-215a17aac652/details/9b6240f7-a3ca-4c16-98ec-7c6ada508c72/",
-                "step": "95a14611-1993-41e6-8464-4fd69aa4a028",
-                "user_response": null,
-                "started": "2019-01-07T06:00:00-05:00",
-                "finished": null
-            }
+            [
+                {
+                    "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
+                    "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
+                    "user_response": {
+                        "example_response": "this is the response"
+                    },
+                    "started": "2021-03-09T21:06:57Z",
+                    "finished": null
+                }
+            ]
 
         """
         engagement_details = WorkflowCollectionEngagementDetail.objects.filter(
@@ -195,10 +198,12 @@ class WorkflowCollectionEngagementDetailView(APIView):
             of the resource with a 200 status code.
 
             {
-                "detail": "http://localhost:8000/api_v3/users/self/workflows/engagements/2b3fca55-a802-4b0f-b0df-215a17aac652/details/9b6240f7-a3ca-4c16-98ec-7c6ada508c72/",
-                "step": "95a14611-1993-41e6-8464-4fd69aa4a028",
-                "user_response": null,
-                "started": "2019-01-07T06:00:00-05:00",
+                "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
+                "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
+                "user_response": {
+                    "example_response": "this is the response"
+                },
+                "started": "2021-03-09T21:06:57Z",
                 "finished": null
             }
 
@@ -241,21 +246,24 @@ class WorkflowCollectionEngagementDetailView(APIView):
         Returns:
             A HTTP response object that depending on the result
             of the operation will have varying status codes and payloads.
-
             {
-                'detail': 'http://testserver/api_v3/users/self/workflows/engagements/61ddea59-897f-4df9-a8fa-7da04b654125/details/94bbbb93-195c-471a-8173-ffda6d48e528/',
-                'step': UUID('7d6bf291-0551-49c5-8636-d7df2fc2c800'),
-                'user_response': None,
-                'started': '2019-09-13T10:14:42.990323-04:00',
-                'finished': '2019-09-13T10:17:02.329924-04:00',
-                'state': {
-                    'next_workflow': None,
-                    'next_step_id': None,
-                    'prev_workflow': 'http://testserver/api_v3/workflows/workflows/dec836dd-c872-4fe7-964b-acd49b4e3b9f/',
-                    'prev_step_id': UUID('7d6bf291-0551-49c5-8636-d7df2fc2c800'),
-                    'previously_completed_workflows': [
-                        {'workflow': 'http://testserver/api_v3/workflows/workflows/dec836dd-c872-4fe7-964b-acd49b4e3b9f/'}
-                    ]
+                "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
+                "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
+                "user_response": {
+                    "example_response": "this is the response patched"
+                },
+                "started": "2021-03-09T21:06:57Z",
+                "finished": null,
+                "state": {
+                    "next_step_id": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
+                    "prev_step_id": null,
+                    "steps_completed_in_collection": 0,
+                    "steps_in_collection": 1,
+                    "steps_completed_in_workflow": 0,
+                    "steps_in_workflow": 1,
+                    "previously_completed_workflows": [],
+                    "next_workflow": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/",
+                    "prev_workflow": null
                 }
             }
 
