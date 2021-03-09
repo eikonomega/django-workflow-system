@@ -1,10 +1,9 @@
 """Convenience imports."""
 from workflows.models.author import WorkflowAuthor, workflow_author_media_folder
 from workflows.models.assignment import WorkflowCollectionAssignment
-from workflows.models.engagement import (
-    WorkflowCollectionEngagement,
-    WorkflowCollectionEngagementDetail,
-)
+from workflows.models.engagement_detail import WorkflowCollectionEngagementDetail
+from workflows.models.engagement import WorkflowCollectionEngagement
+
 from workflows.models.collection import (
     WorkflowCollection,
     WorkflowCollectionTagOption,
