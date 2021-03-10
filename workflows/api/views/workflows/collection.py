@@ -69,12 +69,12 @@ class WorkflowCollectionsView(APIView):
                     "category": "SURVEY",
                     "tags": [
                         {
-                            "tagType": "Administrative",
-                            "tagValue": "phase_1"
+                            "tag_type": "Administrative",
+                            "tag_value": "phase_1"
                         },
                         {
-                            "tagType": "Website",
-                            "tagValue": "Home_Page"
+                            "tag_type": "Website",
+                            "tag_value": "Home_Page"
                         }
                     ],
                     "newer_version": null
@@ -184,12 +184,12 @@ class WorkflowCollectionView(APIView):
                 "category": "SURVEY",
                 "tags": [
                     {
-                        "tagType": "Administrative",
-                        "tagValue": "phase_1"
+                        "tag_type": "Administrative",
+                        "tag_value": "phase_1"
                     },
                     {
-                        "tagType": "Website",
-                        "tagValue": "Home_Page"
+                        "tag_type": "Website",
+                        "tag_value": "Home_Page"
                     }
                 ],
                 "newer_version": null

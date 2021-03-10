@@ -231,4 +231,4 @@ def get_tags_helper(instance):
         List of Tag objects in JSON format.
 
     """
-    return [{"tagType": tag.type.type, "tagValue": tag.text} for tag in instance.tags.all()]
+    return [{"tag_type": tag.type.type, "tag_value": tag.text} for tag in instance.tags.all()]

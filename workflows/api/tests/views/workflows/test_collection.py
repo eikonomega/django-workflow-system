@@ -43,10 +43,10 @@ class TestWorkflowCollectionsView(TestCase):
         self.workflow_collection_2.tags.add(self.workflow_collection_tag_option_3)
         self.workflow_collection_2.tags.add(self.workflow_collection_tag_option_4)
 
-        self.tag_1_dict = {'tagType': 'The Type', 'tagValue': 'The Tag'}
-        self.tag_2_dict = {'tagType': 'The Type 2', 'tagValue': 'The Tag 2'}
-        self.tag_3_dict = {'tagType': 'The Type', 'tagValue': 'The Tag 3'}
-        self.tag_4_dict = {'tagType': 'The Type 2', 'tagValue': 'The Tag 4'}
+        self.tag_1_dict = {'tag_type': 'The Type', 'tag_value': 'The Tag'}
+        self.tag_2_dict = {'tag_type': 'The Type 2', 'tag_value': 'The Tag 2'}
+        self.tag_3_dict = {'tag_type': 'The Type', 'tag_value': 'The Tag 3'}
+        self.tag_4_dict = {'tag_type': 'The Type 2', 'tag_value': 'The Tag 4'}
 
     def test_get__unauthenticated(self):
         """Unauthenticated users cannot access GET method."""
@@ -152,7 +152,7 @@ class TestWorkflowCollectionView(TestCase):
         )
         self.workflow_collection.tags.add(self.workflow_collection_tag_option)
 
-        self.tag_1_dict = {'tagType': 'The Type', 'tagValue': 'tag'}
+        self.tag_1_dict = {'tag_type': 'The Type', 'tag_value': 'tag'}
 
     def test_get__success(self):
         """Ensure response payload is as expected."""
