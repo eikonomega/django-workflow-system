@@ -18,40 +18,37 @@ class WorkflowCollectionEngagementDetail(CreatedModifiedAbstractModel):
     which they had previously left incomplete. Most queries on
     WorkflowCollectionEngagementDetails should exclude instances
     where finished=None.
-
-    Attributes:
-        id (UUIDField): The unique UUID of the record.
-        workflow_collection_engagement (ForeignKey): The WorkflowCollectionEngagement object
-                                                     associated with the engagement detail.
-        step (ForeignKey): The WorkflowStep associated with the engagement detail.
-        user_response (JSONField): Internal representation of JSON response from user.
-                                   If present, user_response is expected to be of the following form:
-                               {
-                                   "questions": [
-                                       {
-                                           "stepInputID": <uuid>,
-                                           "stepInputUIIdentifier": "string",
-                                           "response": <JSON>
-                                        },
-                                        {
-                                           "stepInputID": <uuid>,
-                                           "stepInputUIIdentifier": "string",
-                                           "response": <JSON>
-                                        }
-                                    ]
-                                }
-        started (DateTimeField): The start date of the engagement detail.
-        finished (DateTimeField): The finish date of the engagement detail.
     """
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow_collection_engagement = models.ForeignKey(
-        "WorkflowCollectionEngagement", on_delete=models.PROTECT
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        help_text="The unique UUID of the record."
     )
-    step = models.ForeignKey(WorkflowStep, on_delete=models.PROTECT)
-    user_response = models.JSONField(null=True, blank=True)
-    started = models.DateTimeField(default=timezone.now)
-    finished = models.DateTimeField(blank=True, null=True)
+    workflow_collection_engagement = models.ForeignKey(
+        "WorkflowCollectionEngagement", on_delete=models.PROTECT,
+        help_text="The WorkflowCollectionEngagement object associated with the engagement detail."
+    )
+    step = models.ForeignKey(
+        WorkflowStep,
+        on_delete=models.PROTECT,
+        help_text="The WorkflowStep associated with the engagement detail."
+    )
+    user_response = models.JSONField(
+        null=True,
+        blank=True,
+        help_text="Internal representation of JSON response from user."
+    )
+    started = models.DateTimeField(
+        default=timezone.now,
+        help_text="The start date of the engagement detail."
+    )
+    finished = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text="The finish date of the engagement detail."
+    )
 
     class Meta:
         db_table = "workflow_system_collection_engagement_detail"

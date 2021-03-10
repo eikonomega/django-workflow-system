@@ -1,13 +1,12 @@
 """Django model definition."""
-import re
 import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.core.exceptions import ValidationError
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.collection_tag import WorkflowCollectionTagOption
+from workflows.utils.validate_code import validate_code
 
 
 def collection_detail_image_location(instance, filename):
@@ -32,15 +31,6 @@ def collection_cover_image_location(instance, filename):
     return "workflows/collections/{}/cover-image.{}".format(
         instance.id, filename.rpartition(".")[2]
     )
-
-
-def validate_code(code):
-    """
-    Ensure that the code provided follows python_variable_naming_syntax.
-    """
-    regex = '^[a-z_][a-z0-9_]+$'
-    if not re.search(regex, code):
-        raise ValidationError("code must be in 'python_variable_naming_syntax'")
 
 
 class WorkflowCollection(CreatedModifiedAbstractModel):
