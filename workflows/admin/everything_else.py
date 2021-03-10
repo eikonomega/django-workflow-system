@@ -24,10 +24,9 @@ from ..models import (
     WorkflowCollectionSubscriptionSchedule,
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
-    WorkflowStepDataGroup)
+    WorkflowStepDataGroup, WorkflowCollectionTagType)
 
 # assignment.py
-
 
 @admin.register(WorkflowCollectionAssignment)
 class WorkflowCollectionAssignmentAdmin(admin.ModelAdmin):
@@ -307,3 +306,10 @@ class WorkflowAdmin(admin.ModelAdmin):
 
     copy.short_description = "Copy selected workflows"
     copy.allowed_permissions = ("add",)
+
+# collection_tag_type.py
+
+
+@admin.register(WorkflowCollectionTagType)
+class WorkflowCollectionTagTypeAdmin(admin.ModelAdmin):
+    list_display = ["type"]

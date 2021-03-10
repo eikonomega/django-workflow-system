@@ -121,11 +121,20 @@ class _WorkflowStepDependencyDetailFactory(DjangoModelFactory):
     required_response = None  # Must be supplied in kwargs
 
 
+class WorkflowCollectionTagTypeFactory(DjangoModelFactory):
+    class Meta:
+        model = models.WorkflowCollectionTagType
+        django_get_or_create = ['type']
+
+
 class WorkflowCollectionTagOptionFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowCollectionTagOption
-        django_get_or_create = ['text']
+        django_get_or_create = ['text', 'type']
+
+    type = factory.SubFactory(WorkflowCollectionTagTypeFactory, is_staff=True)
 
 
 __all__ = ["WorkflowCollectionFactory",
-           "WorkflowCollectionTagOptionFactory"]
+           "WorkflowCollectionTagOptionFactory",
+           "WorkflowCollectionTagTypeFactory"]

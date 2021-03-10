@@ -21,6 +21,7 @@ class WorkflowCollectionMemberSummarySerializer(serializers.ModelSerializer):
             'workflow',
         )
 
+
 class WorkflowCollectionMemberDetailedSerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowCollectionMember objects, but with steps.
@@ -36,7 +37,6 @@ class WorkflowCollectionMemberDetailedSerializer(serializers.ModelSerializer):
         )
 
 
-
 class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowCollection objects.
@@ -47,7 +47,17 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
     newer_version = serializers.SerializerMethodField()
 
     def get_tags(self, instance):
-        return [tag.text for tag in instance.tags.all()]
+        """
+        Method to build an object for each corresponding Tag.
+
+        Parameters:
+            instance (WorkflowCollection object)
+
+        Returns:
+            List of Tag objects in JSON format.
+
+        """
+        return get_tags_helper(instance)
 
     def get_authors(self, instance):
         """
@@ -207,3 +217,18 @@ def get_authors_helper(request, instance):
     # Here we're making a dict with the key being the id. This filters out the duplicates.
     # The values() of the dict will be make up the list
     return list({author['id']: author for author in authors}.values())
+
+
+def get_tags_helper(instance):
+    """
+    Helper method for gathering a collection's list of tags and formatting them along with their
+    corresponding types.
+
+    Parameters:
+    instance : WorkflowCollection object
+
+    Returns:
+        List of Tag objects in JSON format.
+
+    """
+    return [{"tag_type": tag.type.type, "tag_value": tag.text} for tag in instance.tags.all()]

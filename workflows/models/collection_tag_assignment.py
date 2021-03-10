@@ -3,11 +3,12 @@ import uuid
 
 from django.db import models
 
+from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.collection import WorkflowCollection
 from workflows.models.collection_tag import WorkflowCollectionTagOption
 
 
-class WorkflowCollectionTagAssignment(models.Model):
+class WorkflowCollectionTagAssignment(CreatedModifiedAbstractModel):
     """Assign tags to collections."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
