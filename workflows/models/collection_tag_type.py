@@ -14,7 +14,7 @@ class WorkflowCollectionTagType(CreatedModifiedAbstractModel):
 
     class Meta:
         db_table = "workflow_system_collection_tag_type"
-        verbose_name_plural = "Workflow Collections Tag Types"
+        verbose_name_plural = "Workflow Collection Tag Types"
 
     def __str__(self):
         return self.type

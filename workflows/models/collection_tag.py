@@ -17,7 +17,7 @@ class WorkflowCollectionTagOption(CreatedModifiedAbstractModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     text = models.CharField(max_length=50, unique=True)
-    type = models.ForeignKey(WorkflowCollectionTagType, on_delete=models.CASCADE)
+    type = models.ForeignKey(WorkflowCollectionTagType, on_delete=models.PROTECT)
 
     class Meta:
         db_table = "workflow_system_collection_tag_option"
