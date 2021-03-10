@@ -1,6 +1,4 @@
-"""
-Model definitions related to Workflow JSON Schemas.
-"""
+"""Django model definition."""
 
 import uuid
 
@@ -14,24 +12,28 @@ from workflows.models.abstract_models import CreatedModifiedAbstractModel
 
 class JSONSchema(CreatedModifiedAbstractModel):
     """
-    JSONSchema definitions for use within Workflows.
+    JSON schemas are used to validate data coming into the system.
 
-    Attributes:
-        id (UUIDField): The unique UUID for the database record.
-        code (CharField): A short-hand reference to the schema definition.
-        description (TextField): A human-friendly description of what is being
-                                 defined in the JSONSchema.
-        schema (JSONField): A valid JSONSchema specification.
+    In particular, when a WorkflowStep is defined, it is associated
+    with a given schema. This is then used to validate the data
+    provided by the user via API submission.
+
+    This is a control to prevent bad data from getting into the system.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=100)
-    description = models.TextField(max_length=250)
+    code = models.CharField(
+        max_length=100, help_text="A short-hand reference to the schema definition."
+    )
+    description = models.TextField(
+        max_length=250,
+        help_text="A human-friendly description of what is being defined in the JSONSchema.",
+    )
     schema = models.JSONField()
 
     class Meta:
-        db_table = 'workflow_system_json_schema'
-        verbose_name_plural = 'JSON Schema Definitions (Advanced)'
+        db_table = "workflow_system_json_schema"
+        verbose_name_plural = "JSON Schema Definitions (Advanced)"
 
     def __str__(self):
         return self.code
@@ -42,7 +44,11 @@ class JSONSchema(CreatedModifiedAbstractModel):
         try:
             Draft7Validator.check_schema(self.schema)
         except SchemaError as error:
-            raise ValidationError({
-                'schema': (
-                    'There is something wrong in your schema definition. '
-                    'Details {}'.format(error))})
+            raise ValidationError(
+                {
+                    "schema": (
+                        "There is something wrong in your schema definition. "
+                        "Details {}".format(error)
+                    )
+                }
+            )

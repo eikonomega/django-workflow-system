@@ -8,13 +8,11 @@ from workflows.models.abstract_models import CreatedModifiedAbstractModel
 
 class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
     """
-    Definition of a WorkflowStepDataGroup
+    WorkflowStepDataGroup allows clients to group together user-provided data.
 
-    Attributes:
-        id (UUIDField): The UUID of the DataGroup
-        parent_group (ForeignKey): The parent group of this folder. 'blank' signifies this DataGroup has no parent
-        name (CharField): Human friendly name.
-        description (TextField): The description of the data group.
+    This is especially useful for clients who are conducting surveys as
+    it allows them to group together data from steps that work together
+    to form a single metric.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -24,9 +22,10 @@ class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
         null=True,
         blank=True,
         on_delete=models.CASCADE,
+        help_text="Data groups can be arranged in hierarchies.",
     )
     name = models.CharField(max_length=200)
-    description = models.TextField()
+    description = models.TextField(help_text="The description of the data group.")
 
     class Meta:
         db_table = "workflow_system_data_group"
@@ -37,11 +36,13 @@ class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
 
     @property
     def full_path(self):
+        # TODO: Add description.
         return "<".join(reversed(self.name_list))
 
     @property
     def name_list(self):
-        """Returns a list of category codes from root to this category"""
+        # TODO: Rename to something like "group_hierarchy" and improve documentation.
+        """Return a list of category codes from root to this category"""
         label_list = [self.name]
         iter_group: WorkflowStepDataGroup = self.parent_group
         while iter_group is not None:
