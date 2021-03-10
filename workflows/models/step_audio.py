@@ -5,7 +5,8 @@ from django.db import models
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.step import WorkflowStep
-from workflows.utils import workflow_step_media_folder
+
+from workflows.utils import workflow_step_media_location
 
 
 class WorkflowStepAudio(CreatedModifiedAbstractModel):
@@ -24,19 +25,16 @@ class WorkflowStepAudio(CreatedModifiedAbstractModel):
         url (FileField): The location of the audio
 
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow_step = models.ForeignKey(
-        WorkflowStep,
-        on_delete=models.PROTECT)
+    workflow_step = models.ForeignKey(WorkflowStep, on_delete=models.PROTECT)
     ui_identifier = models.CharField(max_length=200)
-    url = models.FileField(
-        upload_to=workflow_step_media_folder,
-        max_length=200)
+    url = models.FileField(upload_to=workflow_step_media_location, max_length=200)
 
     class Meta:
-        db_table = 'workflow_system_step_audio'
+        db_table = "workflow_system_step_audio"
         verbose_name_plural = "Workflow Step Audio"
-        unique_together = ['workflow_step', 'ui_identifier']
+        unique_together = ["workflow_step", "ui_identifier"]
 
     def __str__(self):
         return self.ui_identifier
