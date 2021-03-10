@@ -8,6 +8,7 @@ from workflows.models.step_ui_template import WorkflowStepUITemplate
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.data_group import WorkflowStepDataGroup
 from workflows.models.workflow import Workflow
+from workflows.utils.validate_code import validate_code
 
 
 class WorkflowStep(CreatedModifiedAbstractModel):
@@ -27,10 +28,10 @@ class WorkflowStep(CreatedModifiedAbstractModel):
         on_delete=models.CASCADE,
         help_text="The workflow associated with the step.",
     )
-    # TODO: GH Issue 26
     code = models.CharField(
         max_length=200,
         help_text="An identifier for programmatically referencing this step.",
+        validators=[validate_code]
     )
     order = models.PositiveIntegerField(
         validators=[MinValueValidator(1)],

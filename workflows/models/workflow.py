@@ -5,6 +5,7 @@ from django.db import models
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.author import WorkflowAuthor
+from workflows.utils.validate_code import validate_code
 
 
 # Utility Functions for Handling Media Uploads
@@ -34,7 +35,7 @@ class Workflow(CreatedModifiedAbstractModel):
     IMAGE_SIZE = (600, 375)
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    code = models.CharField(max_length=200)
+    code = models.CharField(max_length=200, validators=[validate_code])
     name = models.CharField(max_length=200)
     version = models.PositiveIntegerField(default=1)
     image = models.ImageField(
