@@ -5,6 +5,7 @@ from django.db import models
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.step import WorkflowStep
+
 from workflows.utils import workflow_step_media_folder
 
 
@@ -23,17 +24,14 @@ class WorkflowStepImage(CreatedModifiedAbstractModel):
                                    within a template.
         url (ImageField): The image location
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow_step = models.ForeignKey(
-        WorkflowStep,
-        on_delete=models.PROTECT)
+    workflow_step = models.ForeignKey(WorkflowStep, on_delete=models.PROTECT)
     ui_identifier = models.CharField(max_length=200)
-    url = models.ImageField(
-        upload_to=workflow_step_media_folder,
-        max_length=200)
+    url = models.ImageField(upload_to=workflow_step_media_folder, max_length=200)
 
     class Meta:
-        db_table = 'workflow_system_step_image'
+        db_table = "workflow_system_step_image"
         verbose_name_plural = "Workflow Step Images"
         unique_together = ["workflow_step", "ui_identifier"]
 
