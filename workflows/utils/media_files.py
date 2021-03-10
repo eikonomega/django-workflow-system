@@ -1,4 +1,4 @@
-def workflow_step_media_folder(instance, filename):
+def workflow_step_media_location(instance, filename):
     """Return the location of a stored media file."""
     return "workflows/workflows/{}/steps/{}/{}.{}".format(
         instance.workflow_step.workflow.id,
