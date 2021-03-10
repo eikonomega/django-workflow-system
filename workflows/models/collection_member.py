@@ -10,7 +10,7 @@ from workflows.models.abstract_models import CreatedModifiedAbstractModel
 
 
 class WorkflowCollectionMember(CreatedModifiedAbstractModel):
-    """Workflow collections are made of individual workflows, which are called members."""
+    """Workflow collections are made up of individual workflows, which are called members."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)

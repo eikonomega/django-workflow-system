@@ -89,10 +89,10 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
     assignment_only = models.BooleanField(default=False)
 
     # Indicate if collection is eligible for recommendations.
-    recommendable = models.BooleanField()
+    recommendable = models.BooleanField(default=False)
 
     # Indicates if collection is ready for use.
-    active = models.BooleanField()
+    active = models.BooleanField(default=False)
 
     # Collections can either represent a survey or a set of activities.
     # This may expand in the future.

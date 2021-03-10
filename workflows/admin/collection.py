@@ -8,7 +8,6 @@ from django.db import IntegrityError
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
-from ..models.collection_tag_assignment import WorkflowCollectionTagAssignment
 from ..utils.admin_utils import IsActiveCollectionFilter
 from ..models import (
     Workflow,
@@ -18,7 +17,8 @@ from ..models import (
     WorkflowStep,
     WorkflowStepDependencyGroup,
     WorkflowStepDependencyDetail,
-    WorkflowCollectionAssignment, WorkflowCollectionEngagement)
+    WorkflowCollectionAssignment, WorkflowCollectionEngagement,
+    WorkflowCollectionTagAssignment)
 
 
 @admin.register(WorkflowCollectionTagOption)
