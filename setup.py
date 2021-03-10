@@ -8,6 +8,7 @@ setup(
     author_email="prometheus-team@nd.edu",
     license="MIT",
     packages=["workflows"],
+    python_requires='>3.8'
     install_requires=["Pillow==6.2.0", "jsonschema==3.0.1", "Django >= 3.1.0"],
     zip_safe=False,
 )
