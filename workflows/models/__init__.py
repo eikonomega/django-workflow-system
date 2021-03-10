@@ -2,6 +2,11 @@
 from workflows.models.author import WorkflowAuthor, workflow_author_media_folder
 from workflows.models.assignment import WorkflowCollectionAssignment
 from workflows.models.collection_tag_type import WorkflowCollectionTagType
+from workflows.models.collection_tag_assignment import WorkflowCollectionTagAssignment
+from workflows.models.engagement import (
+    WorkflowCollectionEngagement,
+    WorkflowCollectionEngagementDetail,
+)
 from workflows.models.engagement_detail import WorkflowCollectionEngagementDetail
 from workflows.models.engagement import WorkflowCollectionEngagement
 
@@ -57,4 +62,5 @@ __all__ = [
     "Workflow",
     "WorkflowStepDataGroup",
     "CreatedModifiedAbstractModel",
+    "WorkflowCollectionTagAssignment"
 ]

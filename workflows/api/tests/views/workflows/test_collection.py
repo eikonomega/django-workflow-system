@@ -5,7 +5,7 @@ from rest_framework.test import APIRequestFactory
 from workflows.api.tests.factories import (UserFactory, WorkflowCollectionFactory,
                                            WorkflowCollectionTagOptionFactory, WorkflowFactory)
 from workflows.api.tests.factories.workflows.workflow_collection import \
-    _WorkflowCollectionMemberFactory
+    (_WorkflowCollectionMemberFactory, WorkflowCollectionTagTypeFactory)
 from workflows.api.views.workflows import WorkflowCollectionsView, WorkflowCollectionView
 
 
@@ -18,16 +18,35 @@ class TestWorkflowCollectionsView(TestCase):
 
         self.user = UserFactory()
         self.workflow_collection = WorkflowCollectionFactory()
-        self.workflow_collection_tag_option = WorkflowCollectionTagOptionFactory(text="The Tag")
-        self.workflow_collection_tag_option_2 = WorkflowCollectionTagOptionFactory(text="The Tag 2")
+        self.workflow_collection_tag_type = WorkflowCollectionTagTypeFactory(type="The Type")
+        self.workflow_collection_tag_type_2 = WorkflowCollectionTagTypeFactory(type="The Type 2")
+        self.workflow_collection_tag_option = WorkflowCollectionTagOptionFactory(
+            text="The Tag",
+            type=self.workflow_collection_tag_type
+        )
+        self.workflow_collection_tag_option_2 = WorkflowCollectionTagOptionFactory(
+            text="The Tag 2",
+            type=self.workflow_collection_tag_type_2
+        )
         self.workflow_collection.tags.add(self.workflow_collection_tag_option_2)
         self.workflow_collection.tags.add(self.workflow_collection_tag_option)
 
         self.workflow_collection_2 = WorkflowCollectionFactory()
-        self.workflow_collection_tag_option_3 = WorkflowCollectionTagOptionFactory(text="The Tag 3")
-        self.workflow_collection_tag_option_4 = WorkflowCollectionTagOptionFactory(text="The Tag 4")
+        self.workflow_collection_tag_option_3 = WorkflowCollectionTagOptionFactory(
+            text="The Tag 3",
+            type=self.workflow_collection_tag_type
+        )
+        self.workflow_collection_tag_option_4 = WorkflowCollectionTagOptionFactory(
+            text="The Tag 4",
+            type=self.workflow_collection_tag_type_2
+        )
         self.workflow_collection_2.tags.add(self.workflow_collection_tag_option_3)
         self.workflow_collection_2.tags.add(self.workflow_collection_tag_option_4)
+
+        self.tag_1_dict = {'tagType': 'The Type', 'tagValue': 'The Tag'}
+        self.tag_2_dict = {'tagType': 'The Type 2', 'tagValue': 'The Tag 2'}
+        self.tag_3_dict = {'tagType': 'The Type', 'tagValue': 'The Tag 3'}
+        self.tag_4_dict = {'tagType': 'The Type 2', 'tagValue': 'The Tag 4'}
 
     def test_get__unauthenticated(self):
         """Unauthenticated users cannot access GET method."""
@@ -85,18 +104,18 @@ class TestWorkflowCollectionsView(TestCase):
             response.data[0]["category"], self.workflow_collection.category
         )
         self.assertCountEqual(
-            response.data[0]["tags"], [self.workflow_collection_tag_option.text,
-                                       self.workflow_collection_tag_option_2.text]
+            response.data[0]["tags"], [self.tag_1_dict, self.tag_2_dict]
         )
+
         self.assertEqual(response.data[1]["code"], self.workflow_collection_2.code)
         self.assertEqual(response.data[1]["name"], self.workflow_collection_2.name)
         self.assertEqual(response.data[1]["ordered"], self.workflow_collection_2.ordered)
         self.assertEqual(
             response.data[1]["category"], self.workflow_collection_2.category
         )
+
         self.assertCountEqual(
-            response.data[1]["tags"], [self.workflow_collection_tag_option_3.text,
-                                       self.workflow_collection_tag_option_4.text]
+            response.data[1]["tags"], [self.tag_3_dict, self.tag_4_dict]
         )
 
 
@@ -126,8 +145,14 @@ class TestWorkflowCollectionView(TestCase):
         self.workflow_collection_member = _WorkflowCollectionMemberFactory(
             workflow=self.workflow,
             workflow_collection=self.workflow_collection)
-        self.workflow_collection_tag_option = WorkflowCollectionTagOptionFactory(text="tag")
+        self.workflow_collection_tag_type = WorkflowCollectionTagTypeFactory(type="The Type")
+        self.workflow_collection_tag_option = WorkflowCollectionTagOptionFactory(
+            text="tag",
+            type=self.workflow_collection_tag_type
+        )
         self.workflow_collection.tags.add(self.workflow_collection_tag_option)
+
+        self.tag_1_dict = {'tagType': 'The Type', 'tagValue': 'tag'}
 
     def test_get__success(self):
         """Ensure response payload is as expected."""
@@ -182,7 +207,7 @@ class TestWorkflowCollectionView(TestCase):
             response.data["authors"][0]["user"]["last_name"], self.workflow.author.user.last_name
         )
         self.assertEqual(
-            response.data["tags"][0], self.workflow_collection_tag_option.text
+            response.data["tags"], [self.tag_1_dict]
         )
 
     def test_get__nonexistent_workflow_collection(self):

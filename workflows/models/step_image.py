@@ -5,7 +5,7 @@ from django.db import models
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.step import WorkflowStep
-from workflows.utils.workflow_step_media_folder import workflow_step_media_folder
+from workflows.utils import workflow_step_media_folder
 
 
 class WorkflowStepImage(CreatedModifiedAbstractModel):
