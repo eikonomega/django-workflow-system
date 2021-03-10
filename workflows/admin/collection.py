@@ -15,6 +15,7 @@ from ..models import (
     WorkflowCollection,
     WorkflowCollectionMember,
     WorkflowCollectionTagOption,
+    WorkflowCollectionTagType,
     WorkflowStep,
     WorkflowStepDependencyGroup,
     WorkflowStepDependencyDetail,
@@ -30,6 +31,7 @@ class WorkflowCollectionMemberInline(admin.StackedInline):
     model = WorkflowCollectionMember
     extra = 1
     ordering = ["order"]
+
 
 class WorkflowCollectionTagOptionInline(admin.StackedInline):
     model = WorkflowCollectionTagAssignment
@@ -53,7 +55,8 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
             None,
             {
                 "fields": [
-                    ("name", "code", "version", "created_by"),
+                    ("name", "code"),
+                    ("version", "created_by"),
                     ("assignment_only", "recommendable", "active", "ordered"),
                     "description",
                     ("category",),

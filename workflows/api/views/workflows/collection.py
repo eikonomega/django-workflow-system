@@ -22,7 +22,7 @@ class WorkflowCollectionsView(APIView):
 
     * Get: Retrieve summary representations of (kind of) all Active Workflow Collections.
     Specifically, get will return each workflow collection the user has a connection to,
-    be it through an assignment, engagement, or suggestion, PLUST the newest version of
+    be it through an assignment, engagement, or suggestion, PLUS the newest version of
     all remaining workflow collections.
     """
     required_scopes = ['read']
