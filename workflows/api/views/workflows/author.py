@@ -22,19 +22,17 @@ class WorkflowAuthorsView(APIView):
 
         Returns:
             A JSON object representation of all Workflow Authors.
-
             [
                 {
-                    "id": "f8987318-a445-4588-a7ac-5c0c385f6bd8",
+                    "id": "47d41a0c-e460-4ce4-8880-a9cf088cc818",
                     "user": {
-                        "first_name": "Steve",
-                        "last_name": "Smith"
+                        "first_name": "Justin",
+                        "last_name": "Branco"
                     },
-                    "detail": "http://127.0.0.1:8000/api_v3/workflow-authors/f8987318-a445-4588-a7ac-5c0c385f6bd8",
+                    "detail": "http://127.0.0.1:8000/workflow_system/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/",
                     "title": "Dr",
-                    "image": "http://127.0.0.1:8000/media/workflows/author/f8987318-a445-4588-a7ac-5c0c385f6bd8/profileImage.png"
+                    "image": "http://127.0.0.1:8000/workflows/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/profileImage.png"
                 }
-                ...
             ]
         """
         serializer = WorkflowAuthorSummarySerializer(
@@ -63,19 +61,20 @@ class WorkflowAuthorView(APIView):
         Returns:
             A JSON object representation of the requested Workflow Author
             {
-                "id": "f8987318-a445-4588-a7ac-5c0c385f6bd8",
+                "self_detail": "http://127.0.0.1:8000/workflow_system/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/",
+                "id": "47d41a0c-e460-4ce4-8880-a9cf088cc818",
                 "user": {
-                    "first_name": "Steve",
-                    "last_name": "Smith"
+                    "first_name": "Justin",
+                    "last_name": "Branco"
                 },
                 "title": "Dr",
-                "image": "http://127.0.0.1:8000/media/workflows/author/f8987318-a445-4588-a7ac-5c0c385f6bd8/profileImage.png",
-                "biography": "Stuff and things",
+                "image": "http://127.0.0.1:8000/workflows/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/profileImage.png",
+                "biography": "After I became a Doctor I became an Admin!",
                 "workflow_set": [
                     {
-                        "name": "Workflow I",
-                        "detail": "http://127.0.0.1:8000/api_v3/workflows/0477a1dc-961b-4d06-9d19-92c85524db3e",
-                        "image": "http://127.0.0.1:8000/media/workflow/0477a1dc-961b-4d06-9d19-92c85524db3e/coverImage.jpg"
+                        "name": "Workflow_1",
+                        "detail": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/",
+                        "image": "http://127.0.0.1:8000/workflows/workflows/71689475-c779-4620-9623-dc5cbc0ec612/cover-image.png"
                     }
                 ]
             }

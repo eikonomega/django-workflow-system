@@ -6,6 +6,9 @@ from workflows.models.engagement import (
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
 )
+from workflows.models.engagement_detail import WorkflowCollectionEngagementDetail
+from workflows.models.engagement import WorkflowCollectionEngagement
+
 from workflows.models.collection import (
     WorkflowCollection,
     WorkflowCollectionTagOption,
@@ -15,16 +18,16 @@ from workflows.models.collection_member import WorkflowCollectionMember
 
 from workflows.models.json_schema import JSONSchema
 from workflows.models.step import (
-    WorkflowStep,
-    WorkflowStepAudio,
-    WorkflowStepImage,
-    WorkflowStepText,
-    WorkflowStepInput,
-    WorkflowStepUITemplate,
-    WorkflowStepVideo,
-    WorkflowStepDependencyDetail,
-    WorkflowStepDependencyGroup,
+    WorkflowStep
 )
+from workflows.models.step_audio import WorkflowStepAudio
+from workflows.models.step_dependency_detail import WorkflowStepDependencyDetail
+from workflows.models.step_dependency_group import WorkflowStepDependencyGroup
+from workflows.models.step_image import WorkflowStepImage
+from workflows.models.step_input import WorkflowStepInput
+from workflows.models.step_text import WorkflowStepText
+from workflows.models.step_ui_template import WorkflowStepUITemplate
+from workflows.models.step_video import WorkflowStepVideo
 from workflows.models.subscription import (
     WorkflowCollectionSubscription,
     WorkflowCollectionSubscriptionSchedule,

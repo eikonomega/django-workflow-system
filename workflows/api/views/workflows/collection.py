@@ -39,62 +39,38 @@ class WorkflowCollectionsView(APIView):
             A JSON object representation of all Active Workflow Collections.
             [
                 {
-                    "id": "644a7970-f50a-4df6-8928-68dafc2e6ead",
-                    "detail": "http://localhost:8000/api_v3/workflows/collections/644a7970-f50a-4df6-8928-68dafc2e6ead/",
-                    "code": "123",
-                    "detail_image": "http://localhost:8000/media/collection/644a7970-f50a-4df6-8928-68dafc2e6ead/detail-image.png",
-                    "home_image": "http://localhost:8000/media/collection/644a7970-f50a-4df6-8928-68dafc712893d/home-image.png",
-                    "library_image": "http://localhost:8000/media/collection/644a7970-f50a-4df6-8928-lom09pLas/library-image.png",
-                    "assignment_only": true,
-                    "name": "Collection I",
-                    "ordered": true,
+                    "id": "c7b1940f-f19d-49ab-9ed5-7161dd185087",
+                    "detail": "http://127.0.0.1:8000/workflow_system/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/",
+                    "code": "c_1",
+                    "version": 1,
+                    "active": true,
+                    "created_date": "2021-03-09T19:34:51.517701Z",
+                    "modified_date": "2021-03-09T19:34:51.517728Z",
+                    "description": "This is the first of many workflow collections.",
+                    "detail_image": "http://127.0.0.1:8000/workflows/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/detail-image.png",
+                    "home_image": "http://127.0.0.1:8000/workflows/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/home-image.png",
+                    "library_image": "http://127.0.0.1:8000/workflows/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/library-image.png",
+                    "assignment_only": false,
+                    "recommendable": true,
+                    "name": "Workflow_Collection_1",
+                    "ordered": false,
                     "authors": [
                         {
-                            "id": "13972dc1-aa03-443e-a67e-1bdfe4c1c617",
-                            "user": {
-                                "first_name": "Brett",
-                                "last_name": "Fox"
-                            },
-                            "detail": "http://localhost:8000/api_v3/workflows/authors/13972dc1-aa03-443e-a67e-1bdfe4c1c617/",
-                            "title": "Mr.",
-                            "image": "http://localhost:8000/media/workflows/author/13972dc1-aa03-443e-a67e-1bdfe4c1c617/profileImage.png"
-                        },
-                        {
-                            "id": "8a3f55f2-7138-4c3a-9d4b-aeb8a11f0ccf",
+                            "id": "47d41a0c-e460-4ce4-8880-a9cf088cc818",
                             "user": {
                                 "first_name": "Justin",
                                 "last_name": "Branco"
                             },
-                            "detail": "http://localhost:8000/api_v3/workflows/authors/8a3f55f2-7138-4c3a-9d4b-aeb8a11f0ccf/",
-                            "title": "Sir",
-                            "image": "http://localhost:8000/media/workflows/author/8a3f55f2-7138-4c3a-9d4b-aeb8a11f0ccf/profileImage.png"
+                            "detail": "http://127.0.0.1:8000/workflow_system/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/",
+                            "title": "Dr",
+                            "image": "http://127.0.0.1:8000/workflows/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/profileImage.png"
                         }
                     ],
                     "category": "SURVEY",
-                },
-                {
-                    "id": "b08e618e-0146-4723-b326-a2a9d97ff409",
-                    "detail": "http://localhost:8000/api_v3/workflows/collections/b08e618e-0146-4723-b326-a2a9d97ff409/",
-                    "code": "LMT",
-                    "detail_image": "http://localhost:8000/media/collection/644a7970-f50a-4df6-8928-68dafc2e6ead/detail-image.png",
-                    "home_image": "http://localhost:8000/media/collection/644a7970-f50a-4df6-8928-68dafc712893d/home-image.png",
-                    "library_image": "http://localhost:8000/media/collection/644a7970-f50a-4df6-8928-lom09pLas/library-image.png",
-                    "assignment_only": false,
-                    "name": "Collection III",
-                    "ordered": false,
-                    "authors": [
-                        {
-                            "id": "13972dc1-aa03-443e-a67e-1bdfe4c1c617",
-                            "user": {
-                                "first_name": "Brett",
-                                "last_name": "Fox"
-                            },
-                            "detail": "http://localhost:8000/api_v3/workflows/authors/13972dc1-aa03-443e-a67e-1bdfe4c1c617/",
-                            "title": "Mr.",
-                            "image": "http://localhost:8000/media/workflows/author/13972dc1-aa03-443e-a67e-1bdfe4c1c617/profileImage.png"
-                        }
+                    "tags": [
+                        "collection"
                     ],
-                    "category": "SURVEY",
+                    "newer_version": null
                 }
             ]
         """
@@ -161,53 +137,48 @@ class WorkflowCollectionView(APIView):
         Returns:
             A JSON object representation of a Active Workflow Collection resources.
             {
-                "id": "644a7970-f50a-4df6-8928-68dafc2e6ead",
-                "code": "123",
-                "detail_image": "http://localhost:8000/media/collection/644a7970-f50a-4df6-8928-68dafc2e6ead/detail-image.png",
-                "home_image": "http://localhost:8000/media/collection/644a7970-f50a-4df6-8928-68dafc712893d/home-image.png",
-                "library_image": "http://localhost:8000/media/collection/644a7970-f50a-4df6-8928-lom09pLas/library-image.png",
-                "assignment_only": true,
-                "name": "Collection I",
-                "ordered": true,
+                "self_detail": "http://127.0.0.1:8000/workflow_system/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/",
+                "id": "c7b1940f-f19d-49ab-9ed5-7161dd185087",
+                "code": "c_1",
+                "version": 1,
+                "active": true,
+                "created_date": "2021-03-09T19:34:51.517701Z",
+                "modified_date": "2021-03-09T19:34:51.517728Z",
+                "description": "This is the first of many workflow collections.",
+                "detail_image": "http://127.0.0.1:8000/workflows/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/detail-image.png",
+                "home_image": "http://127.0.0.1:8000/workflows/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/home-image.png",
+                "library_image": "http://127.0.0.1:8000/workflows/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/library-image.png",
+                "assignment_only": false,
+                "recommendable": true,
+                "name": "Workflow_Collection_1",
+                "ordered": false,
                 "workflowcollectionmember_set": [
-                    {
-                        "order": 2,
-                        "workflow": {
-                            "name": "Workflow I",
-                            "detail": "http://localhost:8000/api_v3/workflows/workflows/6b6bfb2e-d227-4d0b-9141-1c8e9c29520a/"
-                        }
-                    },
                     {
                         "order": 1,
                         "workflow": {
-                            "name": "Workflow II",
-                            "detail": "http://localhost:8000/api_v3/workflows/workflows/7ce2913b-4960-476e-b622-71eae0244f78/"
+                            "name": "Workflow_1",
+                            "detail": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/",
+                            "image": "http://127.0.0.1:8000/workflows/workflows/71689475-c779-4620-9623-dc5cbc0ec612/cover-image.png"
                         }
                     }
                 ],
                 "authors": [
                     {
-                        "id": "13972dc1-aa03-443e-a67e-1bdfe4c1c617",
-                        "user": {
-                            "first_name": "Brett",
-                            "last_name": "Fox"
-                        },
-                        "detail": "http://localhost:8000/api_v3/workflows/authors/13972dc1-aa03-443e-a67e-1bdfe4c1c617/",
-                        "title": "Mr.",
-                        "image": "http://localhost:8000/media/workflows/author/13972dc1-aa03-443e-a67e-1bdfe4c1c617/profileImage.png"
-                    },
-                    {
-                        "id": "8a3f55f2-7138-4c3a-9d4b-aeb8a11f0ccf",
+                        "id": "47d41a0c-e460-4ce4-8880-a9cf088cc818",
                         "user": {
                             "first_name": "Justin",
                             "last_name": "Branco"
                         },
-                        "detail": "http://localhost:8000/api_v3/workflows/authors/8a3f55f2-7138-4c3a-9d4b-aeb8a11f0ccf/",
-                        "title": "Sir",
-                        "image": "http://localhost:8000/media/workflows/author/8a3f55f2-7138-4c3a-9d4b-aeb8a11f0ccf/profileImage.png"
+                        "detail": "http://127.0.0.1:8000/workflow_system/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/",
+                        "title": "Dr",
+                        "image": "http://127.0.0.1:8000/workflows/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/profileImage.png"
                     }
                 ],
                 "category": "SURVEY",
+                "tags": [
+                    "collection"
+                ],
+                "newer_version": null
             }
 
         Raises

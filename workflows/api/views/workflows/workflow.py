@@ -29,20 +29,20 @@ class WorkflowsView(APIView):
             A JSON object representation of all Workflows.
             [
                 {
-                    "id": "3ec6f24c-a578-4a78-9d22-4e67354891ed",
-                    "name": "Workflow III",
-                    "detail": "http://localhost:8000/api_v3/workflows/workflows/3ec6f24c-a578-4a78-9d22-4e67354891ed/",
+                    "id": "71689475-c779-4620-9623-dc5cbc0ec612",
+                    "name": "Workflow_1",
+                    "detail": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/",
                     "author": {
-                        "id": "13972dc1-aa03-443e-a67e-1bdfe4c1c617",
+                        "id": "47d41a0c-e460-4ce4-8880-a9cf088cc818",
                         "user": {
-                            "first_name": "Brett",
-                            "last_name": "Fox"
+                            "first_name": "Justin",
+                            "last_name": "Branco"
                         },
-                        "detail": "http://localhost:8000/api_v3/workflows/authors/13972dc1-aa03-443e-a67e-1bdfe4c1c617/",
-                        "title": "Mr.",
-                        "image": "http://localhost:8000/media/workflows/author/13972dc1-aa03-443e-a67e-1bdfe4c1c617/profileImage.png"
+                        "detail": "http://127.0.0.1:8000/workflow_system/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/",
+                        "title": "Dr",
+                        "image": "http://127.0.0.1:8000/workflows/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/profileImage.png"
                     },
-                    "image": "http://localhost:8000/media/workflows/3ec6f24c-a578-4a78-9d22-4e67354891ed/cover-image.jpg",
+                    "image": "http://127.0.0.1:8000/workflows/workflows/71689475-c779-4620-9623-dc5cbc0ec612/cover-image.png"
                 }
             ]
         """
@@ -81,26 +81,37 @@ class WorkflowView(APIView):
         Returns:
             A JSON object representation of the Workflow resource.
             {
-                "id": "6b6bfb2e-d227-4d0b-9141-1c8e9c29520a",
-                "code": "BGA",
-                "name": "Workflow I",
-                "image": "http://localhost:8000/media/workflows/6b6bfb2e-d227-4d0b-9141-1c8e9c29520a/cover-image.png",
+                "id": "71689475-c779-4620-9623-dc5cbc0ec612",
+                "self_detail": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/",
+                "code": "Workflow_1_Code",
+                "name": "Workflow_1",
+                "image": "http://127.0.0.1:8000/workflows/workflows/71689475-c779-4620-9623-dc5cbc0ec612/cover-image.png",
                 "author": {
-                    "id": "13972dc1-aa03-443e-a67e-1bdfe4c1c617",
+                    "id": "47d41a0c-e460-4ce4-8880-a9cf088cc818",
                     "user": {
-                        "first_name": "Brett",
-                        "last_name": "Fox"
+                        "first_name": "Justin",
+                        "last_name": "Branco"
                     },
-                    "detail": "http://localhost:8000/api_v3/workflows/authors/13972dc1-aa03-443e-a67e-1bdfe4c1c617/",
-                    "title": "Mr.",
-                    "image": "http://localhost:8000/media/workflows/author/13972dc1-aa03-443e-a67e-1bdfe4c1c617/profileImage.png"
+                    "detail": "http://127.0.0.1:8000/workflow_system/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/",
+                    "title": "Dr",
+                    "image": "http://127.0.0.1:8000/workflows/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/profileImage.png"
                 },
                 "workflowstep_set": [
                     {
-                        "code": "1000",
+                        "id": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
+                        "code": "Workflow_1_Step_1",
                         "order": 1,
-                        "ui_template": "Cool Beans",
-                        "workflowstepinput_set": [],
+                        "ui_template": "Workflow_1_Step_1_Template",
+                        "workflowstepinput_set": [
+                            {
+                                "id": "846173f7-6faf-4d12-9261-4f390bf03600",
+                                "workflow_step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
+                                "content": "This is the input for step 1",
+                                "ui_identifier": "Step 1 Input",
+                                "required": true,
+                                "response_schema": "655c8526-3bfa-402f-bf7c-48bf8b24f84b"
+                            }
+                        ],
                         "workflowsteptext_set": [],
                         "workflowstepaudio_set": [],
                         "workflowstepimage_set": [],
