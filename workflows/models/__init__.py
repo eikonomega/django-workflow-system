@@ -1,15 +1,18 @@
 """Convenience imports."""
 from workflows.models.author import WorkflowAuthor, workflow_author_media_folder
 from workflows.models.assignment import WorkflowCollectionAssignment
+from workflows.models.collection_tag_assignment import WorkflowCollectionTagAssignment
 from workflows.models.engagement import (
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
 )
 from workflows.models.collection import (
     WorkflowCollection,
-    WorkflowCollectionMember,
     WorkflowCollectionTagOption,
 )
+
+from workflows.models.collection_member import WorkflowCollectionMember
+
 from workflows.models.json_schema import JSONSchema
 from workflows.models.step import (
     WorkflowStep,
@@ -54,4 +57,5 @@ __all__ = [
     "Workflow",
     "WorkflowStepDataGroup",
     "CreatedModifiedAbstractModel",
+    "WorkflowCollectionTagAssignment"
 ]

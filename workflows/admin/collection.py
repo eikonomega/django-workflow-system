@@ -5,7 +5,6 @@ from itertools import chain, count
 
 from django.contrib import admin
 from django.db import IntegrityError
-from django.db.models import Q
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 
@@ -18,8 +17,8 @@ from ..models import (
     WorkflowStep,
     WorkflowStepDependencyGroup,
     WorkflowStepDependencyDetail,
-    WorkflowCollectionAssignment, WorkflowCollectionEngagement)
-from ..models.collection import WorkflowCollectionTagAssignment
+    WorkflowCollectionAssignment, WorkflowCollectionEngagement,
+    WorkflowCollectionTagAssignment)
 
 
 @admin.register(WorkflowCollectionTagOption)
@@ -55,7 +54,7 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
             {
                 "fields": [
                     ("name", "code", "version", "created_by"),
-                    ("assignment_only", "active", "ordered"),
+                    ("assignment_only", "recommendable", "active", "ordered"),
                     "description",
                     ("category",),
                     ("home_image_preview", "home_image"),

@@ -29,6 +29,7 @@ class WorkflowCollectionFactory(DjangoModelFactory):
     assignment_only = False
     active = True
     category = 'ACTIVITY'
+    recommendable = False
 
     @factory.post_generation
     def workflow_set(self, create, extracted, **kwargs):
