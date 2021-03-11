@@ -1,1 +1,2 @@
-from workflows.utils import workflow_step_media_folder
+"Convenience Import/Export"
+from .media_files import workflow_step_media_location
