@@ -1,5 +1,4 @@
 import factory
-from django.conf import settings
 from factory.django import DjangoModelFactory
 
 import workflows.models as models
@@ -21,9 +20,6 @@ class WorkflowCollectionFactory(DjangoModelFactory):
     code = factory.sequence(lambda n: 'workflow_collection_code_{}'.format(n))
     description = "Blank"
     ordered = True
-    detail_image = settings.MEDIA_ROOT + '/wumbo.jpg'
-    home_image = settings.MEDIA_ROOT + '/wumbo.jpg'
-    library_image = settings.MEDIA_ROOT + '/wumbo.jpg'
     version = 1
     created_by = factory.SubFactory(UserFactory, is_staff=True)
     assignment_only = False
@@ -131,8 +127,6 @@ class WorkflowCollectionTagOptionFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowCollectionTagOption
         django_get_or_create = ['text', 'type']
-
-    type = factory.SubFactory(WorkflowCollectionTagTypeFactory, is_staff=True)
 
 
 __all__ = ["WorkflowCollectionFactory",
