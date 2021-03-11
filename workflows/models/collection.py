@@ -6,7 +6,7 @@ from django.db import models
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.collection_tag import WorkflowCollectionTagOption
-from workflows.utils.validate_code import validate_code
+from workflows.utils.validators import validate_code
 
 
 def collection_detail_image_location(instance, filename):

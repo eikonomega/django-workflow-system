@@ -8,7 +8,7 @@ from workflows.models.step_ui_template import WorkflowStepUITemplate
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.data_group import WorkflowStepDataGroup
 from workflows.models.workflow import Workflow
-from workflows.utils.validate_code import validate_code
+from workflows.utils.validators import validate_code
 
 
 class WorkflowStep(CreatedModifiedAbstractModel):

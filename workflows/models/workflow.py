@@ -5,7 +5,7 @@ from django.db import models
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.author import WorkflowAuthor
-from workflows.utils.validate_code import validate_code
+from workflows.utils.validators import validate_code
 
 
 # Utility Functions for Handling Media Uploads
