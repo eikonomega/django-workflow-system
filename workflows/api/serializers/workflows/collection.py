@@ -267,4 +267,13 @@ def get_images_helper(instance):
         List of Image objects in JSON format.
 
     """
-    return [{"image_url": image.image.__str__(), "image_type": image.type.type} for image in instance.workflowcollectionimage_set.all()]
+    images = []
+
+    for image in instance.workflowcollectionimage_set.all():
+        image_dict = {
+            "image_url": image.image.__str__(),  # TODO: Make this a hyperlink field
+            "image_type": image.type.type
+        }
+        images.append(image_dict)
+
+    return images

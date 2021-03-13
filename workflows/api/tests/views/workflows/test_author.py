@@ -33,7 +33,7 @@ class TestWorkflowAuthorsView(TestCase):
             self.author.title)
         self.assertEqual(
             response.data[0]['image'],
-            f"http://testserver/{str(self.author.image)}")
+            f"http://testserver/mediafiles/{str(self.author.image)}")
         self.assertEqual(
             response.data[0]['user']['first_name'],
             self.author.user.first_name)
@@ -47,7 +47,7 @@ class TestWorkflowAuthorsView(TestCase):
             self.author_2.title)
         self.assertEqual(
             response.data[1]['image'],
-            f"http://testserver/{str(self.author_2.image)}")
+            f"http://testserver/mediafiles/{str(self.author_2.image)}")
         self.assertEqual(
             response.data[1]['user']['first_name'],
             self.author_2.user.first_name)
@@ -88,7 +88,7 @@ class TestWorkflowAuthorView(TestCase):
         self.assertEqual(response.data['title'], self.author.title)
         self.assertEqual(
             response.data['image'],
-            f"http://testserver/{str(self.author.image)}")
+            f"http://testserver/mediafiles/{str(self.author.image)}")
         self.assertEqual(
             response.data['biography'],
             self.author.biography)
@@ -103,7 +103,7 @@ class TestWorkflowAuthorView(TestCase):
             self.workflow.name)
         self.assertEqual(
             response.data['workflow_set'][0]['image'],
-            f"http://testserver{str(self.workflow.image)}")
+            f"http://testserver/mediafiles/{str(self.workflow.image)}")
 
     def test_get__no_author_detail(self):
         """Non-Existent Author ID returns 404."""

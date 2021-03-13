@@ -1,8 +1,7 @@
 import factory
-from django.conf import settings
 from factory.django import DjangoModelFactory
 
-import workflows.models as models
+from workflows.models import Workflow, WorkflowStep
 from .step import WorkflowStepFactory
 from .authors import AuthorFactory
 from ..user import UserFactory
@@ -10,13 +9,13 @@ from ..user import UserFactory
 
 class WorkflowFactory(DjangoModelFactory):
     class Meta:
-        model = models.Workflow
+        model = Workflow
         exclude = ("steps",)
 
     name = factory.sequence(lambda n: f"workflow name {n}")
     code = factory.sequence(lambda n: f"workflow_code_{n}")
     version = 1
-    image = f"{settings.MEDIA_ROOT}/wumbo.jpg"
+    image = f"wumbo.jpg"
     author = factory.SubFactory(AuthorFactory)
     created_by = factory.SubFactory(UserFactory, is_staff=True)
 
@@ -27,7 +26,7 @@ class WorkflowFactory(DjangoModelFactory):
         for step in extracted:
             if isinstance(step, dict):
                 WorkflowStepFactory.create(workflow=self, **step)
-            elif isinstance(step, models.WorkflowStep):
+            elif isinstance(step, WorkflowStep):
                 step.workflow = self
             else:
                 raise TypeError("step must be a dict or WorkflowStep")
