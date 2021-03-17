@@ -4,7 +4,20 @@ from rest_framework.reverse import reverse
 from .author import WorkflowAuthorSummarySerializer
 from .workflow import WorkflowTerseSerializer, ChildWorkflowDetailedSerializer
 from ....models import (
-    WorkflowCollectionMember, WorkflowCollection)
+    WorkflowCollectionMember, WorkflowCollection, WorkflowCollectionImage)
+
+
+class WorkflowImageSummarySerializer(serializers.ModelSerializer):
+    """
+    Summary level serializer for WorkflowCollectionImage objects.
+    """
+    class Meta:
+        model = WorkflowCollectionImage
+        fields = (
+            'id',
+            'image',
+            'type'
+        )
 
 
 class WorkflowCollectionMemberSummarySerializer(serializers.ModelSerializer):
@@ -45,6 +58,7 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
     authors = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     newer_version = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
 
     def get_tags(self, instance):
         """
@@ -72,6 +86,19 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
             List of Author objects in JSON format.
         """
         return get_authors_helper(self.context['request'], instance)
+
+    def get_images(self, instance):
+        """
+        Method to build an object for each corresponding Image.
+
+        Parameters:
+            instance (WorkflowCollection object)
+
+        Returns:
+            List of Image objects in JSON format.
+
+        """
+        return get_images_helper(instance)
 
     def get_newer_version(self, obj: WorkflowCollection):
         latest_version = (
@@ -107,14 +134,12 @@ class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
             'created_date',
             'modified_date',
             'description',
-            'detail_image',
-            'home_image',
-            'library_image',
             'assignment_only',
             'recommendable',
             'name',
             'ordered',
             'authors',
+            'images',
             'category',
             'tags',
             'newer_version',
@@ -143,15 +168,13 @@ class WorkflowCollectionDetailedSerializer(WorkflowCollectionBaseSerializer):
             'created_date',
             'modified_date',
             'description',
-            'detail_image',
-            'home_image',
-            'library_image',
             'assignment_only',
             'recommendable',
             'name',
             'ordered',
             'workflowcollectionmember_set',
             'authors',
+            'images',
             'category',
             'tags',
             'newer_version',
@@ -180,15 +203,13 @@ class WorkflowCollectionWithStepsSerializer(WorkflowCollectionBaseSerializer):
             'created_date',
             'modified_date',
             'description',
-            'detail_image',
-            'home_image',
-            'library_image',
             'assignment_only',
             'recommendable',
             'name',
             'ordered',
             'workflowcollectionmember_set',
             'authors',
+            'images',
             'category',
             'tags',
             'newer_version',
@@ -232,3 +253,27 @@ def get_tags_helper(instance):
 
     """
     return [{"tag_type": tag.type.type, "tag_value": tag.text} for tag in instance.tags.all()]
+
+
+def get_images_helper(instance):
+    """
+    Helper method for gathering a collection's list of images and formatting them along with their
+    corresponding types.
+
+    Parameters:
+    instance : WorkflowCollection object
+
+    Returns:
+        List of Image objects in JSON format.
+
+    """
+    images = []
+
+    for image in instance.workflowcollectionimage_set.all():
+        image_dict = {
+            "image_url": image.image.__str__(),  # TODO: Make this a hyperlink field
+            "image_type": image.type.type
+        }
+        images.append(image_dict)
+
+    return images

@@ -6,7 +6,6 @@ from itertools import chain, count
 from django.contrib import admin
 from django.db import IntegrityError
 from django.utils import timezone
-from django.utils.safestring import mark_safe
 
 from ..utils.admin_utils import IsActiveCollectionFilter
 from ..models import (
@@ -14,12 +13,11 @@ from ..models import (
     WorkflowCollection,
     WorkflowCollectionMember,
     WorkflowCollectionTagOption,
-    WorkflowCollectionTagType,
     WorkflowStep,
     WorkflowStepDependencyGroup,
     WorkflowStepDependencyDetail,
     WorkflowCollectionAssignment, WorkflowCollectionEngagement,
-    WorkflowCollectionTagAssignment)
+    WorkflowCollectionTagAssignment, WorkflowCollectionImage)
 
 
 @admin.register(WorkflowCollectionTagOption)
@@ -35,6 +33,11 @@ class WorkflowCollectionMemberInline(admin.StackedInline):
 
 class WorkflowCollectionTagOptionInline(admin.StackedInline):
     model = WorkflowCollectionTagAssignment
+    extra = 1
+
+
+class WorkflowCollectionImageInline(admin.StackedInline):
+    model = WorkflowCollectionImage
     extra = 1
 
 
@@ -59,44 +62,23 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                     ("version", "created_by"),
                     ("assignment_only", "recommendable", "active", "ordered"),
                     "description",
-                    ("category",),
-                    ("home_image_preview", "home_image"),
-                    ("library_image_preview", "library_image"),
-                    ("detail_image_preview", "detail_image"),
+                    ("category",)
                 ]
             },
         ),
     ]
 
     readonly_fields = [
-        "home_image_preview",
-        "library_image_preview",
-        "detail_image_preview",
         "open_assignments",
         "open_subscriptions",
     ]
 
-    inlines = [WorkflowCollectionTagOptionInline, WorkflowCollectionMemberInline]
+    inlines = [WorkflowCollectionTagOptionInline,
+               WorkflowCollectionMemberInline,
+               WorkflowCollectionImageInline]
+
     actions = ["copy", "deep_copy", "kill_stragglers"]
     list_filter = ["tags", IsActiveCollectionFilter]
-
-    def home_image_preview(self, instance: WorkflowCollection):
-        if instance.pk:
-            return mark_safe(f"<img src={instance.home_image.url} />")
-        else:
-            return ""
-
-    def library_image_preview(self, instance: WorkflowCollection):
-        if instance.pk:
-            return mark_safe(f"<img src={instance.library_image.url} />")
-        else:
-            return ""
-
-    def detail_image_preview(self, instance: WorkflowCollection):
-        if instance.pk:
-            return mark_safe(f"<img src={instance.detail_image.url} />")
-        else:
-            return ""
 
     def open_assignments(self, instance: WorkflowCollection):
         return instance.workflowcollectionassignment_set.filter(

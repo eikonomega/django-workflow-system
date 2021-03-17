@@ -24,7 +24,7 @@ from ..models import (
     WorkflowCollectionSubscriptionSchedule,
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
-    WorkflowStepDataGroup, WorkflowCollectionTagType)
+    WorkflowStepDataGroup, WorkflowCollectionTagType, WorkflowCollectionImageType)
 
 # assignment.py
 
@@ -312,4 +312,12 @@ class WorkflowAdmin(admin.ModelAdmin):
 
 @admin.register(WorkflowCollectionTagType)
 class WorkflowCollectionTagTypeAdmin(admin.ModelAdmin):
+    list_display = ["type"]
+
+
+# collection_image_type.py
+
+
+@admin.register(WorkflowCollectionImageType)
+class WorkflowCollectionImageTypeAdmin(admin.ModelAdmin):
     list_display = ["type"]

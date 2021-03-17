@@ -47,9 +47,6 @@ class WorkflowCollectionsView(APIView):
                     "created_date": "2021-03-09T19:34:51.517701Z",
                     "modified_date": "2021-03-09T19:34:51.517728Z",
                     "description": "This is the first of many workflow collections.",
-                    "detail_image": "http://127.0.0.1:8000/workflows/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/detail-image.png",
-                    "home_image": "http://127.0.0.1:8000/workflows/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/home-image.png",
-                    "library_image": "http://127.0.0.1:8000/workflows/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/library-image.png",
                     "assignment_only": false,
                     "recommendable": true,
                     "name": "Workflow_Collection_1",
@@ -64,6 +61,16 @@ class WorkflowCollectionsView(APIView):
                             "detail": "http://127.0.0.1:8000/workflow_system/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/",
                             "title": "Dr",
                             "image": "http://127.0.0.1:8000/workflows/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/profileImage.png"
+                        }
+                    ],
+                    "images": [
+                        {
+                            "image_url": "workflows/collections/cd297706-adb3-43d7-bb81-dcf6d2a506d3/Detail.png",
+                            "image_type": "Detail"
+                        },
+                        {
+                            "image_url": "workflows/collections/ef37306b-0859-4fa0-9003-dd63968bda8b/Home.png",
+                            "image_type": "Home"
                         }
                     ],
                     "category": "SURVEY",
@@ -152,9 +159,6 @@ class WorkflowCollectionView(APIView):
                 "created_date": "2021-03-09T19:34:51.517701Z",
                 "modified_date": "2021-03-09T19:34:51.517728Z",
                 "description": "This is the first of many workflow collections.",
-                "detail_image": "http://127.0.0.1:8000/workflows/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/detail-image.png",
-                "home_image": "http://127.0.0.1:8000/workflows/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/home-image.png",
-                "library_image": "http://127.0.0.1:8000/workflows/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/library-image.png",
                 "assignment_only": false,
                 "recommendable": true,
                 "name": "Workflow_Collection_1",
@@ -179,6 +183,16 @@ class WorkflowCollectionView(APIView):
                         "detail": "http://127.0.0.1:8000/workflow_system/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/",
                         "title": "Dr",
                         "image": "http://127.0.0.1:8000/workflows/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/profileImage.png"
+                    }
+                ],
+                "images": [
+                    {
+                        "image_url": "workflows/collections/cd297706-adb3-43d7-bb81-dcf6d2a506d3/Detail.png",
+                        "image_type": "Detail"
+                    },
+                    {
+                        "image_url": "workflows/collections/ef37306b-0859-4fa0-9003-dd63968bda8b/Home.png",
+                        "image_type": "Home"
                     }
                 ],
                 "category": "SURVEY",

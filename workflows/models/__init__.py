@@ -1,6 +1,8 @@
 """Convenience imports."""
 from workflows.models.author import WorkflowAuthor, workflow_author_media_folder
 from workflows.models.assignment import WorkflowCollectionAssignment
+from workflows.models.collection_image import WorkflowCollectionImage
+from workflows.models.collection_image_type import WorkflowCollectionImageType
 from workflows.models.collection_tag_type import WorkflowCollectionTagType
 from workflows.models.collection_tag_assignment import WorkflowCollectionTagAssignment
 from workflows.models.engagement import (
@@ -47,6 +49,8 @@ __all__ = [
     "WorkflowCollectionMember",
     "WorkflowCollectionTagOption",
     "WorkflowCollectionTagType",
+    "WorkflowCollectionImageType",
+    "WorkflowCollectionImage",
     "JSONSchema",
     "WorkflowStep",
     "WorkflowStepAudio",

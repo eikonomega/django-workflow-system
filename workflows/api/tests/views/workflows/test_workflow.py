@@ -37,13 +37,13 @@ class TestWorkflowsView(TestCase):
             if result['name'] == self.workflow.name:
                 self.assertEqual(
                     result['image'],
-                    f"http://testserver{str(self.workflow.image)}")
+                    f"http://testserver/mediafiles/{str(self.workflow.image)}")
                 self.assertEqual(
                     result['author']['title'],
                     author_obj.title)
                 self.assertEqual(
                     result['author']['image'],
-                    f"http://testserver/{str(author_obj.image)}")
+                    f"http://testserver/mediafiles/{str(author_obj.image)}")
                 self.assertEqual(
                     result['author']['user']['first_name'],
                     author_obj.user.first_name)
@@ -54,13 +54,13 @@ class TestWorkflowsView(TestCase):
             elif result['name'] == self.workflow_2.name:
                 self.assertEqual(
                     result['image'],
-                    f"http://testserver{str(self.workflow_2.image)}")
+                    f"http://testserver/mediafiles/{str(self.workflow_2.image)}")
                 self.assertEqual(
                     result['author']['title'],
                     author_obj.title)
                 self.assertEqual(
                     result['author']['image'],
-                    f"http://testserver/{str(author_obj.image)}")
+                    f"http://testserver/mediafiles/{str(author_obj.image)}")
                 self.assertEqual(
                     result['author']['user']['first_name'],
                     author_obj.user.first_name)
@@ -91,11 +91,11 @@ class TestWorkflowView(TestCase):
         self.assertEqual(response.data['name'], self.workflow.name)
         self.assertEqual(
             response.data['image'],
-            f"http://testserver{str(self.workflow.image)}")
+            f"http://testserver/mediafiles/{str(self.workflow.image)}")
         self.assertEqual(response.data['author']['title'], self.workflow.author.title)
         self.assertEqual(
             response.data['author']['image'],
-            f"http://testserver/{str(self.workflow.author.image)}")
+            f"http://testserver/mediafiles/{str(self.workflow.author.image)}")
         self.assertEqual(response.data['author']['user']['first_name'],
                          self.workflow.author.user.first_name)
         self.assertEqual(response.data['author']['user']['last_name'],

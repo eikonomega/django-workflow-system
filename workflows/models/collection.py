@@ -9,30 +9,6 @@ from workflows.models.collection_tag import WorkflowCollectionTagOption
 from workflows.utils.validators import validate_code
 
 
-def collection_detail_image_location(instance, filename):
-    return "workflows/collections/{}/detail-image.{}".format(
-        instance.id, filename.rpartition(".")[2]
-    )
-
-
-def collection_home_image_location(instance, filename):
-    return "workflows/collections/{}/home-image.{}".format(
-        instance.id, filename.rpartition(".")[2]
-    )
-
-
-def collection_library_image_location(instance, filename):
-    return "workflows/collections/{}/library-image.{}".format(
-        instance.id, filename.rpartition(".")[2]
-    )
-
-
-def collection_cover_image_location(instance, filename):
-    return "workflows/collections/{}/cover-image.{}".format(
-        instance.id, filename.rpartition(".")[2]
-    )
-
-
 class WorkflowCollection(CreatedModifiedAbstractModel):
     """
     Definition of a Workflow Collection.
@@ -66,17 +42,6 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
 
     # Do all workflows in collection need to be completed in order?
     ordered = models.BooleanField()
-
-    # TODO: Delete these. See GH issue #12
-    detail_image = models.ImageField(
-        upload_to=collection_detail_image_location, max_length=200
-    )
-    home_image = models.ImageField(
-        upload_to=collection_home_image_location, max_length=200
-    )
-    library_image = models.ImageField(
-        upload_to=collection_library_image_location, max_length=200
-    )
 
     # Which staff member created the collection in the admin panel?
     # This is separate from Workflow author, and just points to the

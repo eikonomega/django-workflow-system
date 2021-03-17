@@ -5,13 +5,7 @@ from django.db import models
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.author import WorkflowAuthor
-from workflows.utils.validators import validate_code
-
-
-# Utility Functions for Handling Media Uploads
-def workflow_cover_image_location(instance, filename):
-    return 'workflows/workflows/{}/cover-image.{}'.format(
-        instance.id, filename.rpartition('.')[2])
+from workflows.utils import workflow_cover_image_location
 
 
 class Workflow(CreatedModifiedAbstractModel):
