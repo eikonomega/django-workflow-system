@@ -5,7 +5,7 @@ from django.db import models
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.author import WorkflowAuthor
-from workflows.utils import workflow_cover_image_location
+from workflows.utils.validators import validate_code
 
 
 class Workflow(CreatedModifiedAbstractModel):
@@ -24,7 +24,7 @@ class Workflow(CreatedModifiedAbstractModel):
     )
     code = models.CharField(
         max_length=200,
-        validators=[validate_code],
+        # validators=[validate_code],
         help_text="An internal code for database level operations"
     )
     name = models.CharField(max_length=200, help_text="Human friendly name")
@@ -32,13 +32,6 @@ class Workflow(CreatedModifiedAbstractModel):
         default=1,
         help_text="The version of a Workflow. Used to accommodate the "
                   "evolution of a Workflow over time"
-    )
-    image = models.ImageField(
-        upload_to=workflow_cover_image_location,
-        max_length=200,
-        blank=True,
-        null=True,
-        help_text="General image associated with the Workflow"
     )
     author = models.ForeignKey(
         WorkflowAuthor,

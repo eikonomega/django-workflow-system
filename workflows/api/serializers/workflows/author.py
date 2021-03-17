@@ -27,7 +27,7 @@ class WorkflowForeignKeyAuthorSummarySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Workflow
-        fields = ['name', 'detail', 'image']
+        fields = ['name', 'detail']
 
 
 class WorkflowAuthorSummarySerializer(serializers.ModelSerializer):

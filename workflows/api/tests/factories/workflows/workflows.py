@@ -15,7 +15,6 @@ class WorkflowFactory(DjangoModelFactory):
     name = factory.sequence(lambda n: f"workflow name {n}")
     code = factory.sequence(lambda n: f"workflow_code_{n}")
     version = 1
-    image = f"wumbo.jpg"
     author = factory.SubFactory(AuthorFactory)
     created_by = factory.SubFactory(UserFactory, is_staff=True)
 

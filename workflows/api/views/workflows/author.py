@@ -73,8 +73,7 @@ class WorkflowAuthorView(APIView):
                 "workflow_set": [
                     {
                         "name": "Workflow_1",
-                        "detail": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/",
-                        "image": "http://127.0.0.1:8000/workflows/workflows/71689475-c779-4620-9623-dc5cbc0ec612/cover-image.png"
+                        "detail": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/"
                     }
                 ]
             }

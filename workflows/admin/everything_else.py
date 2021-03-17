@@ -24,7 +24,8 @@ from ..models import (
     WorkflowCollectionSubscriptionSchedule,
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
-    WorkflowStepDataGroup, WorkflowCollectionTagType, WorkflowCollectionImageType)
+    WorkflowStepDataGroup, WorkflowCollectionTagType, WorkflowCollectionImageType,
+    WorkflowImageType, WorkflowImage)
 
 # assignment.py
 
@@ -227,10 +228,15 @@ class StepInLine(EditLinkToInlineObject, admin.StackedInline):
     readonly_fields = ("edit_link",)
 
 
+class WorkflowImageInline(admin.StackedInline):
+    model = WorkflowImage
+    extra = 1
+
+
 @admin.register(Workflow)
 class WorkflowAdmin(admin.ModelAdmin):
     list_display = ["name", "code", "author", "category"]
-    inlines = [StepInLine]
+    inlines = [StepInLine, WorkflowImageInline]
     actions = ["copy"]
     list_filter = [
         "workflowcollectionmember__workflow_collection",
@@ -241,7 +247,6 @@ class WorkflowAdmin(admin.ModelAdmin):
         "name",
         "version",
         "image_preview",
-        "image",
         "author",
         "created_by",
     ]
@@ -320,4 +325,12 @@ class WorkflowCollectionTagTypeAdmin(admin.ModelAdmin):
 
 @admin.register(WorkflowCollectionImageType)
 class WorkflowCollectionImageTypeAdmin(admin.ModelAdmin):
+    list_display = ["type"]
+
+
+# workflow_image_type.py
+
+
+@admin.register(WorkflowImageType)
+class WorkflowImageTypeAdmin(admin.ModelAdmin):
     list_display = ["type"]

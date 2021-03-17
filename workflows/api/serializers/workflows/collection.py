@@ -7,19 +7,6 @@ from ....models import (
     WorkflowCollectionMember, WorkflowCollection, WorkflowCollectionImage)
 
 
-class WorkflowImageSummarySerializer(serializers.ModelSerializer):
-    """
-    Summary level serializer for WorkflowCollectionImage objects.
-    """
-    class Meta:
-        model = WorkflowCollectionImage
-        fields = (
-            'id',
-            'image',
-            'type'
-        )
-
-
 class WorkflowCollectionMemberSummarySerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowCollectionMember objects.
