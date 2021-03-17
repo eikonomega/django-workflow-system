@@ -140,3 +140,4 @@ dmypy.json
 
 # Mediafiles Folder
 mediafiles/*
+staticfiles/*
