@@ -6,7 +6,7 @@ from django.db import models
 from workflows.models.collection import WorkflowCollection
 from workflows.models.collection_image_type import WorkflowCollectionImageType
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
-from workflows.utils import collection_library_image_location
+from workflows.utils import collection_image_location
 
 
 class WorkflowCollectionImage(CreatedModifiedAbstractModel):
@@ -15,20 +15,23 @@ class WorkflowCollectionImage(CreatedModifiedAbstractModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     collection = models.ForeignKey(WorkflowCollection, on_delete=models.PROTECT)
     type = models.ForeignKey(WorkflowCollectionImageType, on_delete=models.PROTECT)
-    image = models.ImageField(upload_to=collection_library_image_location, max_length=200)
+    image = models.ImageField(upload_to=collection_image_location, max_length=200)
 
     class Meta:
         db_table = "workflow_system_collection_image"
         verbose_name_plural = "Workflow Collection Images"
-        unique_together = [['collection', 'type']]
+        unique_together = [["collection", "type"]]
 
     def __str__(self):
         return self.image.__str__()
 
     def unique_error_message(self, model_class, unique_check):
-        if model_class == type(self) and unique_check == ('collection', 'type'):
-            return f"Collection already has an image of type '{self.type.type}'. This image " \
-                   f"can be replaced above."
+        if model_class == type(self) and unique_check == ("collection", "type"):
+            return (
+                f"Collection already has an image of type '{self.type.type}'. This image "
+                f"can be replaced above."
+            )
         else:
-            return super(WorkflowCollectionImage, self).unique_error_message(model_class, unique_check)
-
+            return super(WorkflowCollectionImage, self).unique_error_message(
+                model_class, unique_check
+            )
