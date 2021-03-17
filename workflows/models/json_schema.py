@@ -8,6 +8,7 @@ from django.db import models
 from jsonschema import Draft7Validator, SchemaError
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
+from workflows.utils.validators import validate_code
 
 
 class JSONSchema(CreatedModifiedAbstractModel):
@@ -23,7 +24,8 @@ class JSONSchema(CreatedModifiedAbstractModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(
-        max_length=100, help_text="A short-hand reference to the schema definition."
+        max_length=100, help_text="A short-hand reference to the schema definition.",
+        validators=[validate_code]
     )
     description = models.TextField(
         max_length=250,

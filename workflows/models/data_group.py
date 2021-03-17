@@ -36,13 +36,19 @@ class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
 
     @property
     def full_path(self):
-        # TODO: Add description.
-        return "<".join(reversed(self.name_list))
+        """
+        This will return the hierarchy of this data group in a string format.
+        """
+        return "<".join(reversed(self.group_hierarchy))
 
     @property
-    def name_list(self):
-        # TODO: Rename to something like "group_hierarchy" and improve documentation.
-        """Return a list of category codes from root to this category"""
+    def group_hierarchy(self):
+        """
+        Return a list of category codes in their hierarchical form. This will start at
+        this group and traverse upwards grabbing all parents until we reach the root group.
+
+        We then reverse this list so it is returned in the proper hierarchical form.
+        """
         label_list = [self.name]
         iter_group: WorkflowStepDataGroup = self.parent_group
         while iter_group is not None:
