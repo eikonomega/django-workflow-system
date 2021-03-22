@@ -6,6 +6,7 @@ from django.db import models
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.author import WorkflowAuthor
 from workflows.utils import workflow_cover_image_location
+from workflows.utils.validators import validate_code
 
 
 class Workflow(CreatedModifiedAbstractModel):
@@ -40,13 +41,14 @@ class Workflow(CreatedModifiedAbstractModel):
     )
     author = models.ForeignKey(WorkflowAuthor, on_delete=models.PROTECT)
     created_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, limit_choices_to={'is_staff': True})
+        User, on_delete=models.PROTECT, limit_choices_to={"is_staff": True}
+    )
     on_completion = models.CharField(max_length=200, null=True, blank=True)
 
     class Meta:
-        db_table = 'workflow_system_workflow'
-        unique_together = ['version', 'code']
-        ordering = ['name']
+        db_table = "workflow_system_workflow"
+        unique_together = ["version", "code"]
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
