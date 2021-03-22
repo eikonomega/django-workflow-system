@@ -3,8 +3,8 @@ from rest_framework.reverse import reverse
 
 from .author import WorkflowAuthorSummarySerializer
 from .workflow import WorkflowTerseSerializer, ChildWorkflowDetailedSerializer
-from ....models import (
-    WorkflowCollectionMember, WorkflowCollection, WorkflowCollectionImage)
+from ..utils import get_images_helper
+from ....models import WorkflowCollectionMember, WorkflowCollection
 
 
 class WorkflowCollectionMemberSummarySerializer(serializers.ModelSerializer):
@@ -85,7 +85,7 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
             List of Image objects in JSON format.
 
         """
-        return get_images_helper(instance)
+        return get_images_helper(instance.workflowcollectionimage_set.all())
 
     def get_newer_version(self, obj: WorkflowCollection):
         latest_version = (
@@ -240,27 +240,3 @@ def get_tags_helper(instance):
 
     """
     return [{"tag_type": tag.type.type, "tag_value": tag.text} for tag in instance.tags.all()]
-
-
-def get_images_helper(instance):
-    """
-    Helper method for gathering a collection's list of images and formatting them along with their
-    corresponding types.
-
-    Parameters:
-    instance : WorkflowCollection object
-
-    Returns:
-        List of Image objects in JSON format.
-
-    """
-    images = []
-
-    for image in instance.workflowcollectionimage_set.all():
-        image_dict = {
-            "image_url": image.image.__str__(),  # TODO: Make this a hyperlink field
-            "image_type": image.type.type
-        }
-        images.append(image_dict)
-
-    return images

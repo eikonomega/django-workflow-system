@@ -11,7 +11,6 @@ from workflows.utils.validators import validate_code
 class Workflow(CreatedModifiedAbstractModel):
     """
     This is the primary model for this feature.
-    All other models in this application bear a direct/indirect relationship to this one.
     """
 
     IMAGE_SIZE = (600, 375)
@@ -24,7 +23,7 @@ class Workflow(CreatedModifiedAbstractModel):
     )
     code = models.CharField(
         max_length=200,
-        # validators=[validate_code],
+        validators=[validate_code],
         help_text="An internal code for database level operations"
     )
     name = models.CharField(max_length=200, help_text="Human friendly name")

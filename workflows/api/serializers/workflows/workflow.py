@@ -2,7 +2,8 @@ from rest_framework import serializers
 
 from .author import WorkflowAuthorSummarySerializer
 from .step import WorkflowStepSummarySerializer
-from ....models import Workflow, WorkflowImage
+from ..utils import get_images_helper
+from ....models import Workflow
 
 
 class WorkflowTerseSerializer(serializers.ModelSerializer):
@@ -48,7 +49,7 @@ class WorkflowSummarySerializer(serializers.ModelSerializer):
             List of Image objects in JSON format.
 
         """
-        return get_images_helper(instance)
+        return get_images_helper(instance.workflowimage_set.all())
 
 
 class WorkflowDetailedSerializer(serializers.ModelSerializer):
@@ -80,7 +81,7 @@ class WorkflowDetailedSerializer(serializers.ModelSerializer):
             List of Image objects in JSON format.
 
         """
-        return get_images_helper(instance)
+        return get_images_helper(instance.workflowimage_set.all())
 
 
 class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
@@ -111,28 +112,4 @@ class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
             List of Image objects in JSON format.
 
         """
-        return get_images_helper(instance)
-
-
-def get_images_helper(instance):
-    """
-    Helper method for gathering a workflow's list of images and formatting them along with their
-    corresponding types.
-
-    Parameters:
-    instance : Workflow object
-
-    Returns:
-        List of Image objects in JSON format.
-
-    """
-    images = []
-
-    for image in instance.workflowimage_set.all():
-        image_dict = {
-            "image_url": image.image.__str__(),  # TODO: Make this a hyperlink field
-            "image_type": image.type.type
-        }
-        images.append(image_dict)
-
-    return images
+        return get_images_helper(instance.workflowimage_set.all())
