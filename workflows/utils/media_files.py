@@ -26,3 +26,13 @@ def collection_image_location(instance, filename):
     file_extension = filename.rpartition(".")[2]
 
     return f"collections/{collection_id}/{image_type}.{file_extension}"
+
+
+def workflow_image_location(instance, filename):
+    """Return the location of a stored media file for a Workflow."""
+    workflow_id = instance.id
+    image_type = instance.type
+    file_extension = filename.rpartition(".")[2]
+
+    return f"workflows/{workflow_id}/{image_type}.{file_extension}"
+

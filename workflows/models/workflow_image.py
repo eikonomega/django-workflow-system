@@ -6,7 +6,7 @@ from django.db import models
 from workflows.models.workflow import Workflow
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.workflow_image_type import WorkflowImageType
-from workflows.utils import collection_image_location
+from workflows.utils import workflow_image_location
 
 
 class WorkflowImage(CreatedModifiedAbstractModel):
@@ -15,7 +15,7 @@ class WorkflowImage(CreatedModifiedAbstractModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow = models.ForeignKey(Workflow, on_delete=models.PROTECT)
     type = models.ForeignKey(WorkflowImageType, on_delete=models.PROTECT)
-    image = models.ImageField(upload_to=collection_image_location, max_length=200)
+    image = models.ImageField(upload_to=workflow_image_location, max_length=200)
 
     class Meta:
         db_table = "workflow_system_workflow_image"
