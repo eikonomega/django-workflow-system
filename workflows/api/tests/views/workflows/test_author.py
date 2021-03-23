@@ -101,9 +101,6 @@ class TestWorkflowAuthorView(TestCase):
         self.assertEqual(
             response.data['workflow_set'][0]['name'],
             self.workflow.name)
-        self.assertEqual(
-            response.data['workflow_set'][0]['image'],
-            f"http://testserver/mediafiles/{str(self.workflow.image)}")
 
     def test_get__no_author_detail(self):
         """Non-Existent Author ID returns 404."""

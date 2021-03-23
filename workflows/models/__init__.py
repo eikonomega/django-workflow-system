@@ -38,6 +38,8 @@ from workflows.models.subscription import (
 from workflows.models.workflow import Workflow
 from workflows.models.data_group import WorkflowStepDataGroup
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
+from workflows.models.workflow_image import WorkflowImage
+from workflows.models.workflow_image_type import WorkflowImageType
 
 __all__ = [
     "WorkflowAuthor",
@@ -64,6 +66,8 @@ __all__ = [
     "WorkflowCollectionSubscription",
     "WorkflowCollectionSubscriptionSchedule",
     "Workflow",
+    "WorkflowImage",
+    "WorkflowImageType",
     "WorkflowStepDataGroup",
     "CreatedModifiedAbstractModel",
     "WorkflowCollectionTagAssignment"

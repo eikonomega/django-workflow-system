@@ -1,8 +1,11 @@
+from django.conf import settings
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
 from workflows.api.tests.factories import WorkflowFactory, WorkflowStepFactory
 from workflows.api.tests.factories.workflows.step import _WorkflowStepVideoFactory
+from workflows.api.tests.factories.workflows.workflow_image import (WorkflowImageTypeFactory,
+                                                                    WorkflowImageFactory)
 from workflows.api.views.workflows import WorkflowsView, WorkflowView
 from workflows.models import WorkflowAuthor
 
@@ -15,6 +18,38 @@ class TestWorkflowsView(TestCase):
         self.factory = APIRequestFactory()
         self.workflow = WorkflowFactory()
         self.workflow_2 = WorkflowFactory()
+
+        # IMAGES
+        self.workflow_image_type = WorkflowImageTypeFactory(type="Detail")
+        self.workflow_image_type_2 = WorkflowImageTypeFactory(type="Homepage")
+        self.workflow_image = WorkflowImageFactory(
+            type=self.workflow_image_type,
+            image=settings.MEDIA_ROOT + '/wumbo.jpg',
+            workflow=self.workflow
+        )
+        self.workflow_image_2 = WorkflowImageFactory(
+            type=self.workflow_image_type_2,
+            image=settings.MEDIA_ROOT + '/wumbo2.jpg',
+            workflow=self.workflow
+        )
+        self.workflow_image_3 = WorkflowImageFactory(
+            type=self.workflow_image_type,
+            image=settings.MEDIA_ROOT + '/wumbo3.jpg',
+            workflow=self.workflow_2
+        )
+
+        self.image_1_dict = {
+            'image_url': self.workflow_image.image.__str__(),
+            'image_type': self.workflow_image.type.type
+        }
+        self.image_2_dict = {
+            'image_url': self.workflow_image_2.image.__str__(),
+            'image_type': self.workflow_image_2.type.type
+        }
+        self.image_3_dict = {
+            'image_url': self.workflow_image_3.image.__str__(),
+            'image_type': self.workflow_image_3.type.type
+        }
 
     def test_get__success(self):
         """Ensure expected Workflow data is returned."""
@@ -29,44 +64,38 @@ class TestWorkflowsView(TestCase):
             # Ensure all expected data parameters are present.
             self.assertListEqual(
                 list(result.keys()),
-                ["id", "name", "detail", "author", "image"])
+                ["id", "name", "detail", "images", "author"])
 
             author_obj = WorkflowAuthor.objects.get(id=result['author']["id"])
 
             # Validate the content of each returned Workflow
             if result['name'] == self.workflow.name:
                 self.assertEqual(
-                    result['image'],
-                    f"http://testserver/mediafiles/{str(self.workflow.image)}")
-                self.assertEqual(
                     result['author']['title'],
                     author_obj.title)
-                self.assertEqual(
-                    result['author']['image'],
-                    f"http://testserver/mediafiles/{str(author_obj.image)}")
                 self.assertEqual(
                     result['author']['user']['first_name'],
                     author_obj.user.first_name)
                 self.assertEqual(
                     result['author']['user']['last_name'],
                     author_obj.user.last_name)
+                self.assertCountEqual(
+                    result["images"], [self.image_1_dict, self.image_2_dict]
+                )
 
             elif result['name'] == self.workflow_2.name:
                 self.assertEqual(
-                    result['image'],
-                    f"http://testserver/mediafiles/{str(self.workflow_2.image)}")
-                self.assertEqual(
                     result['author']['title'],
                     author_obj.title)
-                self.assertEqual(
-                    result['author']['image'],
-                    f"http://testserver/mediafiles/{str(author_obj.image)}")
                 self.assertEqual(
                     result['author']['user']['first_name'],
                     author_obj.user.first_name)
                 self.assertEqual(
                     result['author']['user']['last_name'],
                     author_obj.user.last_name)
+                self.assertCountEqual(
+                    result["images"], [self.image_3_dict]
+                )
 
 
 class TestWorkflowView(TestCase):
@@ -80,18 +109,38 @@ class TestWorkflowView(TestCase):
         self.workflow_step = WorkflowStepFactory(workflow=self.workflow)
         self.workflow_step_video = _WorkflowStepVideoFactory(workflow_step=self.workflow_step)
 
+        # IMAGES
+        self.workflow_image_type = WorkflowImageTypeFactory(type="Detail")
+        self.workflow_image_type_2 = WorkflowImageTypeFactory(type="Homepage")
+        self.workflow_image = WorkflowImageFactory(
+            type=self.workflow_image_type,
+            image=settings.MEDIA_ROOT + '/wumbo.jpg',
+            workflow=self.workflow
+        )
+        self.workflow_image_2 = WorkflowImageFactory(
+            type=self.workflow_image_type_2,
+            image=settings.MEDIA_ROOT + '/wumbo2.jpg',
+            workflow=self.workflow
+        )
+
+        self.image_1_dict = {
+            'image_url': self.workflow_image.image.__str__(),
+            'image_type': self.workflow_image.type.type
+        }
+        self.image_2_dict = {
+            'image_url': self.workflow_image_2.image.__str__(),
+            'image_type': self.workflow_image_2.type.type
+        }
+
     def test_get__success(self):
         """Ensure returned data is as expected."""
         request = self.factory.get(
             f"/workflows/workflows/{self.workflow.id}/")
         response = self.view(request, self.workflow.id)
-        print('start')
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['code'], self.workflow.code)
         self.assertEqual(response.data['name'], self.workflow.name)
-        self.assertEqual(
-            response.data['image'],
-            f"http://testserver/mediafiles/{str(self.workflow.image)}")
         self.assertEqual(response.data['author']['title'], self.workflow.author.title)
         self.assertEqual(
             response.data['author']['image'],
@@ -105,6 +154,9 @@ class TestWorkflowView(TestCase):
             self.workflow_step_video.ui_identifier)
         self.assertEqual(response.data['workflowstep_set'][0]['code'],
                          self.workflow_step.code)
+        self.assertCountEqual(
+            response.data["images"], [self.image_1_dict, self.image_2_dict]
+        )
 
     def test_get__workflow_id_nonexistent(self):
         """using non-existing workflow ID"""
@@ -115,10 +167,3 @@ class TestWorkflowView(TestCase):
 
         self.assertEqual(response.status_code, 404)
 
-    def test_no_image(self):
-        """test that having no image does not break things"""
-        workflow = WorkflowFactory(image=None)
-        request = self.factory.get(
-            f"/workflows/workflows/{workflow.id}/")
-        response = self.view(request, workflow.id)
-        self.assertEqual(response.data["image"], None)

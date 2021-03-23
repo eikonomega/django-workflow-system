@@ -347,8 +347,8 @@ class TestWorkflowCollectionView(TestCase):
                     'detail',
                     'code',
                     'name',
-                    'image',
                     'author',
+                    'images',
                     'workflowstep_set'
                 ]
             )

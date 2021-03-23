@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .author import WorkflowAuthorSummarySerializer
 from .step import WorkflowStepSummarySerializer
+from ..utils import get_images_helper
 from ....models import Workflow
 
 
@@ -17,8 +18,7 @@ class WorkflowTerseSerializer(serializers.ModelSerializer):
         model = Workflow
         fields = (
             'name',
-            'detail',
-            'image'
+            'detail'
         )
 
 
@@ -31,11 +31,25 @@ class WorkflowSummarySerializer(serializers.ModelSerializer):
         view_name='workflow-v3', lookup_field='id')
 
     author = WorkflowAuthorSummarySerializer()
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = Workflow
         fields = (
-            'id', 'name', 'detail', 'author', 'image')
+            'id', 'name', 'detail', 'images', 'author')
+
+    def get_images(self, instance):
+        """
+        Method to build an object for each corresponding Image.
+
+        Parameters:
+            instance (Workflow object)
+
+        Returns:
+            List of Image objects in JSON format.
+
+        """
+        return get_images_helper(instance.workflowimage_set.all())
 
 
 class WorkflowDetailedSerializer(serializers.ModelSerializer):
@@ -48,11 +62,26 @@ class WorkflowDetailedSerializer(serializers.ModelSerializer):
     self_detail = serializers.HyperlinkedIdentityField(
         view_name='workflow-v3',
         lookup_field='id')
+    images = serializers.SerializerMethodField()
+
 
     class Meta:
         model = Workflow
         fields = (
-            'id', 'self_detail', 'code', 'name', 'image', 'author', 'workflowstep_set')
+            'id', 'self_detail', 'code', 'name', 'author', 'images', 'workflowstep_set')
+
+    def get_images(self, instance):
+        """
+        Method to build an object for each corresponding Image.
+
+        Parameters:
+            instance (Workflow object)
+
+        Returns:
+            List of Image objects in JSON format.
+
+        """
+        return get_images_helper(instance.workflowimage_set.all())
 
 
 class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
@@ -65,8 +94,22 @@ class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
     detail = serializers.HyperlinkedIdentityField(
         view_name='workflow-v3',
         lookup_field='id')
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = Workflow
         fields = (
-            'id', 'detail', 'code', 'name', 'image', 'author', 'workflowstep_set')
+            'id', 'detail', 'code', 'name', 'author', 'images', 'workflowstep_set')
+
+    def get_images(self, instance):
+        """
+        Method to build an object for each corresponding Image.
+
+        Parameters:
+            instance (Workflow object)
+
+        Returns:
+            List of Image objects in JSON format.
+
+        """
+        return get_images_helper(instance.workflowimage_set.all())

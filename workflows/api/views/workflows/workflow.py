@@ -40,9 +40,13 @@ class WorkflowsView(APIView):
                         },
                         "detail": "http://127.0.0.1:8000/workflow_system/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/",
                         "title": "Dr",
-                        "image": "http://127.0.0.1:8000/workflows/authors/47d41a0c-e460-4ce4-8880-a9cf088cc818/profileImage.png"
                     },
-                    "image": "http://127.0.0.1:8000/workflows/workflows/71689475-c779-4620-9623-dc5cbc0ec612/cover-image.png"
+                    "images": [
+                        {
+                            "image_url": "workflows/8538dc36-3a6f-47e1-9132-14d070252b74/home.jpg",
+                            "image_type": "home"
+                        }
+                    ],
                 }
             ]
         """
@@ -85,7 +89,12 @@ class WorkflowView(APIView):
                 "self_detail": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/",
                 "code": "Workflow_1_Code",
                 "name": "Workflow_1",
-                "image": "http://127.0.0.1:8000/workflows/workflows/71689475-c779-4620-9623-dc5cbc0ec612/cover-image.png",
+                "images": [
+                    {
+                        "image_url": "workflows/8538dc36-3a6f-47e1-9132-14d070252b74/home.jpg",
+                        "image_type": "home"
+                    }
+                ],
                 "author": {
                     "id": "47d41a0c-e460-4ce4-8880-a9cf088cc818",
                     "user": {
