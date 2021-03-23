@@ -107,6 +107,7 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
         return f"{self.code}_v{self.version}"
 
     def clean(self):
+        # Validate that this collection code's version is not incrementing by more than 1
         previous_collections = WorkflowCollection.objects.filter(code=self.code)
         latest_version = previous_collections.aggregate(Max('version'))['version__max']
 

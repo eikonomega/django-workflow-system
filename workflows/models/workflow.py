@@ -60,6 +60,7 @@ class Workflow(CreatedModifiedAbstractModel):
         super().save(*args, **kwargs)
 
     def clean(self):
+        # Validate that this workflow code's version is not incrementing by more than 1
         previous_workflows = Workflow.objects.filter(code=self.code)
         latest_version = previous_workflows.aggregate(Max('version'))['version__max']
 
