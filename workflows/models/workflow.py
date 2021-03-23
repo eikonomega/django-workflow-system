@@ -2,7 +2,9 @@
 import uuid
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Max
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.author import WorkflowAuthor
@@ -56,3 +58,12 @@ class Workflow(CreatedModifiedAbstractModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+    def clean(self):
+        previous_workflows = Workflow.objects.filter(code=self.code)
+        latest_version = previous_workflows.aggregate(Max('version'))['version__max']
+
+        if latest_version and self.version > latest_version + 1:
+            raise ValidationError({"version": f"Version can only be incremented by 1. "
+                                              f"The current latest version of this code "
+                                              f"is {latest_version}"})
