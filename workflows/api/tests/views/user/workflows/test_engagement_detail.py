@@ -105,7 +105,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 ['detail', 'step', 'user_response', 'started', 'finished'])
             self.assertEqual(
                 result['detail'],
-                f"http://testserver/workflow_system/users/self/workflows/engagements/"
+                f"http://testserver/workflow_system/users/self/engagements/"
                 f"{self.user_with_activity_engagement__engagement.id}/details/"
                 f"{self.user_with_activity_engagement__detail.id}/")
             self.assertEqual(
@@ -553,7 +553,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data['detail'],
-            f"http://testserver/workflow_system/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/")
+            f"http://testserver/workflow_system/users/self/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/")
 
     def test_patch__unauthenticated_engagement(self):
         """Return 404 error if trying to patch unknown engagement."""

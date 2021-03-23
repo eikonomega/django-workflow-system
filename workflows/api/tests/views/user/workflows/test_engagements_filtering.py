@@ -56,7 +56,7 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(
             response.data[0]['detail'],
-            f"http://testserver/workflow_system/users/self/workflows/engagements/{wce1.id}/")
+            f"http://testserver/workflow_system/users/self/engagements/{wce1.id}/")
 
     def test_include_finished(self):
         wce1 = WorkflowCollectionEngagementFactory(
@@ -108,7 +108,7 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(
             response.data[0]['detail'],
-            f"http://testserver/workflow_system/users/self/workflows/engagements/{wce1.id}/")
+            f"http://testserver/workflow_system/users/self/engagements/{wce1.id}/")
 
     def test_end_filter(self):
         wce1 = WorkflowCollectionEngagementFactory(
@@ -136,7 +136,7 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(
             response.data[0]['detail'],
-            f"http://testserver/workflow_system/users/self/workflows/engagements/{wce1.id}/")
+            f"http://testserver/workflow_system/users/self/engagements/{wce1.id}/")
 
     def test_collection_id_filter(self):
         wce1 = WorkflowCollectionEngagementFactory(
@@ -163,7 +163,7 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(
             response.data[0]['detail'],
-            f"http://testserver/workflow_system/users/self/workflows/engagements/{wce1.id}/")
+            f"http://testserver/workflow_system/users/self/engagements/{wce1.id}/")
 
     def test_start_end_error(self):
         request = self.factory.get(

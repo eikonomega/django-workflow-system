@@ -8,7 +8,7 @@ from ..views import workflows
 
 workflow_endpoints = [
     path('', workflows.workflow_api_root, name='workflows-root-v3'),
-    path('workflow/', workflows.WorkflowsView.as_view(), name='workflows-v3'),
+    path('workflows/', workflows.WorkflowsView.as_view(), name='workflows-v3'),
     path('workflows/<uuid:id>/',
          workflows.WorkflowView.as_view(), name='workflow-v3'),
     path('authors/', workflows.WorkflowAuthorsView.as_view(),

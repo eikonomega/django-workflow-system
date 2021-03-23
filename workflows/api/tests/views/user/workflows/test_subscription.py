@@ -148,7 +148,7 @@ class TestWorkflowCollectionSubscriptionView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data['detail'],
-            f"http://testserver/workflow_system/users/self/workflows/subscriptions/"
+            f"http://testserver/workflow_system/users/self/subscriptions/"
             f"{self.workflow_collection_subscription.id}/")
         self.assertEqual(
             response.data["workflow_collection"],
