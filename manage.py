@@ -8,10 +8,6 @@ def main():
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "test_project.settings")
 
-    # Only print the message if the process is not running from the auto-reloader
-    if os.environ.get('RUN_MAIN') != 'true':
-        print('Warning: Authentication settings have not been set. '
-              'The application will default to basic auth.')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
