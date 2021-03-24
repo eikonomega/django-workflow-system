@@ -1,7 +1,7 @@
 """Django model definition."""
 import uuid
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
@@ -56,7 +56,7 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
     # This is separate from Workflow author, and just points to the
     # person to did the administrative work to create the collection.
     created_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         limit_choices_to={"is_staff": True},
         help_text="Administrative user who created the collection in the database.",
