@@ -2,6 +2,7 @@
 import uuid
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
@@ -45,6 +46,12 @@ class WorkflowCollectionSubscription(CreatedModifiedAbstractModel):
 
     def __str__(self):
         return "{} - {}".format(self.user.username, self.workflow_collection.name)
+
+    # User must be active to subscribe a collection to them
+    def clean(self):
+        if not self.user.is_active:
+            raise ValidationError({"user": "User must be active to subscribe "
+                                           "a collection to them."})
 
 
 class WorkflowCollectionSubscriptionSchedule(CreatedModifiedAbstractModel):
