@@ -15,12 +15,6 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
 
     Workflow collections are the highest level of abstraction in the data model.
     Individual workflows are grouped together via collections.
-
-        assignment_only (BooleanField): If True, the Workflow should only be accessible via assignment.
-        active (BooleanField): Indication of whether or not the Workflow Collection is
-                               currently available for use.
-        category (CharField): The "type" of Workflow.
-        tags (ManyToMany): A 'list' of tags associated to the collection
     """
 
     COLLECTION_TYPES = (
@@ -63,24 +57,35 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
     )
 
     assignment_only = models.BooleanField(
-        default=False, help_text="Is this collection only available via assignment?"
+        default=False,
+        help_text="If True, the Workflow should only be accessible via assignment"
     )
 
     # Indicate if collection is eligible for recommendations.
     recommendable = models.BooleanField(
-        default=False, help_text="Is this collection available for recommendations?"
+        default=False,
+        help_text="Is this collection available for recommendations?"
     )
 
     active = models.BooleanField(
-        default=False, help_text="Indicates if collection is ready for use."
+        default=False,
+        help_text="Indication of whether or not the Workflow Collection is "
+                  "currently available for use."
     )
 
     # Collections can either represent a survey or a set of activities.
     # This may expand in the future.
-    category = models.CharField(default=None, choices=COLLECTION_TYPES, max_length=8)
+    category = models.CharField(
+        default=None,
+        choices=COLLECTION_TYPES,
+        max_length=8,
+        help_text="The 'type' of Workflow"
+    )
 
     tags = models.ManyToManyField(
-        WorkflowCollectionTagOption, through="WorkflowCollectionTagAssignment"
+        WorkflowCollectionTagOption,
+        through="WorkflowCollectionTagAssignment",
+        help_text="A 'list' of tags associated to the collection"
     )
 
     class Meta:

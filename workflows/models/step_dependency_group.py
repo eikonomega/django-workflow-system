@@ -13,17 +13,19 @@ class WorkflowStepDependencyGroup(CreatedModifiedAbstractModel):
     """
     This model allows multiple step dependencies to be grouped together as a
     logical set of dependencies.
-
-    Attributes:
-        id (UUIDField): The unique UUID for the database record.
-        workflow_collection (ForeignKey): The Workflow Collection of the Step's Workflow
-        workflow_step (ForeignKey): The WorkflowStep object that will have a dependency.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow_collection = models.ForeignKey(
-        WorkflowCollection, on_delete=models.CASCADE)
-    workflow_step = models.ForeignKey("WorkflowStep", on_delete=models.CASCADE)
+        WorkflowCollection,
+        on_delete=models.CASCADE,
+        help_text="The Workflow Collection of the Step's Workflow"
+    )
+    workflow_step = models.ForeignKey(
+        "WorkflowStep",
+        on_delete=models.CASCADE,
+        help_text="The WorkflowStep object that will have a dependency"
+    )
 
     class Meta:
         db_table = "workflow_system_step_dependency_group"

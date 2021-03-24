@@ -14,13 +14,13 @@ class WorkflowStepUITemplate(CreatedModifiedAbstractModel):
     about the design of the user interface, it does need to
     indicate to various potential interfaces which design template a
     Workflow author intended to be used for a given Workflow step.
-
-    Attributes:
-        id (UUIDField): The UUID for the database record.
-        name (CharField): The name of the step template
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(
+        max_length=200,
+        unique=True,
+        help_text="The name of the step template"
+    )
 
     class Meta:
         db_table = 'workflow_system_step_ui_template'

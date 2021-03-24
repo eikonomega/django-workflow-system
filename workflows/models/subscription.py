@@ -13,13 +13,6 @@ class WorkflowCollectionSubscription(CreatedModifiedAbstractModel):
     Users who wish to engage in a Workflow Collection on a repeat basis
     can create a WorkflowCollectionSubscription.
 
-    Attributes:
-        id (UUIDField): The unique UUID of the record.
-        workflow_collection (ForeignKey): The WorkflowCollection object associated with the
-                                          subscription.
-        user (ForeignKey): The User object who owns the subscription.
-        active (BooleanField): Whether or not the subscription is active.
-
     Notes:
         * By itself, a WorkFlow Collection subscription object isn't of much value.
         * It's value comes from the WorkflowCollectionSubscriptionSchedule objects
@@ -29,10 +22,19 @@ class WorkflowCollectionSubscription(CreatedModifiedAbstractModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow_collection = models.ForeignKey(
-        WorkflowCollection, on_delete=models.PROTECT
+        WorkflowCollection,
+        on_delete=models.PROTECT,
+        help_text="The WorkflowCollection object associated with the subscription"
     )
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    active = models.BooleanField(default=True)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        help_text="The User object who owns the subscription"
+    )
+    active = models.BooleanField(
+        default=True,
+        help_text="Whether or not the subscription is active"
+    )
 
     class Meta:
         db_table = "workflow_system_collection_subscription"

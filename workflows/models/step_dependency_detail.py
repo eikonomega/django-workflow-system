@@ -15,19 +15,20 @@ class WorkflowStepDependencyDetail(CreatedModifiedAbstractModel):
     """
     This model represents a single dependency specification
     within a dependency group.
-
-    Attributes:
-        id (UUIDField): The unique UUID for the database record.
-        dependency_group (ForeignKey): The Dependency Group the Step Dependency belongs to.
-        dependency_step (ForeignKey): The WorkflowStep object that is being depended on.
-        required_response (JSONField): The user response that is required for the dependency to be
-                                       considered fulfilled.
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     dependency_group = models.ForeignKey(
-        WorkflowStepDependencyGroup, on_delete=models.CASCADE)
-    dependency_step = models.ForeignKey(WorkflowStep, on_delete=models.CASCADE)
-    required_response = models.JSONField()
+        WorkflowStepDependencyGroup,
+        on_delete=models.CASCADE,
+        help_text="The Dependency Group the Step Dependency belongs to"
+    )
+    dependency_step = models.ForeignKey(
+        WorkflowStep,
+        on_delete=models.CASCADE,
+        help_text="The WorkflowStep object that is being depended on"
+    )
+    required_response = models.JSONField(help_text="The user response that is required for "
+                                                   "the dependency to be considered fulfilled")
 
     class Meta:
         db_table = "workflow_system_step_dependency_detail"
