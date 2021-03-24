@@ -26,11 +26,11 @@ class WorkflowCollectionSubscriptionSummarySerializer(serializers.ModelSerialize
     """
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name='user-workflow-collection-subscription-v3', lookup_field='id')
+        view_name='user-workflow-collection-subscription', lookup_field='id')
 
     workflow_collection = serializers.HyperlinkedRelatedField(
         queryset=WorkflowCollection.objects.all(),
-        view_name='workflow-collection-v3',
+        view_name='workflow-collection',
         lookup_field='id')
 
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())

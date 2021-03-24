@@ -22,18 +22,21 @@ class attributes like so:
     permission_classes = [
         oauth2_permissions.IsAuthenticatedOrTokenHasScope]
 """
-
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
+from workflows.api.views.user.workflows import workflow_user_data_api_root
+
 
 @api_view(['GET'])
-def api_root(request, format=None):
+def workflow_api_root(request, format=None):
     """
     Overview of available resources in this API.
     """
     return Response({
-        'workflows': reverse(
-            'workflows-root-v3', request=request, format=format)
+        'workflows': reverse('workflows', request=request, format=format),
+        'workflow-authors': reverse('workflow-authors', request=request, format=format),
+        'workflow-collections': reverse('workflow-collections', request=request, format=format),
+        'workflow-user-data': reverse('workflow-user-data-root', request=request, format=format),
     })

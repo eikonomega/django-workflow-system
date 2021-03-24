@@ -96,7 +96,7 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
         if latest_version == None:
             return None
         if obj != latest_version:
-            relative_url = reverse('workflow-collection-v3', kwargs={"id": latest_version.id})
+            relative_url = reverse('workflow-collection', kwargs={"id": latest_version.id})
             return self.context['request'].build_absolute_uri(relative_url)
         else:
             return None
@@ -108,7 +108,7 @@ class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
     """
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-collection-v3', lookup_field='id')
+        view_name='workflow-collection', lookup_field='id')
 
     class Meta:
         model = WorkflowCollection
@@ -141,7 +141,7 @@ class WorkflowCollectionDetailedSerializer(WorkflowCollectionBaseSerializer):
     workflowcollectionmember_set = WorkflowCollectionMemberSummarySerializer(
         many=True)
     self_detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-collection-v3',
+        view_name='workflow-collection',
         lookup_field='id')
 
     class Meta:
@@ -176,7 +176,7 @@ class WorkflowCollectionWithStepsSerializer(WorkflowCollectionBaseSerializer):
     workflowcollectionmember_set = WorkflowCollectionMemberDetailedSerializer(
         many=True)
     self_detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-collection-v3',
+        view_name='workflow-collection',
         lookup_field='id')
 
     class Meta:

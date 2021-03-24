@@ -40,7 +40,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
 
     def get_detail(self, instance):
         reversed_url = reverse(
-            viewname='user-workflow-collection-engagement-detail-v3',
+            viewname='user-workflow-collection-engagement-detail',
             kwargs={
                 'engagement_id': instance.workflow_collection_engagement.id,
                 'id': instance.id

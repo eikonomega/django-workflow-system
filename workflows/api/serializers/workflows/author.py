@@ -23,7 +23,7 @@ class WorkflowForeignKeyAuthorSummarySerializer(serializers.ModelSerializer):
     """
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-v3', lookup_field='id')
+        view_name='workflow', lookup_field='id')
 
     class Meta:
         model = Workflow
@@ -36,7 +36,7 @@ class WorkflowAuthorSummarySerializer(serializers.ModelSerializer):
     """
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-author-v3', lookup_field='id')
+        view_name='workflow-author', lookup_field='id')
 
     user = UserTerseSerializer()
 
@@ -57,7 +57,7 @@ class WorkflowAuthorDetailedSerializer(serializers.ModelSerializer):
         many=True)
 
     self_detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-author-v3',
+        view_name='workflow-author',
         lookup_field='id')
 
     class Meta:

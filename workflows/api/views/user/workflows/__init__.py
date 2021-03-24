@@ -1,3 +1,7 @@
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+
 from .assignment import (
     WorkflowCollectionAssignmentsView, WorkflowCollectionAssignmentView)
 from .engagement import (
@@ -9,6 +13,7 @@ from .subscription import (
     WorkflowCollectionSubscriptionsView,
     WorkflowCollectionSubscriptionView)
 
+
 __all__ = [
     'WorkflowCollectionAssignmentsView',
     'WorkflowCollectionAssignmentView',
@@ -18,5 +23,17 @@ __all__ = [
     'WorkflowCollectionEngagementDetailView',
     'WorkflowCollectionSubscriptionsView',
     'WorkflowCollectionSubscriptionView',
-    'WorkflowCollectionRecommendationsView'
+    "workflow_user_data_api_root"
 ]
+
+
+@api_view(['GET'])
+def workflow_user_data_api_root(request, format=None):
+    """
+    Overview of available resources in this API.
+    """
+    return Response({
+        'user-workflow-collection-engagements': reverse('user-workflow-collection-engagements', request=request, format=format),
+        'user-workflow-collection-subscriptions': reverse('user-workflow-collection-subscriptions', request=request, format=format),
+        'user-workflow-assignments': reverse('user-workflow-assignments', request=request, format=format),
+    })

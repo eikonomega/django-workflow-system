@@ -83,7 +83,7 @@ class WorkflowCollectionEngagementBaseSerializer(serializers.ModelSerializer):
 
     workflow_collection = serializers.HyperlinkedRelatedField(
         queryset=WorkflowCollection.objects.all(),
-        view_name='workflow-collection-v3',
+        view_name='workflow-collection',
         lookup_field='id')
 
     state = serializers.SerializerMethodField(required=False)
@@ -119,7 +119,7 @@ class WorkflowCollectionEngagementBaseSerializer(serializers.ModelSerializer):
                 return None
             try:
                 reversed_url = reverse(
-                    viewname='workflow-v3',
+                    viewname='workflow',
                     kwargs={'id': workflow_id})
 
             except NoReverseMatch as e:
@@ -152,7 +152,7 @@ class WorkflowCollectionEngagementSummarySerializer(WorkflowCollectionEngagement
     """
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name='user-workflow-collection-engagement-v3',
+        view_name='user-workflow-collection-engagement',
         lookup_field='id',
         required=False,
     )
@@ -208,7 +208,7 @@ class WorkflowCollectionEngagementDetailedSerializer(WorkflowCollectionEngagemen
     )
 
     self_detail = serializers.HyperlinkedIdentityField(
-        view_name='user-workflow-collection-engagement-v3',
+        view_name='user-workflow-collection-engagement',
         lookup_field='id',
         required=False,
     )

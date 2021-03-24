@@ -12,7 +12,7 @@ class WorkflowTerseSerializer(serializers.ModelSerializer):
     """
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-v3', lookup_field='id')
+        view_name='workflow', lookup_field='id')
 
     class Meta:
         model = Workflow
@@ -28,7 +28,7 @@ class WorkflowSummarySerializer(serializers.ModelSerializer):
     """
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-v3', lookup_field='id')
+        view_name='workflow', lookup_field='id')
 
     author = WorkflowAuthorSummarySerializer()
     images = serializers.SerializerMethodField()
@@ -60,7 +60,7 @@ class WorkflowDetailedSerializer(serializers.ModelSerializer):
     author = WorkflowAuthorSummarySerializer()
     workflowstep_set = WorkflowStepSummarySerializer(many=True)
     self_detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-v3',
+        view_name='workflow',
         lookup_field='id')
     images = serializers.SerializerMethodField()
 
@@ -92,7 +92,7 @@ class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
     author = WorkflowAuthorSummarySerializer()
     workflowstep_set = WorkflowStepSummarySerializer(many=True)
     detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-v3',
+        view_name='workflow',
         lookup_field='id')
     images = serializers.SerializerMethodField()
 

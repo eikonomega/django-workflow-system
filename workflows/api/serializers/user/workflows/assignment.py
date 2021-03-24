@@ -9,18 +9,18 @@ class WorkflowCollectionAssignmentSummarySerializer(serializers.ModelSerializer)
     """
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name='user-workflow-assignment-v3', lookup_field='id')
+        view_name='user-workflow-assignment', lookup_field='id')
 
     engagement = serializers.HyperlinkedRelatedField(
         queryset=WorkflowCollectionEngagement.objects.all(),
-        view_name='user-workflow-collection-engagement-v3',
+        view_name='user-workflow-collection-engagement',
         lookup_field='id',
         allow_null=True
     )
 
     workflow_collection = serializers.HyperlinkedRelatedField(
         queryset=WorkflowCollection.objects.all(),
-        view_name='workflow-collection-v3',
+        view_name='workflow-collection',
         lookup_field='id')
 
     class Meta:
