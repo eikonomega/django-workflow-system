@@ -7,6 +7,7 @@ from django.db import models
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.collection_tag import WorkflowCollectionTagOption
 from workflows.utils.validators import validate_code
+from workflows.utils.version_validator import version_validator
 
 
 class WorkflowCollection(CreatedModifiedAbstractModel):
@@ -38,13 +39,13 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
         help_text="""
         Version of the collection. When you change a collection, you should 
         create a new version rather than modify an existing one.
-        """,
+        """
     )
 
     name = models.CharField(
         max_length=200,
         unique=False,
-        help_text="Human friendly name for the collection.",
+        help_text="Human friendly name for the collection."
     )
     description = models.TextField()
 
@@ -59,7 +60,7 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         limit_choices_to={"is_staff": True},
-        help_text="Administrative user who created the collection in the database.",
+        help_text="Administrative user who created the collection in the database."
     )
 
     assignment_only = models.BooleanField(
@@ -103,3 +104,6 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
 
     def source_identifier(self):
         return f"{self.code}_v{self.version}"
+
+    def clean(self):
+        version_validator(self, WorkflowCollection)

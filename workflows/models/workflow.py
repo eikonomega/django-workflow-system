@@ -7,15 +7,13 @@ from django.db import models
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.author import WorkflowAuthor
 from workflows.utils.validators import validate_code
+from workflows.utils.version_validator import version_validator
 
 
 class Workflow(CreatedModifiedAbstractModel):
     """
     This is the primary model for this feature.
     """
-
-    IMAGE_SIZE = (600, 375)
-
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -56,3 +54,6 @@ class Workflow(CreatedModifiedAbstractModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+    def clean(self):
+        version_validator(self, Workflow)

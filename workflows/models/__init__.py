@@ -1,5 +1,5 @@
 """Convenience imports."""
-from workflows.models.author import WorkflowAuthor, workflow_author_media_folder
+from workflows.models.author import WorkflowAuthor
 from workflows.models.assignment import WorkflowCollectionAssignment
 from workflows.models.collection_image import WorkflowCollectionImage
 from workflows.models.collection_image_type import WorkflowCollectionImageType
@@ -43,7 +43,6 @@ from workflows.models.workflow_image_type import WorkflowImageType
 
 __all__ = [
     "WorkflowAuthor",
-    "workflow_author_media_folder",
     "WorkflowCollectionAssignment",
     "WorkflowCollectionEngagement",
     "WorkflowCollectionEngagementDetail",
