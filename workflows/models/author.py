@@ -1,27 +1,21 @@
 """Django model definition."""
 import uuid
 
+from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import User
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
-
-
-def workflow_author_media_folder(instance, filename):
-    """Define where author images are stored."""
-    return "workflows/authors/{}/profileImage.{}".format(
-        instance.id, filename.rpartition(".")[2]
-    )
+from workflows.utils import author_media_location
 
 
 class WorkflowAuthor(CreatedModifiedAbstractModel):
     """Model used to record the author/creator a given workflow."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(User, on_delete=models.PROTECT)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     title = models.CharField(max_length=200)
     image = models.ImageField(
-        upload_to=workflow_author_media_folder, max_length=200, null=True
+        upload_to=author_media_location, max_length=200, null=True
     )
     biography = models.TextField(max_length=500)
 

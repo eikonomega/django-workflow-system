@@ -3,9 +3,9 @@ from typing import TypedDict, List, Union
 import uuid
 
 import jsonschema
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.contrib.auth.models import User
 from django.db.models import Subquery, OuterRef, Q
 from django.utils import timezone
 
@@ -49,7 +49,7 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
     workflow_collection = models.ForeignKey(
         WorkflowCollection, on_delete=models.PROTECT
     )
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     started = models.DateTimeField(default=timezone.now)
     finished = models.DateTimeField(blank=True, null=True)
 

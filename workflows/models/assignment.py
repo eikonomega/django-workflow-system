@@ -4,7 +4,6 @@ from datetime import date
 
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 
@@ -38,7 +37,8 @@ class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
 
     workflow_collection = models.ForeignKey(WorkflowCollection, on_delete=models.CASCADE)
 
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    # FK to Django user.
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
 
     # TODO: If time allows, we should make these datetime fields to allow users to have more precise control over assignements.
     assigned_on = models.DateField(default=date.today)
