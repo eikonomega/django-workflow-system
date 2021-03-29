@@ -104,10 +104,10 @@ class TestWorkflowAuthorView(TestCase):
 
     def test_get__no_author_detail(self):
         """Non-Existent Author ID returns 404."""
-        made_up_uuiid = '4f84f799-9cc5-43d3-0000-24840b7eb8ce'
+        made_up_uuid = '4f84f799-9cc5-43d3-0000-24840b7eb8ce'
         request = self.factory.get(
-            f"/workflows/authors/{made_up_uuiid}/")
-        response = self.view(request, made_up_uuiid)
+            f"/workflows/authors/{made_up_uuid}/")
+        response = self.view(request, made_up_uuid)
 
         self.assertEqual(response.status_code, 404)
         self.assertDictEqual(
