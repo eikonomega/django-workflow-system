@@ -2,9 +2,7 @@
 import uuid
 
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Max
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.author import WorkflowAuthor
@@ -61,4 +59,4 @@ class Workflow(CreatedModifiedAbstractModel):
         super().save(*args, **kwargs)
 
     def clean(self):
-        version_validator(self, Workflow, 'workflow')
+        version_validator(self, Workflow)

@@ -2,9 +2,7 @@
 import uuid
 
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Max
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.collection_tag import WorkflowCollectionTagOption
@@ -108,4 +106,4 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
         return f"{self.code}_v{self.version}"
 
     def clean(self):
-        version_validator(self, WorkflowCollection, 'collection')
+        version_validator(self, WorkflowCollection)
