@@ -1,14 +1,6 @@
 """Media files location specifications."""
 
 
-def workflow_cover_image_location(instance, filename):
-    """Return the location of a stored media file for a Workflow."""
-    workflow_id = instance.id
-    file_extension = filename.rpartition(".")[2]
-
-    return f"workflow_system/workflows/{workflow_id}/cover-image.{file_extension}"
-
-
 def workflow_step_media_location(instance, filename):
     """Return the location of a stored media file for a Workflow Step."""
     workflow_id = instance.workflow_step.workflow.id
