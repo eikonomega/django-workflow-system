@@ -261,6 +261,10 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
         return "{} - {}".format(self.workflow_collection.name, self.user.username)
 
     def clean(self, *args, **kwargs):
+        # User must be active to engage in a collection
+        if not self.user.is_active:
+            raise ValidationError({"user": "User must be active to engage in a collection."})
+
         # Ensure finish date is later than start date
         if self.finished is not None:
             if self.finished < self.started:
