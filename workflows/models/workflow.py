@@ -14,9 +14,6 @@ class Workflow(CreatedModifiedAbstractModel):
     """
     This is the primary model for this feature.
     """
-
-    IMAGE_SIZE = (600, 375)
-
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
