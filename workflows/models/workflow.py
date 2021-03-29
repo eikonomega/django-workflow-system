@@ -7,6 +7,7 @@ from django.db import models
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.author import WorkflowAuthor
 from workflows.utils.validators import validate_code
+from workflows.utils.version_validator import version_validator
 
 
 class Workflow(CreatedModifiedAbstractModel):
@@ -53,3 +54,6 @@ class Workflow(CreatedModifiedAbstractModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+    def clean(self):
+        version_validator(self, Workflow)
