@@ -9,6 +9,7 @@ from django.db.models import Max
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.author import WorkflowAuthor
 from workflows.utils.validators import validate_code
+from workflows.utils.version_validator import version_validator
 
 
 class Workflow(CreatedModifiedAbstractModel):
@@ -60,19 +61,4 @@ class Workflow(CreatedModifiedAbstractModel):
         super().save(*args, **kwargs)
 
     def clean(self):
-        previous_workflows = Workflow.objects.filter(code=self.code)
-        latest_version = previous_workflows.aggregate(Max('version'))['version__max']
-
-        # If this is a new workflow code then make sure the version is 1.
-        if not latest_version and self.version != 1:
-            raise ValidationError({"version": f"Version must be 1 for new workflow codes."})
-
-        # If the first and only workflow of a certain code is attempting to be updated with a different code.
-        if previous_workflows.count() == 1 and previous_workflows[0].id == self.id and self.version != 1:
-            raise ValidationError({"version": f"Version must be 1 for the first workflow of a code."})
-
-        # Validate that this workflow code's version is not incrementing by more than 1
-        if latest_version and self.version > latest_version + 1:
-            raise ValidationError({"version": f"Version can only be incremented by 1. "
-                                              f"The current latest version of this workflow code "
-                                              f"is {latest_version}."})
+        version_validator(self, Workflow, 'workflow')

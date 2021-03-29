@@ -9,6 +9,7 @@ from django.db.models import Max
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.collection_tag import WorkflowCollectionTagOption
 from workflows.utils.validators import validate_code
+from workflows.utils.version_validator import version_validator
 
 
 class WorkflowCollection(CreatedModifiedAbstractModel):
@@ -107,20 +108,4 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
         return f"{self.code}_v{self.version}"
 
     def clean(self):
-        # Validate that this collection code's version is not incrementing by more than 1
-        previous_collections = WorkflowCollection.objects.filter(code=self.code)
-        latest_version = previous_collections.aggregate(Max('version'))['version__max']
-
-        # If this is a new collection code then make sure the version is 1.
-        if not latest_version and self.version != 1:
-            raise ValidationError({"version": f"Version must be 1 for new collection codes."})
-
-        # If the first and only collection of a certain code is attempting to be updated with a different code.
-        if previous_collections.count() == 1 and previous_collections[0].id == self.id and self.version != 1:
-            raise ValidationError({"version": f"Version must be 1 for the first collection of a code."})
-
-        # Validate that this collection code's version is not incrementing by more than 1
-        if latest_version and self.version > latest_version + 1:
-            raise ValidationError({"version": f"Version can only be incremented by 1. "
-                                              f"The current latest version of this collection code "
-                                              f"is {latest_version}."})
+        version_validator(self, WorkflowCollection, 'collection')
