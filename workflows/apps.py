@@ -6,7 +6,23 @@ class WorkflowsConfig(AppConfig):
     name = 'workflows'
 
     def ready(self):
-        if settings.AUTHENTICATION_BACKENDS == ['django.contrib.auth.backends.ModelBackend']:
-            print("Warning: DRF Authentication settings have not been set. "
-                  "The application will default to session auth and basic auth. "
-                  "For more information see https://www.django-rest-framework.org/api-guide/authentication/#setting-the-authentication-scheme")
+        warning = "Warning: Some Django Rest Framework settings have not been set. We recommend " \
+                  "setting them to avoid any unwanted security gaps. For more information see " \
+                  "https://www.django-rest-framework.org/api-guide/authentication/#setting-" \
+                  "the-authentication-scheme"
+
+        try:
+            rest_framework_settings = settings.REST_FRAMEWORK
+        except AttributeError:
+            print(warning)
+            return
+
+        rest_framework_settings_keys = rest_framework_settings.keys()
+
+        if "DEFAULT_AUTHENTICATION_CLASSES" not in rest_framework_settings_keys:
+            print(warning)
+            return
+
+        if "DEFAULT_PERMISSION_CLASSES" not in rest_framework_settings_keys:
+            print(warning)
+            return
