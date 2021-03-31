@@ -1,7 +1,8 @@
 """Django model definition."""
 import uuid
 
-from django.contrib.auth.models import User
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
@@ -31,7 +32,7 @@ class WorkflowCollectionSubscription(CreatedModifiedAbstractModel):
     workflow_collection = models.ForeignKey(
         WorkflowCollection, on_delete=models.PROTECT
     )
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     active = models.BooleanField(default=True)
 
     class Meta:
@@ -45,6 +46,11 @@ class WorkflowCollectionSubscription(CreatedModifiedAbstractModel):
 
     def __str__(self):
         return "{} - {}".format(self.user.username, self.workflow_collection.name)
+
+    # User must be active to subscribe a collection to them
+    def clean(self):
+        if not self.user.is_active:
+            raise ValidationError({"user": "User must be active to subscribe to a collection."})
 
 
 class WorkflowCollectionSubscriptionSchedule(CreatedModifiedAbstractModel):

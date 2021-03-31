@@ -1,21 +1,19 @@
 """Django model definition."""
 import uuid
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
 from workflows.models.author import WorkflowAuthor
 from workflows.utils.validators import validate_code
+from workflows.utils.version_validator import version_validator
 
 
 class Workflow(CreatedModifiedAbstractModel):
     """
     This is the primary model for this feature.
     """
-
-    IMAGE_SIZE = (600, 375)
-
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -39,7 +37,7 @@ class Workflow(CreatedModifiedAbstractModel):
         help_text="The author of the Workflow"
     )
     created_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         limit_choices_to={"is_staff": True},
         help_text="Administrative user who created the Workflow in the database"
@@ -56,3 +54,6 @@ class Workflow(CreatedModifiedAbstractModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+    def clean(self):
+        version_validator(self, Workflow)

@@ -4,7 +4,6 @@ from datetime import date
 
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 
@@ -36,13 +35,10 @@ class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    # FK to Workflow Collection
-    workflow_collection = models.ForeignKey(
-        WorkflowCollection, on_delete=models.CASCADE
-    )
+    workflow_collection = models.ForeignKey(WorkflowCollection, on_delete=models.CASCADE)
 
     # FK to Django user.
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
 
     # TODO: If time allows, we should make these datetime fields to allow users to have more precise control over assignements.
     assigned_on = models.DateField(default=date.today)
@@ -105,3 +101,8 @@ class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
                 raise ValidationError(
                     "The Assignment and Engagement Users are not the same."
                 )
+
+        # User must be active to assign a collection to them
+        if not self.user.is_active:
+            raise ValidationError({"user": "User must be active to assign "
+                                           "a collection to them."})
