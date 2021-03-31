@@ -1,15 +1,15 @@
+"""DRF Serialzier Definition."""
 import logging
 
 from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
 from rest_framework import serializers
 
-from .....models import (
-    WorkflowCollection, WorkflowCollectionEngagement)
-from .engagement_detail import (
-    WorkflowCollectionEngagementDetailSummarySerializer)
+from .....models import WorkflowCollection, WorkflowCollectionEngagement
+from .engagement_detail import WorkflowCollectionEngagementDetailSummarySerializer
 
 logger = logging.getLogger(__name__)
+
 
 class WorkflowCollectionEngagementBaseSerializer(serializers.ModelSerializer):
     """Base serializer for common methods/fields between Detailed and Summary serializers"""
@@ -34,31 +34,37 @@ class WorkflowCollectionEngagementBaseSerializer(serializers.ModelSerializer):
                 return getattr(self.instance, attr_name)
             return None
 
-        started = getattr_patched('started')
-        finished = getattr_patched('finished')
-        workflow_collection = getattr_patched('workflow_collection')
-        state = getattr_patched('state')
-        workflowcollectionassignment = getattr_patched('workflowcollectionassignment')
-        user = getattr_patched('user')
+        started = getattr_patched("started")
+        finished = getattr_patched("finished")
+        workflow_collection = getattr_patched("workflow_collection")
+        state = getattr_patched("state")
+        workflowcollectionassignment = getattr_patched("workflowcollectionassignment")
+        user = getattr_patched("user")
         # Check that the finish date is later than the start date.
 
         if finished is not None:
             if finished < started:
                 raise serializers.ValidationError(
-                    'The finish date must be later than the start date.')
-            if workflow_collection.category == 'SURVEY':
-                if state['next_step_id']:  # i.e. there is still a next step which can be completed
-                    raise serializers.ValidationError("There are still steps which can be completed")
+                    "The finish date must be later than the start date."
+                )
+            if workflow_collection.category == "SURVEY":
+                if state[
+                    "next_step_id"
+                ]:  # i.e. there is still a next step which can be completed
+                    raise serializers.ValidationError(
+                        "There are still steps which can be completed"
+                    )
 
         if workflowcollectionassignment:
-            if workflow_collection != \
-                    workflowcollectionassignment.workflow_collection:
+            if workflow_collection != workflowcollectionassignment.workflow_collection:
                 raise serializers.ValidationError(
-                    'The Engagement and Assignment '
-                    'WorkflowCollections are not the same')
+                    "The Engagement and Assignment "
+                    "WorkflowCollections are not the same"
+                )
             elif user != workflowcollectionassignment.user:
                 raise serializers.ValidationError(
-                    'The Engagement and Assignment Users are not the same')
+                    "The Engagement and Assignment Users are not the same"
+                )
         # Check if the user has an existing incomplete engagement to the same workflow collection
 
         existing_engagement = WorkflowCollectionEngagement.objects.filter(
@@ -70,32 +76,36 @@ class WorkflowCollectionEngagementBaseSerializer(serializers.ModelSerializer):
             existing_engagement = existing_engagement.exclude(pk=self.instance.pk)
         if existing_engagement:
             raise serializers.ValidationError(
-                'The user has an existing incomplete engagement for this workflow collection.')
+                "The user has an existing incomplete engagement for this workflow collection."
+            )
 
         if finished is not None:
             # Clean the finished engagement by deleting unfinished details
-            self.instance.workflowcollectionengagementdetail_set.filter(finished=None).delete()
+            self.instance.workflowcollectionengagementdetail_set.filter(
+                finished=None
+            ).delete()
         return data
 
     user = serializers.HiddenField(
-        default=serializers.CurrentUserDefault(),
-        write_only=True)
+        default=serializers.CurrentUserDefault(), write_only=True
+    )
 
     workflow_collection = serializers.HyperlinkedRelatedField(
         queryset=WorkflowCollection.objects.all(),
-        view_name='workflow-collection-v3',
-        lookup_field='id')
+        view_name="workflow-collection",
+        lookup_field="id",
+    )
 
     state = serializers.SerializerMethodField(required=False)
 
     class Meta:
         model = WorkflowCollectionEngagement
         fields = [
-            'user',
-            'workflow_collection',
-            'started',
-            'finished',
-            'state',
+            "user",
+            "workflow_collection",
+            "started",
+            "finished",
+            "state",
         ]
 
     def get_state(self, instance):
@@ -118,79 +128,86 @@ class WorkflowCollectionEngagementBaseSerializer(serializers.ModelSerializer):
             if workflow_id is None:
                 return None
             try:
-                reversed_url = reverse(
-                    viewname='workflow-v3',
-                    kwargs={'id': workflow_id})
+                reversed_url = reverse(viewname="workflow", kwargs={"id": workflow_id})
 
             except NoReverseMatch as e:
                 logger.error(
                     f"Could not reverse workflow {workflow_id}",
                     exc_info=e,
-                extra={
-                    "workflow_id": workflow_id
-                },)
+                    extra={"workflow_id": workflow_id},
+                )
                 return None
-            return self.context['request'].build_absolute_uri(reversed_url)
+            return self.context["request"].build_absolute_uri(reversed_url)
 
         state = instance.state
         formatted_previously_completed_workflows = []
-        for previously_completed_workflow in state['previously_completed_workflows']:
-            uri = workflow_to_uri(previously_completed_workflow['workflow_id'])
+        for previously_completed_workflow in state["previously_completed_workflows"]:
+            uri = workflow_to_uri(previously_completed_workflow["workflow_id"])
             if uri:
                 formatted_previously_completed_workflows.append({"workflow": uri})
 
-        state['next_workflow'] = workflow_to_uri(state.pop('next_workflow_id'))
-        state['prev_workflow'] = workflow_to_uri(state.pop('prev_workflow_id'))
-        state['previously_completed_workflows'] = formatted_previously_completed_workflows
+        state["next_workflow"] = workflow_to_uri(state.pop("next_workflow_id"))
+        state["prev_workflow"] = workflow_to_uri(state.pop("prev_workflow_id"))
+        state[
+            "previously_completed_workflows"
+        ] = formatted_previously_completed_workflows
 
         return state
 
 
-class WorkflowCollectionEngagementSummarySerializer(WorkflowCollectionEngagementBaseSerializer):
+class WorkflowCollectionEngagementSummarySerializer(
+    WorkflowCollectionEngagementBaseSerializer
+):
     """
     Summary level Serializer for WorkflowCollectionEngagement objects.
     """
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name='user-workflow-collection-engagement-v3',
-        lookup_field='id',
+        view_name="user-workflow-collection-engagement",
+        lookup_field="id",
         required=False,
     )
 
     class Meta:
         model = WorkflowCollectionEngagement
         fields = [
-            'detail',
-            'user',
-            'workflow_collection',
-            'started',
-            'finished',
+            "detail",
+            "user",
+            "workflow_collection",
+            "started",
+            "finished",
         ]
 
 
-class WorkflowCollectionEngagementAndDetailsSerializer(WorkflowCollectionEngagementSummarySerializer):
+class WorkflowCollectionEngagementAndDetailsSerializer(
+    WorkflowCollectionEngagementSummarySerializer
+):
     """
     Summary level Serializer for WorkflowCollectionEngagementDetail objects.
     """
 
-    workflowcollectionengagementdetail_set = WorkflowCollectionEngagementDetailSummarySerializer(
-        many=True,
-        required=False,
+    workflowcollectionengagementdetail_set = (
+        WorkflowCollectionEngagementDetailSummarySerializer(
+            many=True,
+            required=False,
+        )
     )
 
     class Meta:
         model = WorkflowCollectionEngagement
         fields = [
-            'detail',
-            'user',
-            'workflow_collection',
-            'started',
-            'finished',
-            'workflowcollectionengagementdetail_set',
+            "detail",
+            "user",
+            "workflow_collection",
+            "started",
+            "finished",
+            "workflowcollectionengagementdetail_set",
         ]
 
 
-class WorkflowCollectionEngagementDetailedSerializer(WorkflowCollectionEngagementBaseSerializer):
+class WorkflowCollectionEngagementDetailedSerializer(
+    WorkflowCollectionEngagementBaseSerializer
+):
     """
     Detailed serializer for WorkflowCollectionEngagement objects.
 
@@ -202,25 +219,27 @@ class WorkflowCollectionEngagementDetailedSerializer(WorkflowCollectionEngagemen
         WorkflowUserEngagement class.
     """
 
-    workflowcollectionengagementdetail_set = WorkflowCollectionEngagementDetailSummarySerializer(
-        many=True,
-        required=False,
+    workflowcollectionengagementdetail_set = (
+        WorkflowCollectionEngagementDetailSummarySerializer(
+            many=True,
+            required=False,
+        )
     )
 
     self_detail = serializers.HyperlinkedIdentityField(
-        view_name='user-workflow-collection-engagement-v3',
-        lookup_field='id',
+        view_name="user-workflow-collection-engagement",
+        lookup_field="id",
         required=False,
     )
 
     class Meta:
         model = WorkflowCollectionEngagement
         fields = [
-            'self_detail',
-            'user',
-            'workflow_collection',
-            'started',
-            'finished',
-            'workflowcollectionengagementdetail_set',
-            'state',
+            "self_detail",
+            "user",
+            "workflow_collection",
+            "started",
+            "finished",
+            "workflowcollectionengagementdetail_set",
+            "state",
         ]

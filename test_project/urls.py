@@ -19,7 +19,10 @@ from django.conf import settings
 from django.urls import re_path
 from django.views.static import serve
 
-urlpatterns = [path("admin/", admin.site.urls), path("", include("workflows.api.urls"))]
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/", include("workflows.api.urls")),
+]
 
 if settings.DEBUG:
     urlpatterns += [
