@@ -35,5 +35,5 @@ def workflow_user_data_api_root(request, format=None):
     return Response({
         'user-workflow-collection-engagements': reverse('user-workflow-collection-engagements', request=request, format=format),
         'user-workflow-collection-subscriptions': reverse('user-workflow-collection-subscriptions', request=request, format=format),
-        'user-workflow-assignments': reverse('user-workflow-assignments', request=request, format=format),
+        'user-workflow-collection-assignments': reverse('user-workflow-assignments', request=request, format=format),
     })

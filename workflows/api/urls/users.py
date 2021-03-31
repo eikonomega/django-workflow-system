@@ -10,7 +10,9 @@ user resource.
 """
 from django.urls import path
 
-from ..views import user, workflow_user_data_api_root
+from ..views import user
+
+from ..views.user.workflows import workflow_user_data_api_root
 
 # Workflow User Endpoints
 user_endpoints = [
