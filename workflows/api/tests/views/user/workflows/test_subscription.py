@@ -67,7 +67,7 @@ class TestWorkflowSubscriptionsView(TestCase):
         request = self.factory.post(
             self.view_url,
             data={
-                "workflow_collection": f"http://testserver/workflow_system/collections/{self.workflow_collection.id}/",
+                "workflow_collection": f"http://testserver/api/workflow_system/collections/{self.workflow_collection.id}/",
                 "active": True,
                 "workflowcollectionsubscriptionschedule_set": [{
                     "time_of_day": "12:00:00+02:00",
@@ -89,7 +89,7 @@ class TestWorkflowSubscriptionsView(TestCase):
         request = self.factory.post(
             self.view_url,
             data={
-                "workflow_collection": f"http://testserver/workflow_system/collections/{self.workflow_collection.id}/",
+                "workflow_collection": f"http://testserver/api/workflow_system/collections/{self.workflow_collection.id}/",
                 "active": True,
                 "workflowcollectionsubscriptionschedule_set": [{
                     "time_of_day": self.workflow_collection_subscription_schedule.time_of_day,
@@ -148,11 +148,11 @@ class TestWorkflowCollectionSubscriptionView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data['detail'],
-            f"http://testserver/workflow_system/users/self/workflows/subscriptions/"
+            f"http://testserver/api/workflow_system/users/self/workflows/subscriptions/"
             f"{self.workflow_collection_subscription.id}/")
         self.assertEqual(
             response.data["workflow_collection"],
-            f"http://testserver/workflow_system/collections/{self.workflow_collection.id}/")
+            f"http://testserver/api/workflow_system/collections/{self.workflow_collection.id}/")
         self.assertEqual(
             response.data['active'], self.workflow_collection_subscription.active)
         self.assertEqual(
@@ -168,7 +168,7 @@ class TestWorkflowCollectionSubscriptionView(TestCase):
         request = self.factory.put(
             f"/users/self/workflows/subscriptions/{self.workflow_collection_subscription.id}",
             data={
-                "workflow_collection": f"http://testserver/workflow_system/collections/{self.workflow_collection.id}/",
+                "workflow_collection": f"http://testserver/api/workflow_system/collections/{self.workflow_collection.id}/",
                 "active": False,
                 "workflowcollectionsubscriptionschedule_set": [
                     {

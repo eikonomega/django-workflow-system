@@ -57,7 +57,7 @@ class TestWorkflowAssignmentsView(TestCase):
         # Assert Workflow Assignment 1
         self.assertEqual(
             response.data[0]["workflow_collection"],
-            f"http://testserver/workflow_system/collections/{self.workflow_assignment.workflow_collection.id}/",
+            f"http://testserver/api/workflow_system/collections/{self.workflow_assignment.workflow_collection.id}/",
         )
         self.assertEqual(
             response.data[0]["assigned_on"], self.assigned_on.strftime("%Y-%m-%d")
@@ -65,13 +65,13 @@ class TestWorkflowAssignmentsView(TestCase):
         self.assertEqual(response.data[0]["status"], "ASSIGNED")
         self.assertEqual(
             response.data[0]["engagement"],
-            f"http://testserver/workflow_system/users/self/workflows/engagements/{self.workflow_assignment.engagement.id}/",
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.workflow_assignment.engagement.id}/",
         )
 
         # Assert Workflow Assignment 2
         self.assertEqual(
             response.data[1]["workflow_collection"],
-            f"http://testserver/workflow_system/collections/{self.workflow_assignment_2.workflow_collection.id}/",
+            f"http://testserver/api/workflow_system/collections/{self.workflow_assignment_2.workflow_collection.id}/",
         )
         self.assertEqual(
             response.data[1]["assigned_on"], self.assigned_on.strftime("%Y-%m-%d")
@@ -79,7 +79,7 @@ class TestWorkflowAssignmentsView(TestCase):
         self.assertEqual(response.data[1]["status"], "ASSIGNED")
         self.assertEqual(
             response.data[1]["engagement"],
-            f"http://testserver/workflow_system/users/self/workflows/engagements/{self.workflow_assignment_2.engagement.id}/"
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.workflow_assignment_2.engagement.id}/"
         )
 
 
@@ -136,7 +136,7 @@ class TestWorkflowAssignmentView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data["workflow_collection"],
-            f"http://testserver/workflow_system/collections/{self.workflow_assignment.workflow_collection.id}/",
+            f"http://testserver/api/workflow_system/collections/{self.workflow_assignment.workflow_collection.id}/",
         )
         self.assertEqual(
             response.data["assigned_on"], self.assigned_on.strftime("%Y-%m-%d")
@@ -144,7 +144,7 @@ class TestWorkflowAssignmentView(TestCase):
         self.assertEqual(response.data["status"], self.workflow_assignment.status)
         self.assertEqual(
             response.data["engagement"],
-            f"http://testserver/workflow_system/users/self/workflows/engagements/{self.workflow_assignment.engagement.id}/"
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.workflow_assignment.engagement.id}/"
         )
 
     def test_get__assignment_id_nonexistent_detail(self):
@@ -174,7 +174,7 @@ class TestWorkflowAssignmentView(TestCase):
             f"/users/self/workflows/assignments/{self.workflow_assignment_3.id}/",
             data={
                 "status": "IN_PROGRESS",
-                "engagement": f"http://testserver/workflow_system/users/self/workflows/engagements/"
+                "engagement": f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
                               f"{self.workflow_assignment.engagement.id}/"
             },
             format="json",
@@ -186,7 +186,7 @@ class TestWorkflowAssignmentView(TestCase):
         self.assertEqual(response.data["status"], "IN_PROGRESS")
         self.assertEqual(
             response.data["engagement"],
-            "http://testserver/workflow_system/users/self/workflows/engagements/{}/".format(
+            "http://testserver/api/workflow_system/users/self/workflows/engagements/{}/".format(
                 self.workflow_assignment.engagement.id
             ),
         )
@@ -254,7 +254,7 @@ class TestWorkflowAssignmentView(TestCase):
         self.assertEqual(response.data["status"], WorkflowCollectionAssignment.CLOSED_COMPLETE)
         self.assertEqual(
             response.data["engagement"],
-            f"http://testserver/workflow_system/users/self/workflows/engagements/{wca.engagement.id}/"
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wca.engagement.id}/"
         )
         wca.refresh_from_db()
         self.assertTrue(wca.engagement.finished)

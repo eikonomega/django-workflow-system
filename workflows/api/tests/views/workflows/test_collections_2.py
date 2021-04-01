@@ -78,7 +78,7 @@ class TestWorkflowCollectionsView_2(TestCase):
             if collection_dict["id"] == str(self.subscribable_practice_v1.id):
                 self.assertEqual(
                     collection_dict["newer_version"],
-                    f"http://testserver/workflow_system/collections/{self.subscribable_practice_v2.id}/"
+                    f"http://testserver/api/workflow_system/collections/{self.subscribable_practice_v2.id}/"
                 )
 
     def test_inactive_assignment(self):
@@ -106,7 +106,7 @@ class TestWorkflowCollectionsView_2(TestCase):
             if collection_dict["id"] == str(self.assignable_practice_v1.id):
                 self.assertEqual(
                     collection_dict["newer_version"],
-                    f"http://testserver/workflow_system/collections/{self.assignable_practice_v2.id}/"
+                    f"http://testserver/api/workflow_system/collections/{self.assignable_practice_v2.id}/"
                 )
 
     def test_inactive_recommendation(self):
@@ -134,7 +134,7 @@ class TestWorkflowCollectionsView_2(TestCase):
             if collection_dict["id"] == str(self.recommendable_practice_v1.id):
                 self.assertEqual(
                     collection_dict["newer_version"],
-                    f"http://testserver/workflow_system/collections/{self.recommendable_practice_v2.id}/"
+                    f"http://testserver/api/workflow_system/collections/{self.recommendable_practice_v2.id}/"
                 )
 
     def test_newer_is_inactive(self):

@@ -271,7 +271,7 @@ class TestWorkflowCollectionView(TestCase):
         self.assertEqual(response.data["category"], self.workflow_collection.category)
         self.assertEqual(
             response.data["workflowcollectionmember_set"][0]["workflow"]["detail"],
-            "http://testserver/workflow_system/workflows/{}/".format(self.workflow.id),
+            "http://testserver/api/workflow_system/workflows/{}/".format(self.workflow.id),
         )
         self.assertEqual(
             response.data["workflowcollectionmember_set"][0]["order"],

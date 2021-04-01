@@ -79,7 +79,7 @@ class TestWorkflowCollectionEngagementsView(TestCase):
             self.view_url,
             data={
                 "workflow_collection":
-                    f"http://testserver/workflow_system/collections/"
+                    f"http://testserver/api/workflow_system/collections/"
                     f"{self.workflow_user_engagement.workflow_collection.id}/"
             },
             format='json')
@@ -90,13 +90,13 @@ class TestWorkflowCollectionEngagementsView(TestCase):
         self.assertEqual(len(response.data), 6)
         self.assertEqual(
             response.data["workflow_collection"],
-            f"http://testserver/workflow_system/collections/"
+            f"http://testserver/api/workflow_system/collections/"
             f"{self.workflow_user_engagement.workflow_collection.id}/")
         self.assertEqual(
             response.data['state'],
             {
                 "next_step_id": self.workflow_step.id,
-                "next_workflow": f"http://testserver/workflow_system/workflows/{self.workflow_step.workflow.id}/",
+                "next_workflow": f"http://testserver/api/workflow_system/workflows/{self.workflow_step.workflow.id}/",
                 "prev_workflow": None,
                 "prev_step_id": None,
                 "previously_completed_workflows": [],
@@ -112,7 +112,7 @@ class TestWorkflowCollectionEngagementsView(TestCase):
             self.view_url,
             data={
                 "workflow_collection":
-                f"http://testserver/workflow_system/collections/"
+                f"http://testserver/api/workflow_system/collections/"
                 f"{self.workflow_user_engagement.workflow_collection.id}/"
             },
             format='json')
@@ -130,7 +130,7 @@ class TestWorkflowCollectionEngagementsView(TestCase):
             self.view_url,
             data={
                 "workflow_collection":
-                    'http://testserver/workflow_system/collections/{}/'.format(
+                    'http://testserver/api/workflow_system/collections/{}/'.format(
                     self.workflow_user_engagement.workflow_collection.id),
                 "finished": (
                     self.workflow_user_engagement.started - relativedelta(days=1))},

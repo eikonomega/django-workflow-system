@@ -295,7 +295,7 @@ class TestWorkflowCollectionSurveys(TestCase):
         request = self.factory.post(
             '/users/self/workflows/engagements/',
             data={
-                "workflow_collection": f"http://testserver/workflow_system/collections/{collection.id}/"
+                "workflow_collection": f"http://testserver/api/workflow_system/collections/{collection.id}/"
             },
             format='json')
 
@@ -305,11 +305,11 @@ class TestWorkflowCollectionSurveys(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(response.data), 6)
         self.assertEqual(response.data["workflow_collection"],
-                         f"http://testserver/workflow_system/collections/{collection.id}/")
+                         f"http://testserver/api/workflow_system/collections/{collection.id}/")
         self.assertEqual(
             response.data['state'],
             {
-                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "next_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "next_step_id": steps[0].id,
                 "prev_workflow": None,
                 "prev_step_id": None,
@@ -332,7 +332,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{workflow_user_engagement_id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
                 'step': steps[0].id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=1),
@@ -353,9 +353,9 @@ class TestWorkflowCollectionSurveys(TestCase):
         self.assertEqual(
             response.data['state'],
             {
-                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "next_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "next_step_id": steps[1].id,
-                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "prev_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "prev_step_id": steps[0].id,
                 "previously_completed_workflows": [],
                 'steps_completed_in_collection': 1,
@@ -371,7 +371,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{workflow_user_engagement_id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
                 'step': steps[1].id,
                 'started': timezone.now() + timezone.timedelta(milliseconds=2),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=3),
@@ -391,9 +391,9 @@ class TestWorkflowCollectionSurveys(TestCase):
         self.assertEqual(
             response.data['state'],
             {
-                "next_workflow": "http://testserver/workflow_system/workflows/{}/".format(workflow.id),
+                "next_workflow": "http://testserver/api/workflow_system/workflows/{}/".format(workflow.id),
                 "next_step_id": steps[2].id,
-                "prev_workflow": "http://testserver/workflow_system/workflows/{}/".format(workflow.id),
+                "prev_workflow": "http://testserver/api/workflow_system/workflows/{}/".format(workflow.id),
                 "prev_step_id": steps[1].id,
                 "previously_completed_workflows": [],
                 'steps_completed_in_collection': 2,
@@ -406,7 +406,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{workflow_user_engagement_id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/"
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
                     f"{workflow_user_engagement_id}/",
                 'step': steps[2].id,
                 'started': timezone.now() + timezone.timedelta(milliseconds=4),
@@ -424,10 +424,10 @@ class TestWorkflowCollectionSurveys(TestCase):
             {
                 "next_workflow": None,
                 "next_step_id": None,
-                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "prev_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "prev_step_id": steps[2].id,
                 "previously_completed_workflows": [
-                    {"workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/"}
+                    {"workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/"}
                 ],
                 'steps_completed_in_collection': 3,
                 'steps_completed_in_workflow': 3,
@@ -457,7 +457,7 @@ class TestWorkflowCollectionSurveys(TestCase):
         request = self.factory.post(
             '/users/self/workflows/engagements/',
             data={
-                "workflow_collection": f"http://testserver/workflow_system/collections/{collection.id}/"},
+                "workflow_collection": f"http://testserver/api/workflow_system/collections/{collection.id}/"},
             format='json')
 
         request.user = self.user
@@ -466,11 +466,11 @@ class TestWorkflowCollectionSurveys(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(response.data), 6)
         self.assertEqual(response.data["workflow_collection"],
-                         f"http://testserver/workflow_system/collections/{collection.id}/")
+                         f"http://testserver/api/workflow_system/collections/{collection.id}/")
         self.assertEqual(
             response.data['state'],
             {
-                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "next_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "next_step_id": steps[0].id,
                 "prev_workflow": None,
                 "prev_step_id": None,
@@ -494,7 +494,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{workflow_user_engagement_id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
                 'step': steps[0].id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=1),
@@ -518,9 +518,9 @@ class TestWorkflowCollectionSurveys(TestCase):
         self.assertEqual(
             response.data['state'],
             {
-                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "next_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "next_step_id": steps[2].id,
-                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "prev_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "prev_step_id": steps[0].id,
                 "previously_completed_workflows": [],
                 'steps_completed_in_collection': 2,
@@ -536,7 +536,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 workflow_user_engagement_id),
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
                 'step': steps[2].id,
                 'started': timezone.now() + timezone.timedelta(milliseconds=2),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=3),
@@ -556,9 +556,9 @@ class TestWorkflowCollectionSurveys(TestCase):
         self.assertEqual(
             response.data['state'],
             {
-                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "next_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "next_step_id": steps[3].id,
-                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "prev_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "prev_step_id": steps[2].id,
                 "previously_completed_workflows": [],
                 'steps_completed_in_collection': 3,
@@ -572,7 +572,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 workflow_user_engagement_id),
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
                 'step': steps[3].id,
                 'started': timezone.now() + timezone.timedelta(milliseconds=4),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=5)
@@ -588,10 +588,10 @@ class TestWorkflowCollectionSurveys(TestCase):
             {
                 "next_workflow": None,
                 "next_step_id": None,
-                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "prev_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "prev_step_id": steps[3].id,
                 "previously_completed_workflows": [
-                    {"workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/"},
+                    {"workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/"},
                 ],
                 'steps_completed_in_collection': 4,
                 'steps_completed_in_workflow': 4,
@@ -639,7 +639,7 @@ class TestWorkflowCollectionSurveys(TestCase):
         request = self.factory.post(
             '/users/self/workflows/engagements/',
             data={
-                "workflow_collection": f"http://testserver/workflow_system/collections/{collection.id}/"},
+                "workflow_collection": f"http://testserver/api/workflow_system/collections/{collection.id}/"},
             format='json')
 
         request.user = self.user
@@ -648,11 +648,11 @@ class TestWorkflowCollectionSurveys(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(response.data), 6)
         self.assertEqual(response.data["workflow_collection"],
-                         f"http://testserver/workflow_system/collections/{collection.id}/")
+                         f"http://testserver/api/workflow_system/collections/{collection.id}/")
         self.assertEqual(
             response.data['state'],
             {
-                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow1.id}/",
+                "next_workflow": f"http://testserver/api/workflow_system/workflows/{workflow1.id}/",
                 "next_step_id": steps[0].id,
                 "prev_workflow": None,
                 "prev_step_id": None,
@@ -673,7 +673,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{workflow_user_engagement_id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
                 'step': steps[0].id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=1),
@@ -694,12 +694,12 @@ class TestWorkflowCollectionSurveys(TestCase):
         self.assertEqual(
             response.data['state'],
             {
-                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow2.id}/",
+                "next_workflow": f"http://testserver/api/workflow_system/workflows/{workflow2.id}/",
                 "next_step_id": steps[1].id,
-                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow1.id}/",
+                "prev_workflow": f"http://testserver/api/workflow_system/workflows/{workflow1.id}/",
                 "prev_step_id": steps[0].id,
                 "previously_completed_workflows": [
-                    {"workflow": f"http://testserver/workflow_system/workflows/{workflow1.id}/"}
+                    {"workflow": f"http://testserver/api/workflow_system/workflows/{workflow1.id}/"}
                 ],
                 'steps_completed_in_collection': 1,
                 'steps_completed_in_workflow': 0,
@@ -712,7 +712,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             "/users/self/workflows/engagements/{workflow_user_engagement_id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{workflow_user_engagement_id}/",
                 'step': steps[1].id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=1)
@@ -728,11 +728,11 @@ class TestWorkflowCollectionSurveys(TestCase):
             {
                 "next_workflow": None,
                 "next_step_id": None,
-                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow2.id}/",
+                "prev_workflow": f"http://testserver/api/workflow_system/workflows/{workflow2.id}/",
                 "prev_step_id": steps[1].id,
                 "previously_completed_workflows": [
-                    {"workflow": f"http://testserver/workflow_system/workflows/{workflow1.id}/"},
-                    {"workflow": f"http://testserver/workflow_system/workflows/{workflow2.id}/"},
+                    {"workflow": f"http://testserver/api/workflow_system/workflows/{workflow1.id}/"},
+                    {"workflow": f"http://testserver/api/workflow_system/workflows/{workflow2.id}/"},
                 ],
                 'steps_completed_in_collection': 2,
                 'steps_completed_in_workflow': 1,
@@ -755,7 +755,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': steps[0].id,
                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
@@ -776,9 +776,9 @@ class TestWorkflowCollectionSurveys(TestCase):
         self.assertEqual(
             response.data['state'],
             {
-                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "next_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "next_step_id": steps[1].id,
-                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "prev_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "prev_step_id": steps[0].id,
                 "previously_completed_workflows": [],
                 'steps_completed_in_collection': 1,
@@ -802,7 +802,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': steps[0].id,
                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
@@ -823,9 +823,9 @@ class TestWorkflowCollectionSurveys(TestCase):
         self.assertEqual(
             response.data['state'],
             {
-                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "next_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "next_step_id": steps[1].id,
-                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "prev_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "prev_step_id": steps[0].id,
                 "previously_completed_workflows": [],
                 'steps_completed_in_collection': 1,
@@ -848,7 +848,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': steps[0].id,
                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
@@ -869,9 +869,9 @@ class TestWorkflowCollectionSurveys(TestCase):
         self.assertEqual(
             response.data['state'],
             {
-                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "next_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "next_step_id": steps[2].id,
-                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "prev_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "prev_step_id": steps[0].id,
                 "previously_completed_workflows": [],
                 'steps_completed_in_collection': 2,
@@ -894,7 +894,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': steps[0].id,
                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
@@ -927,7 +927,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': steps[0].id,
                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
@@ -960,7 +960,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/api_v3/users/self/workflows/engagements/{engagement.id}/",
+                    f"http://testserver/api/users/self/workflows/engagements/{engagement.id}/",
                 'step': steps[0].id,
                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
@@ -993,7 +993,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': steps[0].id,
                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
@@ -1148,7 +1148,7 @@ class TestWorkflowCollectionSurveys(TestCase):
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': steps[0].id,
                 'started': timezone.now() + timezone.timedelta(milliseconds=1),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=2),
@@ -1168,9 +1168,9 @@ class TestWorkflowCollectionSurveys(TestCase):
         self.assertEqual(
             response.data['state'],
             {
-                "next_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "next_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "next_step_id": steps[3].id,
-                "prev_workflow": f"http://testserver/workflow_system/workflows/{workflow.id}/",
+                "prev_workflow": f"http://testserver/api/workflow_system/workflows/{workflow.id}/",
                 "prev_step_id": steps[0].id,
                 "previously_completed_workflows": [],
                 'steps_completed_in_collection': 3,

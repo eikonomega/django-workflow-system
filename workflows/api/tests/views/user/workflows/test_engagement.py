@@ -58,7 +58,7 @@ class TestWorkflowCollectionEngagementView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data["workflow_collection"],
-            f"http://testserver/workflow_system/collections/{self.workflow_engagement.workflow_collection.id}/")
+            f"http://testserver/api/workflow_system/collections/{self.workflow_engagement.workflow_collection.id}/")
         self.assertEqual(
             dateutil.parser.parse(response.data['started']),
             self.workflow_engagement.started)
