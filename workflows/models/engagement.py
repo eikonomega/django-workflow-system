@@ -4,7 +4,7 @@ import uuid
 
 import jsonschema
 from django.conf import settings
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
 from django.db.models import Subquery, OuterRef, Q
 from django.utils import timezone
@@ -46,9 +46,7 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow_collection = models.ForeignKey(
-        WorkflowCollection, on_delete=models.PROTECT
-    )
+    workflow_collection = models.ForeignKey(WorkflowCollection, on_delete=models.PROTECT)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     started = models.DateTimeField(default=timezone.now)
     finished = models.DateTimeField(blank=True, null=True)
@@ -258,12 +256,23 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
         return False
 
     def __str__(self):
-        return "{} - {}".format(self.workflow_collection.name, self.user.username)
+        return "Engagement: {} - {}".format(self.workflow_collection.name, self.user.username)
 
     def clean(self, *args, **kwargs):
         # User must be active to engage in a collection
         if not self.user.is_active:
             raise ValidationError({"user": "User must be active to engage in a collection."})
+
+        # If this engagement's collection has an unassigned assignment associated with it then
+        try:
+            assignment = self.workflow_collection.workflowcollectionassignment_set.get(
+                engagement=None,
+                status="ASSIGNED"
+            )
+            assignment.engagement = self
+            assignment.save()
+        except ObjectDoesNotExist:
+            pass
 
         # Ensure finish date is later than start date
         if self.finished is not None:
