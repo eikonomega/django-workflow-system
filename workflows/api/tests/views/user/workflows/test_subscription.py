@@ -16,6 +16,7 @@ class TestWorkflowSubscriptionsView(TestCase):
         self.view = WorkflowCollectionSubscriptionsView.as_view()
         self.view_url = '/users/self/workflows/subscriptions/'
         self.factory = APIRequestFactory()
+        self.user = UserFactory()
 
         self.user_with_subscription = UserFactory()
         self.user_without_subscription = UserFactory()
@@ -107,7 +108,7 @@ class TestWorkflowCollectionSubscriptionView(TestCase):
     def setUp(self):
         self.view = WorkflowCollectionSubscriptionView.as_view()
         self.factory = APIRequestFactory()
-
+        self.user = UserFactory()
         self.user_with_subscription = UserFactory()
         self.user_without_subscription = UserFactory()
         self.workflow = WorkflowFactory()
@@ -123,8 +124,8 @@ class TestWorkflowCollectionSubscriptionView(TestCase):
     def test_get__subscription_does_not_exist(self):
         """Trying to use GET with a subscription id that doesn't exist"""
         fake_uuid = '027c315e-3788-4c30-8c58-46723077e5f0'
-        request = self.factory.get(
-            f"/users/self/workflows/subscription/{fake_uuid}")
+        request = self.factory.get(f"/users/self/workflows/subscription/{fake_uuid}")
+        request.user = self.user
         response = self.view(request, fake_uuid)
 
         self.assertEqual(response.status_code, 404)

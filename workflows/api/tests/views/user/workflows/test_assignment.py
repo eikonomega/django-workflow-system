@@ -113,7 +113,7 @@ class TestWorkflowAssignmentView(TestCase):
             f"/users/self/workflows/assignments/{self.workflow_assignment.id}/"
         )
         response = self.detail_view(request, self.workflow_assignment)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
     def test_get__authenticated_detail(self):
         """Authenticated users can access GET method."""
@@ -213,7 +213,7 @@ class TestWorkflowAssignmentView(TestCase):
         )
         response = self.detail_view(request, self.workflow_assignment)
 
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
     def test_patch__assignment_does_not_belong_to_user(self):
         """Users should not have access to others assignments GET method."""

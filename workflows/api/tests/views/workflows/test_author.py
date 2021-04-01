@@ -3,7 +3,7 @@ from rest_framework.exceptions import ErrorDetail
 
 from rest_framework.test import APIRequestFactory
 
-from workflows.api.tests.factories import AuthorFactory, WorkflowFactory
+from workflows.api.tests.factories import AuthorFactory, WorkflowFactory, UserFactory
 from workflows.api.views.workflows import WorkflowAuthorsView, WorkflowAuthorView
 from workflows.models import WorkflowAuthor, Workflow
 
@@ -16,12 +16,13 @@ class TestWorkflowAuthorsView(TestCase):
         self.factory = APIRequestFactory()
         self.author = AuthorFactory()
         self.author_2 = AuthorFactory()
+        self.user = UserFactory()
 
     def test_get__success(self):
         """Checking for authors returned"""
         request = self.factory.get('/workflows/authors/')
+        request.user = self.user
         response = self.view(request)
-
         self.assertEqual(response.status_code, 200)
 
         # Correct number of authors
@@ -63,6 +64,7 @@ class TestWorkflowAuthorsView(TestCase):
         self.assertEqual(len(WorkflowAuthor.objects.all()), 0)
 
         request = self.factory.get('/workflows/authors/')
+        request.user = self.user
         response = self.view(request)
 
         self.assertEqual(response.status_code, 200)
@@ -77,11 +79,12 @@ class TestWorkflowAuthorView(TestCase):
         self.factory = APIRequestFactory()
         self.author = AuthorFactory()
         self.workflow = WorkflowFactory(author=self.author)
+        self.user = UserFactory()
 
     def test_get__success_detail(self):
         """Valid Author ID returns 200 with appropriate payload."""
-        request = self.factory.get(
-            f"/workflows/authors/{self.author.id}/")
+        request = self.factory.get(f"/workflows/authors/{self.author.id}/")
+        request.user = self.user
         response = self.view(request, self.author.id)
 
         self.assertEqual(response.status_code, 200)
@@ -105,8 +108,8 @@ class TestWorkflowAuthorView(TestCase):
     def test_get__no_author_detail(self):
         """Non-Existent Author ID returns 404."""
         made_up_uuid = '4f84f799-9cc5-43d3-0000-24840b7eb8ce'
-        request = self.factory.get(
-            f"/workflows/authors/{made_up_uuid}/")
+        request = self.factory.get(f"/workflows/authors/{made_up_uuid}/")
+        request.user = self.user
         response = self.view(request, made_up_uuid)
 
         self.assertEqual(response.status_code, 404)
