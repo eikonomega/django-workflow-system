@@ -87,15 +87,15 @@ class TestWorkflowCollectionsView(TestCase):
         )
 
         self.image_1_dict = {
-            'image_url': self.workflow_collection_image.image.__str__(),
+            'image_url': f"http://testserver{self.workflow_collection_image.image.url}",
             'image_type': self.workflow_collection_image.type.type
         }
         self.image_2_dict = {
-            'image_url': self.workflow_collection_image_2.image.__str__(),
+            'image_url': f"http://testserver{self.workflow_collection_image_2.image.url}",
             'image_type': self.workflow_collection_image_2.type.type
         }
         self.image_3_dict = {
-            'image_url': self.workflow_collection_image_3.image.__str__(),
+            'image_url': f"http://testserver{self.workflow_collection_image_3.image.url}",
             'image_type': self.workflow_collection_image_3.type.type
         }
 
@@ -104,7 +104,7 @@ class TestWorkflowCollectionsView(TestCase):
         request = self.factory.get("/workflows/collections/")
         response = self.view(request)
 
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 403)
 
     def test_get__authenticated(self):
         """Authenticated users can access GET method."""
@@ -196,6 +196,8 @@ class TestWorkflowCollectionView(TestCase):
             }]
         })
 
+        self.user = UserFactory()
+
         self.workflow = WorkflowFactory()
         self.workflow_collection = WorkflowCollectionFactory()
         self.workflow_collection_member = _WorkflowCollectionMemberFactory(
@@ -225,11 +227,11 @@ class TestWorkflowCollectionView(TestCase):
             collection=self.workflow_collection
         )
         self.image_1_dict = {
-            'image_url': self.workflow_collection_image.image.__str__(),
+            'image_url': f"http://testserver{self.workflow_collection_image.image.url}",
             'image_type': self.workflow_collection_image.type.type
         }
         self.image_2_dict = {
-            'image_url': self.workflow_collection_image_2.image.__str__(),
+            'image_url': f"http://testserver{self.workflow_collection_image_2.image.url}",
             'image_type': self.workflow_collection_image_2.type.type
         }
 
@@ -238,6 +240,7 @@ class TestWorkflowCollectionView(TestCase):
         request = self.factory.get(
             "/workflows/collections/{}/".format(self.workflow_collection.id)
         )
+        request.user = self.user
         response = self.view(request, self.workflow_collection.id)
 
         self.assertEqual(response.status_code, 200)
@@ -271,7 +274,7 @@ class TestWorkflowCollectionView(TestCase):
         self.assertEqual(response.data["category"], self.workflow_collection.category)
         self.assertEqual(
             response.data["workflowcollectionmember_set"][0]["workflow"]["detail"],
-            "http://testserver/workflow_system/workflows/{}/".format(self.workflow.id),
+            "http://testserver/api/workflow_system/workflows/{}/".format(self.workflow.id),
         )
         self.assertEqual(
             response.data["workflowcollectionmember_set"][0]["order"],
@@ -294,6 +297,7 @@ class TestWorkflowCollectionView(TestCase):
         """Attempts to retrieve a non-existent collection result in a 404."""
         made_up_uuiid = "4f84f799-9cc5-43d3-0000-24840b7eb8ce"
         request = self.factory.get("/workflows/collections/{}/".format(made_up_uuiid))
+        request.user = self.user
         response = self.view(request, made_up_uuiid)
 
         self.assertEqual(response.status_code, 404)
@@ -304,6 +308,7 @@ class TestWorkflowCollectionView(TestCase):
             "/workflows/collections/{}/".format(self.simple_survey__survey_collection.id),
             data={"include_steps": "true"}
         )
+        request.user = self.user
         response = self.view(request, self.simple_survey__survey_collection.id)
 
         self.assertEqual(response.status_code, 200)
@@ -376,6 +381,7 @@ class TestWorkflowCollectionView(TestCase):
             "/workflows/collections/{}/".format(self.simple_survey__survey_collection.id),
             data={"include_steps": "beef"}
         )
+        request.user = self.user
         response = self.view(request, self.simple_survey__survey_collection.id)
 
         self.assertEqual(response.status_code, 400)

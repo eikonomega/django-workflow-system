@@ -105,7 +105,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 ['detail', 'step', 'user_response', 'started', 'finished'])
             self.assertEqual(
                 result['detail'],
-                f"http://testserver/workflow_system/users/self/workflows/engagements/"
+                f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
                 f"{self.user_with_activity_engagement__engagement.id}/details/"
                 f"{self.user_with_activity_engagement__detail.id}/")
             self.assertEqual(
@@ -136,7 +136,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         request = self.factory.post(
             f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/",
             data={
-                'workflow_collection_engagement': f"http://testserver/workflow_system/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/",
+                'workflow_collection_engagement': f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/",
                 'step': self.single_activity_collection__step.id,
                 'started': timezone.now()
             },
@@ -158,7 +158,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
             f"/users/self/workflows/engagements/{wce.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{wce.id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce.id}/",
                 'step': self.single_activity_collection__step.id,
                 'started': timezone.now()
             },
@@ -172,7 +172,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
 
         self.assertEqual(
             response.data['state']['next_workflow'],
-            f"http://testserver/workflow_system/workflows/{self.single_activity_collection__workflow.id}/")
+            f"http://testserver/api/workflow_system/workflows/{self.single_activity_collection__workflow.id}/")
 
     def test_post__not_in_collection(self):
         """Should not accept post if step is not in collection"""
@@ -208,7 +208,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         request = self.factory.post(
             f"/users/self/workflows/engagements/{wce.id}/details/",
             data={
-                'workflow_collection_engagement': f"http://testserver/workflow_system/users/self/workflows/engagements/{wce.id}/",
+                'workflow_collection_engagement': f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce.id}/",
                 'step': self.single_activity_collection__step.id,
                 'started': timezone.now(),
                 'finished': None,
@@ -223,7 +223,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
 
         self.assertEqual(
             response.data['state']['next_workflow'],
-            f"http://testserver/workflow_system/workflows/{self.single_activity_collection__workflow.id}/")
+            f"http://testserver/api/workflow_system/workflows/{self.single_activity_collection__workflow.id}/")
 
     def test_post__required_inputs_no_user_response(self):
         """Step has required inputs but no user_response in request, returns a 400."""
@@ -236,7 +236,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         request = self.factory.post(
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/",
             data={
-                'workflow_collection_engagement': f"http://testserver/workflow_system/users/self/workflows/engagements/{my_workflow_engagement.id}/",
+                'workflow_collection_engagement': f"http://testserver/api/workflow_system/users/self/workflows/engagements/{my_workflow_engagement.id}/",
                 'step': self.single_survey_collection__step.id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(minutes=5),
@@ -274,7 +274,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         request = self.factory.post(
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/",
             data={
-                'workflow_collection_engagement': f"http://testserver/workflow_system/users/self/workflows/engagements/{my_workflow_engagement.id}/",
+                'workflow_collection_engagement': f"http://testserver/api/workflow_system/users/self/workflows/engagements/{my_workflow_engagement.id}/",
                 'step': my_step.id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(minutes=5),
@@ -345,7 +345,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': step1.id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=1),
@@ -357,7 +357,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
             response.data['state']['next_workflow'],
-            f"http://testserver/workflow_system/workflows/{workflow2.id}/")
+            f"http://testserver/api/workflow_system/workflows/{workflow2.id}/")
         self.assertEqual(response.data['state']['next_step_id'], step2.id)
 
     def test_post_survey_must_be_started_on_first_step(self):
@@ -401,7 +401,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': step2.id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=1),
@@ -467,7 +467,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
                 'workflow_collection_engagement':
-                    f"http://testserver/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
                 'step': step1.id,
                 'started': timezone.now(),
                 'finished': timezone.now() + timezone.timedelta(milliseconds=1),
@@ -553,7 +553,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.data['detail'],
-            f"http://testserver/workflow_system/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/")
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/")
 
     def test_patch__unauthenticated_engagement(self):
         """Return 404 error if trying to patch unknown engagement."""

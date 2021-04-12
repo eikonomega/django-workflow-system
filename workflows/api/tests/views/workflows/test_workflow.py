@@ -2,7 +2,7 @@ from django.conf import settings
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
-from workflows.api.tests.factories import WorkflowFactory, WorkflowStepFactory
+from workflows.api.tests.factories import WorkflowFactory, WorkflowStepFactory, UserFactory
 from workflows.api.tests.factories.workflows.step import _WorkflowStepVideoFactory
 from workflows.api.tests.factories.workflows.workflow_image import (WorkflowImageTypeFactory,
                                                                     WorkflowImageFactory)
@@ -18,6 +18,7 @@ class TestWorkflowsView(TestCase):
         self.factory = APIRequestFactory()
         self.workflow = WorkflowFactory()
         self.workflow_2 = WorkflowFactory()
+        self.user = UserFactory()
 
         # IMAGES
         self.workflow_image_type = WorkflowImageTypeFactory(type="Detail")
@@ -39,21 +40,22 @@ class TestWorkflowsView(TestCase):
         )
 
         self.image_1_dict = {
-            'image_url': self.workflow_image.image.__str__(),
+            'image_url': f"http://testserver{self.workflow_image.image.url}",
             'image_type': self.workflow_image.type.type
         }
         self.image_2_dict = {
-            'image_url': self.workflow_image_2.image.__str__(),
+            'image_url': f"http://testserver{self.workflow_image_2.image.url}",
             'image_type': self.workflow_image_2.type.type
         }
         self.image_3_dict = {
-            'image_url': self.workflow_image_3.image.__str__(),
+            'image_url': f"http://testserver{self.workflow_image_3.image.url}",
             'image_type': self.workflow_image_3.type.type
         }
 
     def test_get__success(self):
         """Ensure expected Workflow data is returned."""
         request = self.factory.get('/workflows/workflows/')
+        request.user = self.user
         response = self.view(request)
 
         self.assertEqual(response.status_code, 200)
@@ -67,7 +69,7 @@ class TestWorkflowsView(TestCase):
                 ["id", "name", "detail", "images", "author"])
 
             author_obj = WorkflowAuthor.objects.get(id=result['author']["id"])
-
+            print(result['images'])
             # Validate the content of each returned Workflow
             if result['name'] == self.workflow.name:
                 self.assertEqual(
@@ -105,6 +107,7 @@ class TestWorkflowView(TestCase):
         self.view = WorkflowView.as_view()
         self.factory = APIRequestFactory()
 
+        self.user = UserFactory()
         self.workflow = WorkflowFactory()
         self.workflow_step = WorkflowStepFactory(workflow=self.workflow)
         self.workflow_step_video = _WorkflowStepVideoFactory(workflow_step=self.workflow_step)
@@ -124,11 +127,11 @@ class TestWorkflowView(TestCase):
         )
 
         self.image_1_dict = {
-            'image_url': self.workflow_image.image.__str__(),
+            'image_url': f"http://testserver{self.workflow_image.image.url}",
             'image_type': self.workflow_image.type.type
         }
         self.image_2_dict = {
-            'image_url': self.workflow_image_2.image.__str__(),
+            'image_url': f"http://testserver{self.workflow_image_2.image.url}",
             'image_type': self.workflow_image_2.type.type
         }
 
@@ -136,6 +139,7 @@ class TestWorkflowView(TestCase):
         """Ensure returned data is as expected."""
         request = self.factory.get(
             f"/workflows/workflows/{self.workflow.id}/")
+        request.user = self.user
         response = self.view(request, self.workflow.id)
 
         self.assertEqual(response.status_code, 200)
@@ -161,8 +165,8 @@ class TestWorkflowView(TestCase):
     def test_get__workflow_id_nonexistent(self):
         """using non-existing workflow ID"""
         made_up_uuiid = '4f84f799-9cc5-43d3-0000-24840b7eb8ce'
-        request = self.factory.get(
-            f"/workflows/workflows/{made_up_uuiid}/")
+        request = self.factory.get(f"/workflows/workflows/{made_up_uuiid}/")
+        request.user = self.user
         response = self.view(request, made_up_uuiid)
 
         self.assertEqual(response.status_code, 404)
