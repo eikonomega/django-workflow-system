@@ -31,10 +31,8 @@ from workflows.models.step_input import WorkflowStepInput
 from workflows.models.step_text import WorkflowStepText
 from workflows.models.step_ui_template import WorkflowStepUITemplate
 from workflows.models.step_video import WorkflowStepVideo
-from workflows.models.subscription import (
-    WorkflowCollectionSubscription,
-    WorkflowCollectionSubscriptionSchedule,
-)
+from workflows.models.subscription import WorkflowCollectionSubscription
+from workflows.models.subscription_schedule import WorkflowCollectionSubscriptionSchedule
 from workflows.models.workflow import Workflow
 from workflows.models.data_group import WorkflowStepDataGroup
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
