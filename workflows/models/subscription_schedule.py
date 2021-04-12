@@ -1,3 +1,4 @@
+"""Django model definition."""
 import uuid
 from django.db import models
 
@@ -40,8 +41,7 @@ class WorkflowCollectionSubscriptionSchedule(CreatedModifiedAbstractModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow_collection_subscription = models.ForeignKey(
-        WorkflowCollectionSubscription,
-        on_delete=models.CASCADE
+        WorkflowCollectionSubscription, on_delete=models.CASCADE
     )
     time_of_day = models.TimeField()
     day_of_week = models.IntegerField(choices=DAY_OF_WEEK)
