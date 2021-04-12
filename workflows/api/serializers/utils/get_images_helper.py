@@ -1,10 +1,10 @@
-def get_images_helper(self, images):
+def get_images_helper(request, images):
     """
     Helper method for gathering an object's list of images and formatting them along with their
     corresponding types.
 
     Parameters:
-        self : Instance of the Model Serializer
+        request : Request object from the serializer instance.
         images : Queryset of image objects connected to the Object
 
     Returns:
@@ -12,8 +12,6 @@ def get_images_helper(self, images):
 
     """
     image_list = []
-
-    request = self.context.get("request")
 
     for image in images:
         image_dict = {
