@@ -85,7 +85,7 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
             List of Image objects in JSON format.
 
         """
-        return get_images_helper(self, instance.workflowcollectionimage_set.all())
+        return get_images_helper(self.context.get("request"), instance.workflowcollectionimage_set.all())
 
     def get_newer_version(self, obj: WorkflowCollection):
         latest_version = (

@@ -49,7 +49,7 @@ class WorkflowSummarySerializer(serializers.ModelSerializer):
             List of Image objects in JSON format.
 
         """
-        return get_images_helper(self, instance.workflowimage_set.all())
+        return get_images_helper(self.context.get("request"), instance.workflowimage_set.all())
 
 
 class WorkflowDetailedSerializer(serializers.ModelSerializer):
@@ -81,7 +81,7 @@ class WorkflowDetailedSerializer(serializers.ModelSerializer):
             List of Image objects in JSON format.
 
         """
-        return get_images_helper(self, instance.workflowimage_set.all())
+        return get_images_helper(self.context.get("request"), instance.workflowimage_set.all())
 
 
 class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
@@ -112,4 +112,4 @@ class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
             List of Image objects in JSON format.
 
         """
-        return get_images_helper(self, instance.workflowimage_set.all())
+        return get_images_helper(self.context.get("request"), instance.workflowimage_set.all())
