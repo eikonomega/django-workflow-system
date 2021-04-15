@@ -134,3 +134,10 @@ dmypy.json
 # IDE Stuff
 .vscode/
 .vscode/*
+
+# Pycharm
+.idea/
+
+# Mediafiles Folder
+mediafiles/*
+staticfiles/*

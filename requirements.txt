@@ -1,0 +1,15 @@
+Django==3.1.3
+factory_boy==3.2.0                  # A fixtures replacement tool, replaces fixtures with easy-to-use factories for complex object. For usage in unittests
+djangorestframework==3.12.2         # Latest version of DRF
+jsonschema==3.0.1 
+Pillow==8.1.0
+
+black==20.8b1                       # Python Code Formatting
+pylint==2.7.2                       # Python Code Linting
+pylint-django==2.4.2                # Django Code Linting
+Sphinx==3.3.1                       # Documentation Tool
+sphinx-rtd-theme==0.5.0             # Sphinx Theme
+sphinxcontrib-httpdomain==1.7.0     # API plugin for Readthedocs
+recommonmark==0.7.1
+sphinx-markdown-tables==0.0.15
+coverage==5.5                       # Testing Code Coverage

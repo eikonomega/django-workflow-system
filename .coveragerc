@@ -1,0 +1,16 @@
+[run]
+# A list of file name patterns, the files to leave out of measurement or reporting.
+omit =
+        */__init__.py
+        workflows/api/tests/*
+        workflows/api/urls/*
+        workflows/tests/*
+        workflows/models/*
+        workflows/admin/*
+        workflows/migrations/*
+        workflows/apps.py
+        workflows/tests.py
+
+
+# A list of packages or directories, the source to measure during execution.
+source = workflows
