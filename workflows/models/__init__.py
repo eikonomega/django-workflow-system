@@ -20,9 +20,8 @@ from workflows.models.collection import (
 from workflows.models.collection_member import WorkflowCollectionMember
 
 from workflows.models.json_schema import JSONSchema
-from workflows.models.step import (
-    WorkflowStep
-)
+from .recommendation import WorkflowCollectionRecommendation
+from workflows.models.step import WorkflowStep
 from workflows.models.step_audio import WorkflowStepAudio
 from workflows.models.step_dependency_detail import WorkflowStepDependencyDetail
 from workflows.models.step_dependency_group import WorkflowStepDependencyGroup
@@ -32,7 +31,9 @@ from workflows.models.step_text import WorkflowStepText
 from workflows.models.step_ui_template import WorkflowStepUITemplate
 from workflows.models.step_video import WorkflowStepVideo
 from workflows.models.subscription import WorkflowCollectionSubscription
-from workflows.models.subscription_schedule import WorkflowCollectionSubscriptionSchedule
+from workflows.models.subscription_schedule import (
+    WorkflowCollectionSubscriptionSchedule,
+)
 from workflows.models.workflow import Workflow
 from workflows.models.data_group import WorkflowStepDataGroup
 from workflows.models.abstract_models import CreatedModifiedAbstractModel
@@ -50,6 +51,7 @@ __all__ = [
     "WorkflowCollectionTagType",
     "WorkflowCollectionImageType",
     "WorkflowCollectionImage",
+    "WorkflowCollectionRecommendation",
     "JSONSchema",
     "WorkflowStep",
     "WorkflowStepAudio",
@@ -67,5 +69,5 @@ __all__ = [
     "WorkflowImageType",
     "WorkflowStepDataGroup",
     "CreatedModifiedAbstractModel",
-    "WorkflowCollectionTagAssignment"
+    "WorkflowCollectionTagAssignment",
 ]
