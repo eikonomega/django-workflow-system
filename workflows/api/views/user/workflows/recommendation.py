@@ -28,9 +28,7 @@ class WorkflowCollectionRecommendationsView(APIView):
 
     """
 
-    required_scopes = [
-        "read",
-    ]
+    required_scopes = ["read", "write"]
 
     def get(self, request):
         """
@@ -99,7 +97,7 @@ class WorkflowCollectionRecommendationsView(APIView):
             )
             raise e
         else:
-            instance: WorkflowCollectionRecommendation = serializer.save()
+            serializer.save()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 

@@ -1,13 +1,15 @@
 from datetime import timedelta
 
 import factory
+from factory.django import DjangoModelFactory
+
 from django.utils import timezone
 
-from ...factories import WorkflowCollectionFactory
+from .workflow_collection import WorkflowCollectionFactory
 from .....models import WorkflowCollectionRecommendation
 
 
-class WorkflowCollectionRecommendationFactory(factory.DjangoModelFactory):
+class WorkflowCollectionRecommendationFactory(DjangoModelFactory):
     class Meta:
         model = WorkflowCollectionRecommendation
 

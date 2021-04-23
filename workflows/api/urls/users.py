@@ -40,5 +40,11 @@ user_endpoints = [
          name='user-workflow-assignments'),
     path('self/workflows/assignments/<uuid:id>/',
          user.workflows.WorkflowCollectionAssignmentView.as_view(),
-         name='user-workflow-assignment')
+         name='user-workflow-assignment'),
+    path('self/workflows/recommendations/',
+         user.workflows.recommendation.WorkflowCollectionRecommendationsView.as_view(),
+         name='user-workflow-recommendations'),
+    path('self/workflows/recommendations/<uuid:id>/',
+         user.workflows.recommendation.WorkflowCollectionRecommendationView.as_view(),
+         name='user-workflow-recommendation')
 ]

@@ -11,12 +11,12 @@ class WorkflowCollectionRecommendationSerializer(serializers.ModelSerializer):
     """ Serializer for WorkflowCollectionRecommendation objects"""
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name="user-workflow-recommendation-v3", lookup_field="id"
+        view_name="user-workflow-recommendation", lookup_field="id"
     )
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     workflow_collection = serializers.HyperlinkedRelatedField(
         queryset=WorkflowCollection.objects.all(),
-        view_name="workflow-collection-v3",
+        view_name="workflow-collection",
         lookup_field="id",
     )
 
