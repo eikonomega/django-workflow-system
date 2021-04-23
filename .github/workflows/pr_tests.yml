@@ -36,4 +36,4 @@ jobs:
           pip install -r requirements.txt
       - name: Run Tests
         run: |
-          python manage.py test
+          coverage run manage.py test workflows.api.tests && coverage html
