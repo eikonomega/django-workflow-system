@@ -35,7 +35,9 @@ class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    workflow_collection = models.ForeignKey(WorkflowCollection, on_delete=models.CASCADE)
+    workflow_collection = models.ForeignKey(
+        WorkflowCollection, on_delete=models.CASCADE
+    )
 
     # FK to Django user.
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
@@ -104,5 +106,6 @@ class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
 
         # User must be active to assign a collection to them
         if not self.user.is_active:
-            raise ValidationError({"user": "User must be active to assign "
-                                           "a collection to them."})
+            raise ValidationError(
+                {"user": "User must be active to assign a collection to them."}
+            )

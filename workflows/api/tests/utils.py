@@ -14,7 +14,7 @@ def validate_error_response(response: Response):
         response.status_code == status.HTTP_403_FORBIDDEN
         and "detail" in response.data
         and isinstance(response.data["detail"], ErrorDetail)
-        and response.data['detail'] == 'Authentication credentials were not provided.'
+        and response.data["detail"] == "Authentication credentials were not provided."
     ):
         return True
 

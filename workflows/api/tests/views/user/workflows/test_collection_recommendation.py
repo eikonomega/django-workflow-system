@@ -9,7 +9,9 @@ from rest_framework.test import APIRequestFactory
 
 from .... import factories
 from workflows.api.views.user.workflows.recommendation import (
-    WorkflowCollectionRecommendationsView, WorkflowCollectionRecommendationView)
+    WorkflowCollectionRecommendationsView,
+    WorkflowCollectionRecommendationView,
+)
 from workflows.api.views.workflows.collection import WorkflowCollectionsView
 from workflows.models import WorkflowCollectionRecommendation
 from workflows.api.tests.factories import UserFactory, WorkflowCollectionFactory
@@ -19,7 +21,6 @@ class TestWorkflowCollectionRecommendationsView(TestCase):
     """
     Note: This only tests the API endpoint. The collection recommendation system is tested in
     """
-
 
     def setUp(self) -> None:
         self.view = WorkflowCollectionRecommendationsView.as_view()
@@ -51,7 +52,9 @@ class TestWorkflowCollectionRecommendationsView(TestCase):
         request = self.factory.get(self.url)
         request.user = self.user
 
-        factories.WorkflowCollectionRecommendationFactory(user=self.user,)
+        factories.WorkflowCollectionRecommendationFactory(
+            user=self.user,
+        )
 
         response = self.view(request)
 
@@ -212,14 +215,20 @@ class TestWorkflowCollectionRecommendationView(TestCase):
             "end",
         ]:
             self.assertIn(
-                key, response.data,
+                key,
+                response.data,
             )
         self.assertIn(url, response.data["detail"])
 
     def test_patch__authenticated(self):
         """Authenticated users can access PATCH method."""
         url = self.url.format(self.wcr_id)
-        request = self.factory.patch(url, data={"end": timezone.now(),})
+        request = self.factory.patch(
+            url,
+            data={
+                "end": timezone.now(),
+            },
+        )
         request.user = self.user
 
         self.assertIsNone(self.wcr.end)
@@ -235,7 +244,8 @@ class TestWorkflowCollectionRecommendationView(TestCase):
             "end",
         ]:
             self.assertIn(
-                key, response.data,
+                key,
+                response.data,
             )
 
         self.assertIsNotNone(response.data["end"])
@@ -243,11 +253,16 @@ class TestWorkflowCollectionRecommendationView(TestCase):
 
     def test_patch__invalid_payload(self):
         """
-        If the user makes a patch attempt with an invalid payload, a Validation 
+        If the user makes a patch attempt with an invalid payload, a Validation
         error should be raised.
         """
         url = self.url.format(self.wcr_id)
-        request = self.factory.patch(url, data={"end": "Eggs",})
+        request = self.factory.patch(
+            url,
+            data={
+                "end": "Eggs",
+            },
+        )
         request.user = self.user
 
         self.assertIsNone(self.wcr.end)

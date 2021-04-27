@@ -19,12 +19,13 @@ class WorkflowStepUITemplate(CreatedModifiedAbstractModel):
         id (UUIDField): The UUID for the database record.
         name (CharField): The name of the step template
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200, unique=True)
 
     class Meta:
-        db_table = 'workflow_system_step_ui_template'
-        verbose_name_plural = 'Workflow UI Templates'
+        db_table = "workflow_system_step_ui_template"
+        verbose_name_plural = "Workflow UI Templates"
 
     def __str__(self):
         return self.name

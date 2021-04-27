@@ -24,8 +24,9 @@ class JSONSchema(CreatedModifiedAbstractModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     code = models.CharField(
-        max_length=100, help_text="A short-hand reference to the schema definition.",
-        validators=[validate_code]
+        max_length=100,
+        help_text="A short-hand reference to the schema definition.",
+        validators=[validate_code],
     )
     description = models.TextField(
         max_length=250,

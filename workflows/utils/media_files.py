@@ -35,4 +35,3 @@ def author_media_location(instance, filename):
     image_type = filename.rpartition(".")[2]
 
     return f"workflow_system/authors/{author_id}/profileImage.{image_type}"
-

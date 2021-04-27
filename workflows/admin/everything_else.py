@@ -12,7 +12,8 @@ from django.utils.safestring import mark_safe
 from ..utils.admin_utils import (
     EditLinkToInlineObject,
     MeOrAllFilter,
-    USER_SEARCH_FIELDS)
+    USER_SEARCH_FIELDS,
+)
 from ..models import (
     JSONSchema,
     Workflow,
@@ -24,10 +25,15 @@ from ..models import (
     WorkflowCollectionSubscriptionSchedule,
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
-    WorkflowStepDataGroup, WorkflowCollectionTagType, WorkflowCollectionImageType,
-    WorkflowImageType, WorkflowImage)
+    WorkflowStepDataGroup,
+    WorkflowCollectionTagType,
+    WorkflowCollectionImageType,
+    WorkflowImageType,
+    WorkflowImage,
+)
 
 # assignment.py
+
 
 @admin.register(WorkflowCollectionAssignment)
 class WorkflowCollectionAssignmentAdmin(admin.ModelAdmin):
@@ -38,11 +44,7 @@ class WorkflowCollectionAssignmentAdmin(admin.ModelAdmin):
         "status",
         "engagement",
     ]
-    list_filter = [
-        MeOrAllFilter,
-        "workflow_collection",
-        "status"
-    ]
+    list_filter = [MeOrAllFilter, "workflow_collection", "status"]
     search_fields = USER_SEARCH_FIELDS + ("workflow_collection__code",)
 
     readonly_fields = ["engagement"]
@@ -174,7 +176,7 @@ class WorkflowCollectionEngagementAdmin(admin.ModelAdmin):
         "workflow_collection",
         IsFinishedFilter,
         HasDetailsFilter,
-        MeOrAllFilter
+        MeOrAllFilter,
     ]
     inlines = [WorkflowCollectionEngagementDetailInline]
     search_fields = USER_SEARCH_FIELDS
@@ -182,15 +184,25 @@ class WorkflowCollectionEngagementAdmin(admin.ModelAdmin):
 
 @admin.register(WorkflowCollectionEngagementDetail)
 class WorkflowCollectionEngagementDetailAdmin(admin.ModelAdmin):
-    list_display = ["workflow_collection_engagement", "user", "step", "started", "finished"]
+    list_display = [
+        "workflow_collection_engagement",
+        "user",
+        "step",
+        "started",
+        "finished",
+    ]
     search_fields = [
         "workflow_collection_engagement__" + field for field in USER_SEARCH_FIELDS
-    ] + ["workflow_collection_engagement__workflow_collection__code", ]
+    ] + [
+        "workflow_collection_engagement__workflow_collection__code",
+    ]
 
     def user(self, obj: WorkflowCollectionEngagementDetail):
         return obj.workflow_collection_engagement.user.username
+
     user.admin_order_field = "workflow_collection_engagement__user__username"
     user.short_description = "User"
+
 
 # json_schema.py
 
@@ -212,10 +224,7 @@ class WorkflowCollectionSubscriptionScheduleInline(admin.TabularInline):
 class WorkflowCollectionSubscriptionAdmin(admin.ModelAdmin):
     list_display = ["workflow_collection", "user", "active"]
     inlines = [WorkflowCollectionSubscriptionScheduleInline]
-    list_filter = [
-        "active",
-        "workflow_collection"
-    ]
+    list_filter = ["active", "workflow_collection"]
     search_fields = USER_SEARCH_FIELDS + ("workflow_collection__code",)
 
 
@@ -311,6 +320,7 @@ class WorkflowAdmin(admin.ModelAdmin):
 
     copy.short_description = "Copy selected workflows"
     copy.allowed_permissions = ("add",)
+
 
 # collection_tag_type.py
 

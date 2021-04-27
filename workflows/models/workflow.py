@@ -14,33 +14,32 @@ class Workflow(CreatedModifiedAbstractModel):
     """
     This is the primary model for this feature.
     """
+
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
-        help_text="The UUID of the Workflow"
+        help_text="The UUID of the Workflow",
     )
     code = models.CharField(
         max_length=200,
         validators=[validate_code],
-        help_text="An internal code for database level operations"
+        help_text="An internal code for database level operations",
     )
     name = models.CharField(max_length=200, help_text="Human friendly name")
     version = models.PositiveIntegerField(
         default=1,
         help_text="The version of a Workflow. Used to accommodate the "
-                  "evolution of a Workflow over time"
+        "evolution of a Workflow over time",
     )
     author = models.ForeignKey(
-        WorkflowAuthor,
-        on_delete=models.PROTECT,
-        help_text="The author of the Workflow"
+        WorkflowAuthor, on_delete=models.PROTECT, help_text="The author of the Workflow"
     )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         limit_choices_to={"is_staff": True},
-        help_text="Administrative user who created the Workflow in the database"
+        help_text="Administrative user who created the Workflow in the database",
     )
     on_completion = models.CharField(max_length=200, null=True, blank=True)
 

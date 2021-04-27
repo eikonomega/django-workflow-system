@@ -31,7 +31,7 @@ class WorkflowStep(CreatedModifiedAbstractModel):
     code = models.CharField(
         max_length=200,
         help_text="An identifier for programmatically referencing this step.",
-        validators=[validate_code]
+        validators=[validate_code],
     )
     order = models.PositiveIntegerField(
         validators=[MinValueValidator(1)],

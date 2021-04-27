@@ -8,7 +8,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .....utils.logging_utils import generate_extra
-from ....serializers.user.workflows.assignment import WorkflowCollectionAssignmentSummarySerializer
+from ....serializers.user.workflows.assignment import (
+    WorkflowCollectionAssignmentSummarySerializer,
+)
 from .....models import WorkflowCollectionAssignment
 
 import logging
@@ -104,7 +106,7 @@ class WorkflowCollectionAssignmentView(APIView):
             }
 
         Raises:
-            drf_exceptions.NotFound: 
+            drf_exceptions.NotFound:
                 If the id given does not corresponded to a
                 WorkflowCollectionAsssignment that is owned by the
                 requesting user.
@@ -182,20 +184,24 @@ class WorkflowCollectionAssignmentView(APIView):
                     request=request,
                     workflow_collection_assignment=serializer.instance,
                     serializer_errors=serializer.errors,
-                ))
+                ),
+            )
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             instance: WorkflowCollectionAssignment = serializer.save()
 
             new_status = instance.status
-            if old_status != new_status and new_status == WorkflowCollectionAssignment.CLOSED_COMPLETE:
+            if (
+                old_status != new_status
+                and new_status == WorkflowCollectionAssignment.CLOSED_COMPLETE
+            ):
                 logger.info(
                     "Assigment of collection %s to user %s is now CLOSED_COMPLETE",
                     instance.workflow_collection.code,
                     instance.user,
                     extra=generate_extra(
                         event_code="WORKFLOW_COLLECTION_ASSIGNMENT_COMPLETED",
-                        workflow_collection_assignment=instance
+                        workflow_collection_assignment=instance,
                     ),
                 )
 

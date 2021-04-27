@@ -6,74 +6,65 @@ from ....models import (
     WorkflowStepImage,
     WorkflowStepText,
     WorkflowStepInput,
-    WorkflowStepVideo)
+    WorkflowStepVideo,
+)
 
 
 class WorkflowStepTextSummarySerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowStepText objects.
     """
+
     class Meta:
         model = WorkflowStepText
-        fields = (
-            'id',
-            'workflow_step',
-            'content',
-            'ui_identifier',
-            'storage_value')
+        fields = ("id", "workflow_step", "content", "ui_identifier", "storage_value")
+
 
 class WorkflowStepInputSummarySerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowStepInput objects.
     """
+
     class Meta:
         model = WorkflowStepInput
         fields = (
-            'id',
-            'workflow_step',
-            'content',
-            'ui_identifier',
-            'required',
-            'response_schema')
+            "id",
+            "workflow_step",
+            "content",
+            "ui_identifier",
+            "required",
+            "response_schema",
+        )
 
 
 class WorkflowStepAudioSummarySerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowStepAudio  objects.
     """
+
     class Meta:
         model = WorkflowStepAudio
-        fields = (
-            'id',
-            'workflow_step',
-            'ui_identifier',
-            'url')
+        fields = ("id", "workflow_step", "ui_identifier", "url")
 
 
 class WorkflowStepImageSummarySerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowStepImage objects.
     """
+
     class Meta:
         model = WorkflowStepImage
-        fields = (
-            'id',
-            'workflow_step',
-            'ui_identifier',
-            'url')
+        fields = ("id", "workflow_step", "ui_identifier", "url")
 
 
 class WorkflowStepVideoSummarySerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowStepVideo objects.
     """
+
     class Meta:
         model = WorkflowStepVideo
-        fields = (
-            'id',
-            'workflow_step',
-            'ui_identifier',
-            'url')
+        fields = ("id", "workflow_step", "ui_identifier", "url")
 
 
 class WorkflowStepSummarySerializer(serializers.ModelSerializer):
@@ -81,8 +72,7 @@ class WorkflowStepSummarySerializer(serializers.ModelSerializer):
     Summary level serializer for WorkflowStep objects.
     """
 
-    ui_template = serializers.SlugRelatedField(
-        slug_field='name', read_only=True)
+    ui_template = serializers.SlugRelatedField(slug_field="name", read_only=True)
     workflowstepinput_set = WorkflowStepInputSummarySerializer(many=True)
     workflowsteptext_set = WorkflowStepTextSummarySerializer(many=True)
     workflowstepaudio_set = WorkflowStepAudioSummarySerializer(many=True)
@@ -92,9 +82,13 @@ class WorkflowStepSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkflowStep
         fields = (
-            'id', 'code', 'order', 'ui_template',
-            'workflowstepinput_set',
-            'workflowsteptext_set',
-            'workflowstepaudio_set',
-            'workflowstepimage_set',
-            'workflowstepvideo_set')
+            "id",
+            "code",
+            "order",
+            "ui_template",
+            "workflowstepinput_set",
+            "workflowsteptext_set",
+            "workflowstepaudio_set",
+            "workflowstepimage_set",
+            "workflowstepvideo_set",
+        )

@@ -4,7 +4,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ...serializers.workflows.workflow import (
-    WorkflowSummarySerializer, WorkflowDetailedSerializer)
+    WorkflowSummarySerializer,
+    WorkflowDetailedSerializer,
+)
 from ....models import Workflow
 
 
@@ -15,11 +17,11 @@ class WorkflowsView(APIView):
     * Get: Retrieve all Workflows representations.
 
     Notes:
-        Workflows that are part of collections will not be displayed 
+        Workflows that are part of collections will not be displayed
         via this endpoint. They are accessed via the collection detail endpoint.
     """
 
-    required_scopes = ['read']
+    required_scopes = ["read"]
 
     def get(self, request):
         """
@@ -56,7 +58,8 @@ class WorkflowsView(APIView):
         workflows = Workflow.objects.all()
 
         serializer = WorkflowSummarySerializer(
-            workflows, many=True, context={'request': request})
+            workflows, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
 
@@ -73,7 +76,7 @@ class WorkflowView(APIView):
     it is a member of a WorkflowCollection.
     """
 
-    required_scopes = ['read']
+    required_scopes = ["read"]
 
     def get(self, request, id):
         """
@@ -139,6 +142,5 @@ class WorkflowView(APIView):
                 }
         """
         workflow = get_object_or_404(Workflow, id=id)
-        serializer = WorkflowDetailedSerializer(
-            workflow, context={'request': request})
+        serializer = WorkflowDetailedSerializer(workflow, context={"request": request})
         return Response(serializer.data)

@@ -24,30 +24,28 @@ class WorkflowCollectionEngagementDetail(CreatedModifiedAbstractModel):
         primary_key=True,
         default=uuid.uuid4,
         editable=False,
-        help_text="The unique UUID of the record."
+        help_text="The unique UUID of the record.",
     )
     workflow_collection_engagement = models.ForeignKey(
-        "WorkflowCollectionEngagement", on_delete=models.PROTECT,
-        help_text="The WorkflowCollectionEngagement object associated with the engagement detail."
+        "WorkflowCollectionEngagement",
+        on_delete=models.PROTECT,
+        help_text="The WorkflowCollectionEngagement object associated with the engagement detail.",
     )
     step = models.ForeignKey(
         WorkflowStep,
         on_delete=models.PROTECT,
-        help_text="The WorkflowStep associated with the engagement detail."
+        help_text="The WorkflowStep associated with the engagement detail.",
     )
     user_response = models.JSONField(
         null=True,
         blank=True,
-        help_text="Internal representation of JSON response from user."
+        help_text="Internal representation of JSON response from user.",
     )
     started = models.DateTimeField(
-        default=timezone.now,
-        help_text="The start date of the engagement detail."
+        default=timezone.now, help_text="The start date of the engagement detail."
     )
     finished = models.DateTimeField(
-        blank=True,
-        null=True,
-        help_text="The finish date of the engagement detail."
+        blank=True, null=True, help_text="The finish date of the engagement detail."
     )
 
     class Meta:

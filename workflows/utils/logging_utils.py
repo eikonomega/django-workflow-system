@@ -111,7 +111,11 @@ def generate_extra(
         workflow_collection_engagement,
         default=workflow_collection,
     )
-    activity = find_property("activity", activity_assignment, default=activity,)
+    activity = find_property(
+        "activity",
+        activity_assignment,
+        default=activity,
+    )
 
     user = find_property(
         "user",

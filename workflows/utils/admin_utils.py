@@ -26,13 +26,17 @@ class EditLinkToInlineObject(object):
         inlines = (MyModelInline, )
 
     """
+
     def edit_link(self, instance):
-        url = reverse('admin:%s_%s_change' % (
-            instance._meta.app_label,  instance._meta.model_name),  args=[instance.pk] )
+        url = reverse(
+            "admin:%s_%s_change"
+            % (instance._meta.app_label, instance._meta.model_name),
+            args=[instance.pk],
+        )
         if instance.pk:
-            return mark_safe(u'<a href="{u}" target="_blank">edit</a>'.format(u=url))
+            return mark_safe('<a href="{u}" target="_blank">edit</a>'.format(u=url))
         else:
-            return ''
+            return ""
 
 
 class MeOrAllFilter(admin.SimpleListFilter):
@@ -50,15 +54,16 @@ class MeOrAllFilter(admin.SimpleListFilter):
     ```
 
     """
+
     # based on https://docs.djangoproject.com/en/2.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_filter
     title = "User"
     parameter_name = "just_me"
 
     def lookups(self, request: HttpRequest, model_admin: admin.ModelAdmin):
-        return [('true', 'Just Me')]  # 'All' option automatically provided
+        return [("true", "Just Me")]  # 'All' option automatically provided
 
     def queryset(self, request: HttpRequest, queryset: QuerySet):
-        if self.value() == 'true':
+        if self.value() == "true":
             queryset = queryset.filter(user=request.user)
         return queryset
 
@@ -81,21 +86,22 @@ def is_null_filter_factory(field: str):
         ]
 
     """
+
     class IsNullFilter(admin.SimpleListFilter):
         # based on https://docs.djangoproject.com/en/2.2/ref/contrib/admin/#django.contrib.admin.ModelAdmin.list_filter
         title = f"{field} is null"
         parameter_name = f"{field}__isnull"
 
         def lookups(self, request: HttpRequest, model_admin: admin.ModelAdmin):
-            return [('null', 'Is Null'),
-                    ('not_null', 'Is not Null')]
+            return [("null", "Is Null"), ("not_null", "Is not Null")]
 
         def queryset(self, request: HttpRequest, queryset: QuerySet):
-            if self.value() == 'null':
-                queryset = queryset.filter(**{field + '__isnull': True})
-            elif self.value() == 'not_null':
-                queryset = queryset.exclude(**{field + '__isnull': True})
+            if self.value() == "null":
+                queryset = queryset.filter(**{field + "__isnull": True})
+            elif self.value() == "not_null":
+                queryset = queryset.exclude(**{field + "__isnull": True})
             return queryset
+
     return IsNullFilter
 
 
@@ -119,11 +125,13 @@ class StepInCollectionFilter(admin.SimpleListFilter):
 
     def lookups(self, request: HttpRequest, model_admin: admin.ModelAdmin):
         qs = WorkflowCollection.objects.all()
-        return[(o.id, o.name) for o in list(qs)]
+        return [(o.id, o.name) for o in list(qs)]
 
     def queryset(self, request: HttpRequest, queryset: QuerySet):
-        collection_id = request.GET.get('collection')
-        members = WorkflowCollectionMember.objects.filter(workflow_collection=collection_id)
+        collection_id = request.GET.get("collection")
+        members = WorkflowCollectionMember.objects.filter(
+            workflow_collection=collection_id
+        )
         workflow_ids = [o.workflow for o in list(members)]
 
         if len(workflow_ids) > 0:
@@ -148,10 +156,10 @@ class IsActiveCollectionFilter(admin.SimpleListFilter):
     parameter_name = "active"
 
     def lookups(self, request: HttpRequest, model_admin: admin.ModelAdmin):
-        return [(1, 'Active'), (0, 'Inactive')]
+        return [(1, "Active"), (0, "Inactive")]
 
     def queryset(self, request: HttpRequest, queryset: QuerySet):
-        active = request.GET.get('active')
+        active = request.GET.get("active")
         if active is not None:
             try:
                 queryset = queryset.filter(active__exact=int(active))
@@ -165,5 +173,5 @@ USER_SEARCH_FIELDS = (
     "user__username",
     "user__first_name",
     "user__last_name",
-    "user__email"
+    "user__email",
 )
