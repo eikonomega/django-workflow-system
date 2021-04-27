@@ -1,5 +1,3 @@
 from . import workflows
 
-__all__ = [
-    'workflows'
-]
+__all__ = ["workflows"]

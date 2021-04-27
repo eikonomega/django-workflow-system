@@ -3,10 +3,10 @@ from ..workflows.collection import WorkflowCollectionsView, WorkflowCollectionVi
 from ..workflows.workflow import WorkflowsView, WorkflowView
 
 __all__ = [
-    'WorkflowAuthorsView',
-    'WorkflowAuthorView',
-    'WorkflowsView',
-    'WorkflowView',
-    'WorkflowCollectionsView',
-    'WorkflowCollectionView',
+    "WorkflowAuthorsView",
+    "WorkflowAuthorView",
+    "WorkflowsView",
+    "WorkflowView",
+    "WorkflowCollectionsView",
+    "WorkflowCollectionView",
 ]

@@ -3,13 +3,15 @@ from django.conf import settings
 
 
 class WorkflowsConfig(AppConfig):
-    name = 'workflows'
+    name = "workflows"
 
     def ready(self):
-        warning = "Warning: Some Django Rest Framework settings have not been set. We recommend " \
-                  "setting them to avoid any unwanted security gaps. For more information see " \
-                  "https://www.django-rest-framework.org/api-guide/authentication/#setting-" \
-                  "the-authentication-scheme"
+        warning = (
+            "Warning: Some Django Rest Framework settings have not been set. We recommend "
+            "setting them to avoid any unwanted security gaps. For more information see "
+            "https://www.django-rest-framework.org/api-guide/authentication/#setting-"
+            "the-authentication-scheme"
+        )
 
         try:
             rest_framework_settings = settings.REST_FRAMEWORK

@@ -22,12 +22,17 @@ from rest_framework import status
 
 from rest_framework.test import APIRequestFactory
 
-from workflows.api.tests.factories import (WorkflowCollectionFactory, UserFactory,
-                                           WorkflowCollectionEngagementFactory,
-                                           WorkflowCollectionEngagementDetailFactory)
+from workflows.api.tests.factories import (
+    WorkflowCollectionFactory,
+    UserFactory,
+    WorkflowCollectionEngagementFactory,
+    WorkflowCollectionEngagementDetailFactory,
+)
 from workflows.api.tests.factories.workflows import json_schema
-from workflows.api.views.user.workflows import (WorkflowCollectionEngagementDetailsView,
-                                                WorkflowCollectionEngagementDetailView)
+from workflows.api.views.user.workflows import (
+    WorkflowCollectionEngagementDetailsView,
+    WorkflowCollectionEngagementDetailView,
+)
 from workflows.models import WorkflowCollection, WorkflowStep, WorkflowStepInput
 
 
@@ -36,42 +41,62 @@ class TestWorkflowEngagementDetailsView(TestCase):
         self.view = WorkflowCollectionEngagementDetailsView.as_view()
         self.factory = APIRequestFactory()
 
-        self.single_activity_collection: WorkflowCollection = WorkflowCollectionFactory(**{
-            'category': 'ACTIVITY',
-            "workflow_set": [{
-                'workflowstep_set': [{
-                    'workflowsteptext_set': [{
-                        'content': "You did it"
-                    }]
-                }]
-            }]
-        })
+        self.single_activity_collection: WorkflowCollection = WorkflowCollectionFactory(
+            **{
+                "category": "ACTIVITY",
+                "workflow_set": [
+                    {
+                        "workflowstep_set": [
+                            {"workflowsteptext_set": [{"content": "You did it"}]}
+                        ]
+                    }
+                ],
+            }
+        )
 
-        self.single_activity_collection__workflow = self.single_activity_collection.workflowcollectionmember_set.get().workflow
-        self.single_activity_collection__step = self.single_activity_collection__workflow.workflowstep_set.get()
+        self.single_activity_collection__workflow = (
+            self.single_activity_collection.workflowcollectionmember_set.get().workflow
+        )
+        self.single_activity_collection__step = (
+            self.single_activity_collection__workflow.workflowstep_set.get()
+        )
 
-        self.single_survey_collection: WorkflowCollection = WorkflowCollectionFactory(**{
-            'category': 'SURVEY',
-            "workflow_set": [{
-                'workflowstep_set': [{
-                    'workflowstepinput_set': [{
-                        'content': "whatever",
-                        'required': True,
-                        'response_schema': json_schema.JSONSchemaOneToFiveFactory(),
-                    }]
-                }]
-            }]
-        })
-        self.single_survey_collection__workflow = self.single_survey_collection.workflowcollectionmember_set.get().workflow
-        self.single_survey_collection__step = self.single_survey_collection__workflow.workflowstep_set.get()
-        self.single_survey_collection__input = self.single_survey_collection__step.workflowstepinput_set.get()
-
-
+        self.single_survey_collection: WorkflowCollection = WorkflowCollectionFactory(
+            **{
+                "category": "SURVEY",
+                "workflow_set": [
+                    {
+                        "workflowstep_set": [
+                            {
+                                "workflowstepinput_set": [
+                                    {
+                                        "content": "whatever",
+                                        "required": True,
+                                        "response_schema": json_schema.JSONSchemaOneToFiveFactory(),
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+            }
+        )
+        self.single_survey_collection__workflow = (
+            self.single_survey_collection.workflowcollectionmember_set.get().workflow
+        )
+        self.single_survey_collection__step = (
+            self.single_survey_collection__workflow.workflowstep_set.get()
+        )
+        self.single_survey_collection__input = (
+            self.single_survey_collection__step.workflowstepinput_set.get()
+        )
 
         self.user_with_activity_engagement = UserFactory()
-        self.user_with_activity_engagement__engagement = WorkflowCollectionEngagementFactory(
-            workflow_collection=self.single_activity_collection,
-            user=self.user_with_activity_engagement,
+        self.user_with_activity_engagement__engagement = (
+            WorkflowCollectionEngagementFactory(
+                workflow_collection=self.single_activity_collection,
+                user=self.user_with_activity_engagement,
+            )
         )
         self.user_with_activity_engagement__detail = WorkflowCollectionEngagementDetailFactory(
             workflow_collection_engagement=self.user_with_activity_engagement__engagement,
@@ -84,7 +109,8 @@ class TestWorkflowEngagementDetailsView(TestCase):
         details.
         """
         request = self.factory.get(
-            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/")
+            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
+        )
         request.user = UserFactory()
         response = self.view(request, self.user_with_activity_engagement__engagement.id)
 
@@ -94,7 +120,8 @@ class TestWorkflowEngagementDetailsView(TestCase):
     def test_get__user_has_engagement_details(self):
         """Return engagement details for the requesting user."""
         request = self.factory.get(
-            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/")
+            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
+        )
         request.user = self.user_with_activity_engagement
         response = self.view(request, self.user_with_activity_engagement__engagement.id)
 
@@ -102,18 +129,19 @@ class TestWorkflowEngagementDetailsView(TestCase):
         for result in response.data:
             self.assertCountEqual(
                 list(result.keys()),
-                ['detail', 'step', 'user_response', 'started', 'finished'])
+                ["detail", "step", "user_response", "started", "finished"],
+            )
             self.assertEqual(
-                result['detail'],
+                result["detail"],
                 f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
                 f"{self.user_with_activity_engagement__engagement.id}/details/"
-                f"{self.user_with_activity_engagement__detail.id}/")
+                f"{self.user_with_activity_engagement__detail.id}/",
+            )
+            self.assertEqual(result["step"], self.single_activity_collection__step.id)
             self.assertEqual(
-                result['step'],
-                self.single_activity_collection__step.id)
-            self.assertEqual(
-                dateutil.parser.parse(result['started']),
-                self.user_with_activity_engagement__detail.started)
+                dateutil.parser.parse(result["started"]),
+                self.user_with_activity_engagement__detail.started,
+            )
 
     def test_post__incomplete_payload(self):
         """Incomplete JSON payload returns a 400 error."""
@@ -125,7 +153,8 @@ class TestWorkflowEngagementDetailsView(TestCase):
         request = self.factory.post(
             f"/users/self/workflows/engagements/{wce.id}/details/",
             data={},
-            format='json')
+            format="json",
+        )
         request.user = user
         response = self.view(request, wce.id)
 
@@ -136,11 +165,12 @@ class TestWorkflowEngagementDetailsView(TestCase):
         request = self.factory.post(
             f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/",
             data={
-                'workflow_collection_engagement': f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/",
-                'step': self.single_activity_collection__step.id,
-                'started': timezone.now()
+                "workflow_collection_engagement": f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/",
+                "step": self.single_activity_collection__step.id,
+                "started": timezone.now(),
             },
-            format='json')
+            format="json",
+        )
         request.user = self.user_with_activity_engagement
         response = self.view(request, self.user_with_activity_engagement__engagement.id)
 
@@ -149,7 +179,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
     def test_post__valid_payload(self):
         """Valid JSON payload returns a 201."""
 
-        user=UserFactory()
+        user = UserFactory()
         wce = WorkflowCollectionEngagementFactory(
             workflow_collection=self.single_activity_collection,
             user=user,
@@ -157,27 +187,31 @@ class TestWorkflowEngagementDetailsView(TestCase):
         request = self.factory.post(
             f"/users/self/workflows/engagements/{wce.id}/details/",
             data={
-                'workflow_collection_engagement':
-                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce.id}/",
-                'step': self.single_activity_collection__step.id,
-                'started': timezone.now()
+                "workflow_collection_engagement": f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce.id}/",
+                "step": self.single_activity_collection__step.id,
+                "started": timezone.now(),
             },
-            format='json')
+            format="json",
+        )
         request.user = user
         response = self.view(request, wce.id)
 
         self.assertEqual(response.status_code, 201)
 
-        self.assertEqual(response.data['state']['next_step_id'], self.single_activity_collection__step.id)
+        self.assertEqual(
+            response.data["state"]["next_step_id"],
+            self.single_activity_collection__step.id,
+        )
 
         self.assertEqual(
-            response.data['state']['next_workflow'],
-            f"http://testserver/api/workflow_system/workflows/{self.single_activity_collection__workflow.id}/")
+            response.data["state"]["next_workflow"],
+            f"http://testserver/api/workflow_system/workflows/{self.single_activity_collection__workflow.id}/",
+        )
 
     def test_post__not_in_collection(self):
         """Should not accept post if step is not in collection"""
 
-        user=UserFactory()
+        user = UserFactory()
         wce = WorkflowCollectionEngagementFactory(
             workflow_collection=self.single_activity_collection,
             user=user,
@@ -185,12 +219,12 @@ class TestWorkflowEngagementDetailsView(TestCase):
         request = self.factory.post(
             f"/users/self/workflows/engagements/{wce.id}/details/",
             data={
-                'workflow_collection_engagement':
-                    f"http://testserver/api_v3/users/self/workflows/engagements/{wce.id}/",
-                'step': self.single_survey_collection__step.id,
-                'started': timezone.now()
+                "workflow_collection_engagement": f"http://testserver/api_v3/users/self/workflows/engagements/{wce.id}/",
+                "step": self.single_survey_collection__step.id,
+                "started": timezone.now(),
             },
-            format='json')
+            format="json",
+        )
         request.user = user
         response = self.view(request, wce.id)
 
@@ -208,22 +242,27 @@ class TestWorkflowEngagementDetailsView(TestCase):
         request = self.factory.post(
             f"/users/self/workflows/engagements/{wce.id}/details/",
             data={
-                'workflow_collection_engagement': f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce.id}/",
-                'step': self.single_activity_collection__step.id,
-                'started': timezone.now(),
-                'finished': None,
+                "workflow_collection_engagement": f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce.id}/",
+                "step": self.single_activity_collection__step.id,
+                "started": timezone.now(),
+                "finished": None,
             },
-            format='json')
+            format="json",
+        )
         request.user = self.user_with_activity_engagement
         response = self.view(request, wce.id)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        self.assertEqual(response.data['state']['next_step_id'], self.single_activity_collection__step.id)
+        self.assertEqual(
+            response.data["state"]["next_step_id"],
+            self.single_activity_collection__step.id,
+        )
 
         self.assertEqual(
-            response.data['state']['next_workflow'],
-            f"http://testserver/api/workflow_system/workflows/{self.single_activity_collection__workflow.id}/")
+            response.data["state"]["next_workflow"],
+            f"http://testserver/api/workflow_system/workflows/{self.single_activity_collection__workflow.id}/",
+        )
 
     def test_post__required_inputs_no_user_response(self):
         """Step has required inputs but no user_response in request, returns a 400."""
@@ -236,13 +275,14 @@ class TestWorkflowEngagementDetailsView(TestCase):
         request = self.factory.post(
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/",
             data={
-                'workflow_collection_engagement': f"http://testserver/api/workflow_system/users/self/workflows/engagements/{my_workflow_engagement.id}/",
-                'step': self.single_survey_collection__step.id,
-                'started': timezone.now(),
-                'finished': timezone.now() + timezone.timedelta(minutes=5),
-                'user_response': None,
+                "workflow_collection_engagement": f"http://testserver/api/workflow_system/users/self/workflows/engagements/{my_workflow_engagement.id}/",
+                "step": self.single_survey_collection__step.id,
+                "started": timezone.now(),
+                "finished": timezone.now() + timezone.timedelta(minutes=5),
+                "user_response": None,
             },
-            format='json')
+            format="json",
+        )
         request.user = self.user_with_activity_engagement
         response = self.view(request, my_workflow_engagement.id)
 
@@ -251,19 +291,26 @@ class TestWorkflowEngagementDetailsView(TestCase):
     def test_post_no_required_inputs_questions_not_in_parsed(self):
         """No required questions, but "questions" is not in user_response json structure"""
 
-        my_collection = WorkflowCollectionFactory(**{
-            'category': 'SURVEY',
-            "workflow_set": [{
-                'workflowstep_set': [{
-                    'workflowstepinput_set': [{
-                        'content': "whatever",
-                        'required': False
-                    }]
-                }]
-            }]
-        })
+        my_collection = WorkflowCollectionFactory(
+            **{
+                "category": "SURVEY",
+                "workflow_set": [
+                    {
+                        "workflowstep_set": [
+                            {
+                                "workflowstepinput_set": [
+                                    {"content": "whatever", "required": False}
+                                ]
+                            }
+                        ]
+                    }
+                ],
+            }
+        )
 
-        my_step = WorkflowStep.objects.get(workflow__workflowcollectionmember__workflow_collection=my_collection)
+        my_step = WorkflowStep.objects.get(
+            workflow__workflowcollectionmember__workflow_collection=my_collection
+        )
         my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
@@ -274,21 +321,22 @@ class TestWorkflowEngagementDetailsView(TestCase):
         request = self.factory.post(
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/",
             data={
-                'workflow_collection_engagement': f"http://testserver/api/workflow_system/users/self/workflows/engagements/{my_workflow_engagement.id}/",
-                'step': my_step.id,
-                'started': timezone.now(),
-                'finished': timezone.now() + timezone.timedelta(minutes=5),
-                'user_response': {"ignored_key": "ignored value"},
+                "workflow_collection_engagement": f"http://testserver/api/workflow_system/users/self/workflows/engagements/{my_workflow_engagement.id}/",
+                "step": my_step.id,
+                "started": timezone.now(),
+                "finished": timezone.now() + timezone.timedelta(minutes=5),
+                "user_response": {"ignored_key": "ignored value"},
             },
-            format='json')
+            format="json",
+        )
         request.user = my_user
         response = self.view(request, my_workflow_engagement.id)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        self.assertEqual(response.data['state']['next_step_id'], None)
+        self.assertEqual(response.data["state"]["next_step_id"], None)
 
-        self.assertEqual(response.data['state']['next_workflow'], None)
+        self.assertEqual(response.data["state"]["next_workflow"], None)
 
     def test_post_assignment_next_step_started_on_second_workflow(self):
         """
@@ -308,30 +356,26 @@ class TestWorkflowEngagementDetailsView(TestCase):
                     "workflowstep_set": [
                         {
                             "code": "step1",
-                            "workflowsteptext_set": [{
-                                "content": "Who careeees, skip this"
-                            }]
+                            "workflowsteptext_set": [
+                                {"content": "Who careeees, skip this"}
+                            ],
                         }
-                    ]
+                    ],
                 },
                 {
                     "name": "workflow_2",
                     "workflowstep_set": [
                         {
                             "code": "step1",
-                            "workflowsteptext_set": [{
-                                "content": "setup of joke"
-                            }]
+                            "workflowsteptext_set": [{"content": "setup of joke"}],
                         },
                         {
                             "code": "step2",
-                            "workflowsteptext_set": [{
-                                "content": "punchline of joke"
-                            }]
-                        }
-                    ]
-                }
-            ]
+                            "workflowsteptext_set": [{"content": "punchline of joke"}],
+                        },
+                    ],
+                },
+            ],
         }
         collection = WorkflowCollectionFactory(**collection_factory_spec)
         user = UserFactory()
@@ -339,26 +383,31 @@ class TestWorkflowEngagementDetailsView(TestCase):
             workflow_collection=collection,
             user=user,
         )
-        workflow2 = collection.workflowcollectionmember_set.order_by('order')[1].workflow
-        step1, step2 = tuple(workflow2.workflowstep_set.order_by('order'))
+        workflow2 = collection.workflowcollectionmember_set.order_by("order")[
+            1
+        ].workflow
+        step1, step2 = tuple(workflow2.workflowstep_set.order_by("order"))
         request = self.factory.post(
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
-                'workflow_collection_engagement':
-                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
-                'step': step1.id,
-                'started': timezone.now(),
-                'finished': timezone.now() + timezone.timedelta(milliseconds=1),
+                "workflow_collection_engagement": f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                "step": step1.id,
+                "started": timezone.now(),
+                "finished": timezone.now() + timezone.timedelta(milliseconds=1),
             },
-            format='json')
+            format="json",
+        )
         request.user = user
-        response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
+        response = WorkflowCollectionEngagementDetailsView.as_view()(
+            request, engagement.id
+        )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(
-            response.data['state']['next_workflow'],
-            f"http://testserver/api/workflow_system/workflows/{workflow2.id}/")
-        self.assertEqual(response.data['state']['next_step_id'], step2.id)
+            response.data["state"]["next_workflow"],
+            f"http://testserver/api/workflow_system/workflows/{workflow2.id}/",
+        )
+        self.assertEqual(response.data["state"]["next_step_id"], step2.id)
 
     def test_post_survey_must_be_started_on_first_step(self):
         """
@@ -375,19 +424,17 @@ class TestWorkflowEngagementDetailsView(TestCase):
                     "workflowstep_set": [
                         {
                             "code": "step1",
-                            "workflowsteptext_set": [{
-                                "content": "Who careeees, skip this"
-                            }]
+                            "workflowsteptext_set": [
+                                {"content": "Who careeees, skip this"}
+                            ],
                         },
                         {
                             "code": "step2",
-                            "workflowsteptext_set": [{
-                                "content": "punchline of joke"
-                            }]
-                        }
-                    ]
+                            "workflowsteptext_set": [{"content": "punchline of joke"}],
+                        },
+                    ],
                 }
-            ]
+            ],
         }
         collection = WorkflowCollectionFactory(**collection_factory_spec)
         user = UserFactory()
@@ -396,19 +443,21 @@ class TestWorkflowEngagementDetailsView(TestCase):
             user=user,
         )
         workflow = collection.workflowcollectionmember_set.all()[0].workflow
-        step1, step2 = tuple(workflow.workflowstep_set.order_by('order'))
+        step1, step2 = tuple(workflow.workflowstep_set.order_by("order"))
         request = self.factory.post(
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
-                'workflow_collection_engagement':
-                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
-                'step': step2.id,
-                'started': timezone.now(),
-                'finished': timezone.now() + timezone.timedelta(milliseconds=1),
+                "workflow_collection_engagement": f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                "step": step2.id,
+                "started": timezone.now(),
+                "finished": timezone.now() + timezone.timedelta(milliseconds=1),
             },
-            format='json')
+            format="json",
+        )
         request.user = user
-        response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
+        response = WorkflowCollectionEngagementDetailsView.as_view()(
+            request, engagement.id
+        )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -430,30 +479,26 @@ class TestWorkflowEngagementDetailsView(TestCase):
                     "workflowstep_set": [
                         {
                             "code": "step1",
-                            "workflowsteptext_set": [{
-                                "content": "Who careeees, skip this"
-                            }]
+                            "workflowsteptext_set": [
+                                {"content": "Who careeees, skip this"}
+                            ],
                         }
-                    ]
+                    ],
                 },
                 {
                     "name": "workflow_2",
                     "workflowstep_set": [
                         {
                             "code": "step1",
-                            "workflowsteptext_set": [{
-                                "content": "setup of joke"
-                            }]
+                            "workflowsteptext_set": [{"content": "setup of joke"}],
                         },
                         {
                             "code": "step2",
-                            "workflowsteptext_set": [{
-                                "content": "punchline of joke"
-                            }]
-                        }
-                    ]
-                }
-            ]
+                            "workflowsteptext_set": [{"content": "punchline of joke"}],
+                        },
+                    ],
+                },
+            ],
         }
         collection = WorkflowCollectionFactory(**collection_factory_spec)
         user = UserFactory()
@@ -461,41 +506,50 @@ class TestWorkflowEngagementDetailsView(TestCase):
             workflow_collection=collection,
             user=user,
         )
-        workflow2 = collection.workflowcollectionmember_set.order_by('order')[1].workflow
-        step1, step2 = tuple(workflow2.workflowstep_set.order_by('order'))
+        workflow2 = collection.workflowcollectionmember_set.order_by("order")[
+            1
+        ].workflow
+        step1, step2 = tuple(workflow2.workflowstep_set.order_by("order"))
         request = self.factory.post(
             f"/users/self/workflows/engagements/{engagement.id}/details/",
             data={
-                'workflow_collection_engagement':
-                    f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
-                'step': step1.id,
-                'started': timezone.now(),
-                'finished': timezone.now() + timezone.timedelta(milliseconds=1),
+                "workflow_collection_engagement": f"http://testserver/api/workflow_system/users/self/workflows/engagements/{engagement.id}/",
+                "step": step1.id,
+                "started": timezone.now(),
+                "finished": timezone.now() + timezone.timedelta(milliseconds=1),
             },
-            format='json')
+            format="json",
+        )
         request.user = user
-        response = WorkflowCollectionEngagementDetailsView.as_view()(request, engagement.id)
+        response = WorkflowCollectionEngagementDetailsView.as_view()(
+            request, engagement.id
+        )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class TestWorkflowCollectionEngagementDetailView(TestCase):
-
     def setUp(self):
         self.view = WorkflowCollectionEngagementDetailView.as_view()
         self.factory = APIRequestFactory()
-        self.single_activity_collection: WorkflowCollection = WorkflowCollectionFactory(**{
-            'category': 'ACTIVITY',
-            "workflow_set": [{
-                'workflowstep_set': [{
-                    'workflowsteptext_set': [{
-                        'content': "You did it"
-                    }]
-                }]
-            }]
-        })
-        self.single_activity_collection__workflow = self.single_activity_collection.workflowcollectionmember_set.get().workflow
-        self.single_activity_collection__step = self.single_activity_collection__workflow.workflowstep_set.get()
+        self.single_activity_collection: WorkflowCollection = WorkflowCollectionFactory(
+            **{
+                "category": "ACTIVITY",
+                "workflow_set": [
+                    {
+                        "workflowstep_set": [
+                            {"workflowsteptext_set": [{"content": "You did it"}]}
+                        ]
+                    }
+                ],
+            }
+        )
+        self.single_activity_collection__workflow = (
+            self.single_activity_collection.workflowcollectionmember_set.get().workflow
+        )
+        self.single_activity_collection__step = (
+            self.single_activity_collection__workflow.workflowstep_set.get()
+        )
 
         self.user_with_engagement = UserFactory()
         self.user_with_engagement__engagement = WorkflowCollectionEngagementFactory(
@@ -518,9 +572,10 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             workflow_collection=self.single_activity_collection,
         )
 
-        fake_uuid = '027c315e-3788-4c30-8c58-46723077e2f0'
+        fake_uuid = "027c315e-3788-4c30-8c58-46723077e2f0"
         request = self.factory.get(
-            f"/users/self/workflows/engagements/{engagement.id}/details/{fake_uuid}/")
+            f"/users/self/workflows/engagements/{engagement.id}/details/{fake_uuid}/"
+        )
         request.user = UserFactory()
         response = self.view(request, engagement.id, fake_uuid)
 
@@ -532,39 +587,48 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         shows as NOT FOUND.
         """
         request = self.factory.get(
-            f"/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/")
+            f"/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/"
+        )
         request.user = UserFactory()
         response = self.view(
             request,
             self.user_with_engagement__engagement.id,
-            self.user_with_engagement__detail.id)
+            self.user_with_engagement__detail.id,
+        )
 
         self.assertEqual(response.status_code, 404)
 
     def test_get__authenticated_engagement(self):
         """Returned specified engagement for requesting user."""
         request = self.factory.get(
-            f"/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/")
+            f"/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/"
+        )
         request.user = self.user_with_engagement
-        response = self.view(request,
-                             self.user_with_engagement__engagement.id,
-                             self.user_with_engagement__detail.id)
+        response = self.view(
+            request,
+            self.user_with_engagement__engagement.id,
+            self.user_with_engagement__detail.id,
+        )
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.data['detail'],
-            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/")
+            response.data["detail"],
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__detail.id}/",
+        )
 
     def test_patch__unauthenticated_engagement(self):
         """Return 404 error if trying to patch unknown engagement."""
-        fake_uuid = '4f84f799-9cc5-43d3-0000-24840b7eb8ce'
+        fake_uuid = "4f84f799-9cc5-43d3-0000-24840b7eb8ce"
 
         request = self.factory.patch(
             f"/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{fake_uuid}/",
             data={},
-            format='json')
+            format="json",
+        )
         request.user = self.user_with_engagement
-        response = self.view(request, self.user_with_engagement__engagement.id, fake_uuid)
+        response = self.view(
+            request, self.user_with_engagement__engagement.id, fake_uuid
+        )
 
         self.assertEqual(response.status_code, 404)
 
@@ -573,32 +637,46 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         time_stamp = timezone.now()
         request = self.factory.patch(
             f"/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/{self.user_with_engagement__engagement.id}/",
-            data={"finished": time_stamp,},
-            format='json')
+            data={
+                "finished": time_stamp,
+            },
+            format="json",
+        )
         request.user = self.user_with_engagement
-        response = self.view(request,
-                             self.user_with_engagement__engagement.id,
-                             self.user_with_engagement__detail.id)
+        response = self.view(
+            request,
+            self.user_with_engagement__engagement.id,
+            self.user_with_engagement__detail.id,
+        )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(dateutil.parser.parse(
-            response.data['finished']), time_stamp)
+        self.assertEqual(dateutil.parser.parse(response.data["finished"]), time_stamp)
 
     def test_patch__valid_payload_with_schema(self):
         """Patch current engagement to the one specified."""
-        my_collection = WorkflowCollectionFactory(**{
-            'category': 'SURVEY',
-            "workflow_set": [{
-                'workflowstep_set': [{
-                    'workflowstepinput_set': [{
-                        'content': "one to fiveeee",
-                        'required': True,
-                        "response_schema": json_schema.JSONSchemaOneToFiveFactory()
-                    }]
-                }]
-            }]
-        })
-        my_step = WorkflowStep.objects.get(workflow__workflowcollectionmember__workflow_collection=my_collection)
+        my_collection = WorkflowCollectionFactory(
+            **{
+                "category": "SURVEY",
+                "workflow_set": [
+                    {
+                        "workflowstep_set": [
+                            {
+                                "workflowstepinput_set": [
+                                    {
+                                        "content": "one to fiveeee",
+                                        "required": True,
+                                        "response_schema": json_schema.JSONSchemaOneToFiveFactory(),
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+            }
+        )
+        my_step = WorkflowStep.objects.get(
+            workflow__workflowcollectionmember__workflow_collection=my_collection
+        )
         my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
@@ -617,40 +695,51 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                'user_response': {
-                    "questions": [{
-                        "stepInputID": str(my_step_input.id),
-                        "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                        "response": 1
-                    }]
-                }
+                "user_response": {
+                    "questions": [
+                        {
+                            "stepInputID": str(my_step_input.id),
+                            "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                            "response": 1,
+                        }
+                    ]
+                },
             },
-            format='json')
+            format="json",
+        )
         request.user = my_user
         response = self.view(
-            request,
-            my_workflow_engagement.id,
-            my_workflow_engagement_detail.id)
+            request, my_workflow_engagement.id, my_workflow_engagement_detail.id
+        )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(dateutil.parser.parse(
-            response.data['finished']), time_stamp)
+        self.assertEqual(dateutil.parser.parse(response.data["finished"]), time_stamp)
 
     def test_patch__valid_payload_with_schema_existing_response(self):
         """Patch current engagement to the one specified."""
-        my_collection = WorkflowCollectionFactory(**{
-            'category': 'SURVEY',
-            "workflow_set": [{
-                'workflowstep_set': [{
-                    'workflowstepinput_set': [{
-                        'content': "one to fiveeee",
-                        'required': True,
-                        "response_schema": json_schema.JSONSchemaOneToFiveFactory()
-                    }]
-                }]
-            }]
-        })
-        my_step = WorkflowStep.objects.get(workflow__workflowcollectionmember__workflow_collection=my_collection)
+        my_collection = WorkflowCollectionFactory(
+            **{
+                "category": "SURVEY",
+                "workflow_set": [
+                    {
+                        "workflowstep_set": [
+                            {
+                                "workflowstepinput_set": [
+                                    {
+                                        "content": "one to fiveeee",
+                                        "required": True,
+                                        "response_schema": json_schema.JSONSchemaOneToFiveFactory(),
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+            }
+        )
+        my_step = WorkflowStep.objects.get(
+            workflow__workflowcollectionmember__workflow_collection=my_collection
+        )
         my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
@@ -662,11 +751,15 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             step=my_step,
             started=timezone.now(),
             finished=timezone.now(),
-            user_response={"questions": [{
-                "stepInputID": str(my_step_input.id),
-                "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                "response": 1
-            }]}
+            user_response={
+                "questions": [
+                    {
+                        "stepInputID": str(my_step_input.id),
+                        "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                        "response": 1,
+                    }
+                ]
+            },
         )
 
         time_stamp = timezone.now()
@@ -674,40 +767,51 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                'user_response': {
-                    "questions": [{
-                        "stepInputID": str(my_step_input.id),
-                        "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                        "response": 2
-                    }]
-                }
+                "user_response": {
+                    "questions": [
+                        {
+                            "stepInputID": str(my_step_input.id),
+                            "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                            "response": 2,
+                        }
+                    ]
+                },
             },
-            format='json')
+            format="json",
+        )
         request.user = my_user
         response = self.view(
-            request,
-            my_workflow_engagement.id,
-            my_workflow_engagement_detail.id)
+            request, my_workflow_engagement.id, my_workflow_engagement_detail.id
+        )
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(dateutil.parser.parse(
-            response.data['finished']), time_stamp)
+        self.assertEqual(dateutil.parser.parse(response.data["finished"]), time_stamp)
 
     def test_patch__schema_fails(self):
         """Patch current engagement to the one specified."""
-        my_collection = WorkflowCollectionFactory(**{
-            'category': 'SURVEY',
-            "workflow_set": [{
-                'workflowstep_set': [{
-                    'workflowstepinput_set': [{
-                        'content': "one to fiveeee",
-                        'required': True,
-                        "response_schema": json_schema.JSONSchemaOneToFiveFactory()
-                    }]
-                }]
-            }]
-        })
-        my_step = WorkflowStep.objects.get(workflow__workflowcollectionmember__workflow_collection=my_collection)
+        my_collection = WorkflowCollectionFactory(
+            **{
+                "category": "SURVEY",
+                "workflow_set": [
+                    {
+                        "workflowstep_set": [
+                            {
+                                "workflowstepinput_set": [
+                                    {
+                                        "content": "one to fiveeee",
+                                        "required": True,
+                                        "response_schema": json_schema.JSONSchemaOneToFiveFactory(),
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+            }
+        )
+        my_step = WorkflowStep.objects.get(
+            workflow__workflowcollectionmember__workflow_collection=my_collection
+        )
         my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
@@ -719,47 +823,61 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             step=my_step,
             started=timezone.now(),
             finished=timezone.now(),
-            user_response={"questions": [{
-                "stepInputID": str(my_step_input.id),
-                "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                "response": 1
-            }]}
+            user_response={
+                "questions": [
+                    {
+                        "stepInputID": str(my_step_input.id),
+                        "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                        "response": 1,
+                    }
+                ]
+            },
         )
         time_stamp = timezone.now()
         request = self.factory.patch(
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                'user_response': {
-                    "questions": [{
-                        "stepInputID": str(my_step_input.id),
-                        "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                        "response": "africa"
-                    }]
-                }
+                "user_response": {
+                    "questions": [
+                        {
+                            "stepInputID": str(my_step_input.id),
+                            "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                            "response": "africa",
+                        }
+                    ]
+                },
             },
-            format='json')
+            format="json",
+        )
         request.user = my_user
-        response = self.view(request,
-                             my_workflow_engagement.id,
-                             my_workflow_engagement_detail.id)
+        response = self.view(
+            request, my_workflow_engagement.id, my_workflow_engagement_detail.id
+        )
 
         self.assertEqual(response.status_code, 400)
 
     def test_post__answer_NOT_required_NOT_given(self):
-        my_collection = WorkflowCollectionFactory(**{
-            'category': 'SURVEY',
-            "workflow_set": [{
-                'workflowstep_set': [{
-                    'workflowstepinput_set': [{
-                        'content': "whatever",
-                        'required': False
-                    }]
-                }]
-            }]
-        })
+        my_collection = WorkflowCollectionFactory(
+            **{
+                "category": "SURVEY",
+                "workflow_set": [
+                    {
+                        "workflowstep_set": [
+                            {
+                                "workflowstepinput_set": [
+                                    {"content": "whatever", "required": False}
+                                ]
+                            }
+                        ]
+                    }
+                ],
+            }
+        )
 
-        my_step = WorkflowStep.objects.get(workflow__workflowcollectionmember__workflow_collection=my_collection)
+        my_step = WorkflowStep.objects.get(
+            workflow__workflowcollectionmember__workflow_collection=my_collection
+        )
         my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
@@ -778,33 +896,42 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                'user_response': {"questions": []},
+                "user_response": {"questions": []},
             },
-            format='json')
+            format="json",
+        )
         request.user = my_user
         response = self.view(
-            request,
-            my_workflow_engagement,
-            my_workflow_engagement_detail.id
+            request, my_workflow_engagement, my_workflow_engagement_detail.id
         )
 
         self.assertEqual(response.status_code, 200)
 
     def test_patch__answer_required_not_given(self):
-        my_collection = WorkflowCollectionFactory(**{
-            'category': 'SURVEY',
-            "workflow_set": [{
-                'workflowstep_set': [{
-                    'workflowstepinput_set': [{
-                        'content': "You DO need to answer 1 to 5",
-                        'required': True,
-                        "response_schema": json_schema.JSONSchemaOneToFiveFactory()
-                    }]
-                }]
-            }]
-        })
+        my_collection = WorkflowCollectionFactory(
+            **{
+                "category": "SURVEY",
+                "workflow_set": [
+                    {
+                        "workflowstep_set": [
+                            {
+                                "workflowstepinput_set": [
+                                    {
+                                        "content": "You DO need to answer 1 to 5",
+                                        "required": True,
+                                        "response_schema": json_schema.JSONSchemaOneToFiveFactory(),
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+            }
+        )
 
-        my_step = WorkflowStep.objects.get(workflow__workflowcollectionmember__workflow_collection=my_collection)
+        my_step = WorkflowStep.objects.get(
+            workflow__workflowcollectionmember__workflow_collection=my_collection
+        )
         my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
@@ -823,31 +950,42 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                'user_response': {"questions": []},
+                "user_response": {"questions": []},
             },
-            format='json')
+            format="json",
+        )
         request.user = my_user
-        response = self.view(request,
-                             my_workflow_engagement.id,
-                             my_workflow_engagement_detail.id)
+        response = self.view(
+            request, my_workflow_engagement.id, my_workflow_engagement_detail.id
+        )
 
         self.assertEqual(response.status_code, 400)
 
     def test_patch__questions_not_in_user_response(self):
-        my_collection = WorkflowCollectionFactory(**{
-            'category': 'SURVEY',
-            "workflow_set": [{
-                'workflowstep_set': [{
-                    'workflowstepinput_set': [{
-                        'content': "You DO need to answer 1 to 5",
-                        'required': True,
-                        "response_schema": json_schema.JSONSchemaOneToFiveFactory()
-                    }]
-                }]
-            }]
-        })
+        my_collection = WorkflowCollectionFactory(
+            **{
+                "category": "SURVEY",
+                "workflow_set": [
+                    {
+                        "workflowstep_set": [
+                            {
+                                "workflowstepinput_set": [
+                                    {
+                                        "content": "You DO need to answer 1 to 5",
+                                        "required": True,
+                                        "response_schema": json_schema.JSONSchemaOneToFiveFactory(),
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+            }
+        )
 
-        my_step = WorkflowStep.objects.get(workflow__workflowcollectionmember__workflow_collection=my_collection)
+        my_step = WorkflowStep.objects.get(
+            workflow__workflowcollectionmember__workflow_collection=my_collection
+        )
         my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
@@ -867,12 +1005,13 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                'user_response': {"la": "mao"},
+                "user_response": {"la": "mao"},
             },
-            format='json')
+            format="json",
+        )
         request.user = my_user
-        response = self.view(request,
-                             my_workflow_engagement.id,
-                             my_workflow_engagement_detail.id)
+        response = self.view(
+            request, my_workflow_engagement.id, my_workflow_engagement_detail.id
+        )
 
         self.assertEqual(response.status_code, 400)

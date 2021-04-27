@@ -10,8 +10,9 @@ from rest_framework.views import APIView
 from ....utils import convert_to_utc_time
 from .....models import WorkflowCollectionSubscription
 from .....utils.logging_utils import generate_extra
-from ....serializers.user.workflows.subscription import \
-    WorkflowCollectionSubscriptionSummarySerializer
+from ....serializers.user.workflows.subscription import (
+    WorkflowCollectionSubscriptionSummarySerializer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,8 @@ class WorkflowCollectionSubscriptionsView(APIView):
     * Post: Create a new WorkflowCollectionSubscription resource
       for the requesting user.
     """
-    required_scopes = ['read', 'write']
+
+    required_scopes = ["read", "write"]
 
     def get(self, request):
         """
@@ -52,7 +54,9 @@ class WorkflowCollectionSubscriptionsView(APIView):
         """
         serializer = WorkflowCollectionSubscriptionSummarySerializer(
             WorkflowCollectionSubscription.objects.filter(user=request.user),
-            many=True, context={'request': request})
+            many=True,
+            context={"request": request},
+        )
 
         return Response(data=serializer.data)
 
@@ -92,11 +96,13 @@ class WorkflowCollectionSubscriptionsView(APIView):
             }
         """
         serializer = WorkflowCollectionSubscriptionSummarySerializer(
-            data=request.data, context={'request': request})
+            data=request.data, context={"request": request}
+        )
 
         try:
             workflow_subscriptions = request.data[
-                'workflowcollectionsubscriptionschedule_set']
+                "workflowcollectionsubscriptionschedule_set"
+            ]
         except KeyError:
             # If a schedule isn't passed through, we'll skip this part
             pass
@@ -105,8 +111,9 @@ class WorkflowCollectionSubscriptionsView(APIView):
                 # This try/except is converting the time that is being passed in
                 # from the mobile app into UTC time.
                 try:
-                    schedule_set['time_of_day'] = convert_to_utc_time(
-                        schedule_set['time_of_day'], '%H:%M:%S%z')
+                    schedule_set["time_of_day"] = convert_to_utc_time(
+                        schedule_set["time_of_day"], "%H:%M:%S%z"
+                    )
                 except ValueError:
                     # If there is no offset specified, we want to use the time
                     # that was passed in
@@ -122,17 +129,19 @@ class WorkflowCollectionSubscriptionsView(APIView):
                 extra=generate_extra(
                     request=request,
                     serializer_errors=serializer.errors,
-                )
+                ),
             )
 
             # Handle uniqueness constraint violation
-            if 'non_field_errors' in serializer.errors and \
-                    serializer.errors['non_field_errors'][0].code == 'unique':
+            if (
+                "non_field_errors" in serializer.errors
+                and serializer.errors["non_field_errors"][0].code == "unique"
+            ):
 
                 return Response(
-                    data={
-                        'detail': serializer.errors['non_field_errors'][0]},
-                    status=status.HTTP_409_CONFLICT)
+                    data={"detail": serializer.errors["non_field_errors"][0]},
+                    status=status.HTTP_409_CONFLICT,
+                )
             raise e
         else:
             instance: WorkflowCollectionSubscription = serializer.save()
@@ -144,8 +153,8 @@ class WorkflowCollectionSubscriptionsView(APIView):
                     event_code="WORKFLOW_COLLECTION_SUBSCRIPTION_CREATED",
                     user=request.user,
                     workflow_collection=instance.workflow_collection,
-                    workflow_collection_subscription__active=instance.active
-                )
+                    workflow_collection_subscription__active=instance.active,
+                ),
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -161,7 +170,7 @@ class WorkflowCollectionSubscriptionView(APIView):
 
     """
 
-    required_scopes = ['read', 'write']
+    required_scopes = ["read", "write"]
 
     def get(self, request, id):
         """
@@ -202,8 +211,8 @@ class WorkflowCollectionSubscriptionView(APIView):
         )
 
         serializer = WorkflowCollectionSubscriptionSummarySerializer(
-            workflow_collection_subscription,
-            context={'request': request})
+            workflow_collection_subscription, context={"request": request}
+        )
 
         return Response(data=serializer.data)
 
@@ -216,7 +225,7 @@ class WorkflowCollectionSubscriptionView(APIView):
             id (str): The UUID of the user subscription to modify.
 
         Body Parameters:
-            workflow_collection (foreign key): The Workflow Collection object associated with the 
+            workflow_collection (foreign key): The Workflow Collection object associated with the
                                                subscription.
             active (boolean): Whether or not the subscription is active
             workflowcollectionsubscription_set (array): The ability to set a workflow collection schedule.
@@ -260,11 +269,13 @@ class WorkflowCollectionSubscriptionView(APIView):
         serializer = WorkflowCollectionSubscriptionSummarySerializer(
             workflow_collection_subscription,
             data=request.data,
-            context={'request': request})
+            context={"request": request},
+        )
 
         try:
             workflow_subscriptions = request.data[
-                'workflowcollectionsubscriptionschedule_set']
+                "workflowcollectionsubscriptionschedule_set"
+            ]
         except KeyError:
             # If a schedule isn't passed through, we'll skip this part
             pass
@@ -273,8 +284,9 @@ class WorkflowCollectionSubscriptionView(APIView):
                 # This try/except is converting the time that is being passed in
                 # from the mobile app into UTC time.
                 try:
-                    schedule_set['time_of_day'] = convert_to_utc_time(
-                        schedule_set['time_of_day'], '%H:%M:%S%z')
+                    schedule_set["time_of_day"] = convert_to_utc_time(
+                        schedule_set["time_of_day"], "%H:%M:%S%z"
+                    )
                 except ValueError:
                     # If there is no offset specified, we want to use the time
                     # that was passed in
@@ -288,8 +300,8 @@ class WorkflowCollectionSubscriptionView(APIView):
                 extra=generate_extra(
                     request=request,
                     workflow_collection_subscription=workflow_collection_subscription,
-                    serializer_error=serializer.errors
-                )
+                    serializer_error=serializer.errors,
+                ),
             )
             raise e
         else:
@@ -302,7 +314,7 @@ class WorkflowCollectionSubscriptionView(APIView):
                     event_code="WORKFLOW_COLLECTION_SUBSCRIPTION_UPDATED",
                     user=request.user,
                     workflow_collection=instance.workflow_collection,
-                    workflow_collection_subscription__active=instance.active
-                )
+                    workflow_collection_subscription__active=instance.active,
+                ),
             )
             return Response(serializer.data)

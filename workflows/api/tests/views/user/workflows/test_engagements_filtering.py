@@ -13,28 +13,39 @@ from rest_framework import status
 #
 from rest_framework.test import APIRequestFactory
 
-from workflows.api.tests.factories import (UserFactory, WorkflowCollectionFactory,
-                                           WorkflowCollectionEngagementFactory)
+from workflows.api.tests.factories import (
+    UserFactory,
+    WorkflowCollectionFactory,
+    WorkflowCollectionEngagementFactory,
+)
 from workflows.api.views.user.workflows import WorkflowCollectionEngagementsView
 from workflows.models import WorkflowCollection
 
 
 class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
-    view_url = '/users/self/workflows/engagements/'
+    view_url = "/users/self/workflows/engagements/"
 
     def setUp(self):
         self.view = WorkflowCollectionEngagementsView.as_view()
         self.user = UserFactory()
         self.factory = APIRequestFactory()
-        self.workflow_collection: WorkflowCollection = WorkflowCollectionFactory(**{
-            "name": "simple_survey",
-            "category": "SURVEY",
-            "workflow_set": [{
-                "name": "simple_survey_workflow",
-                "code": "simple_survey_workflow",
-                "workflowstep_set": [{"code": "step1",}]
-            }]
-        })
+        self.workflow_collection: WorkflowCollection = WorkflowCollectionFactory(
+            **{
+                "name": "simple_survey",
+                "category": "SURVEY",
+                "workflow_set": [
+                    {
+                        "name": "simple_survey_workflow",
+                        "code": "simple_survey_workflow",
+                        "workflowstep_set": [
+                            {
+                                "code": "step1",
+                            }
+                        ],
+                    }
+                ],
+            }
+        )
 
     def test_default_filter_set(self):
         wce1 = WorkflowCollectionEngagementFactory(
@@ -55,8 +66,9 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(
-            response.data[0]['detail'],
-            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce1.id}/")
+            response.data[0]["detail"],
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce1.id}/",
+        )
 
     def test_include_finished(self):
         wce1 = WorkflowCollectionEngagementFactory(
@@ -86,12 +98,12 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
         wce1 = WorkflowCollectionEngagementFactory(
             workflow_collection=self.workflow_collection,
             user=self.user,
-            started=timezone.now()
+            started=timezone.now(),
         )
         wce2 = WorkflowCollectionEngagementFactory(
             workflow_collection=self.workflow_collection,
             user=self.user,
-            started=timezone.now() - timedelta(10)
+            started=timezone.now() - timedelta(10),
         )
 
         request = self.factory.get(
@@ -99,7 +111,7 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
             data={
                 "include_finished": True,
                 "start": timezone.now() - timedelta(5),
-            }
+            },
         )
         request.user = self.user
         response = self.view(request)
@@ -107,19 +119,20 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(
-            response.data[0]['detail'],
-            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce1.id}/")
+            response.data[0]["detail"],
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce1.id}/",
+        )
 
     def test_end_filter(self):
         wce1 = WorkflowCollectionEngagementFactory(
             workflow_collection=self.workflow_collection,
             user=self.user,
-            started=timezone.now() - timedelta(10)
+            started=timezone.now() - timedelta(10),
         )
         wce2 = WorkflowCollectionEngagementFactory(
             workflow_collection=self.workflow_collection,
             user=self.user,
-            started=timezone.now()
+            started=timezone.now(),
         )
 
         request = self.factory.get(
@@ -127,7 +140,7 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
             data={
                 "include_finished": False,
                 "end": timezone.now() - timedelta(5),
-            }
+            },
         )
         request.user = self.user
         response = self.view(request)
@@ -135,26 +148,24 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(
-            response.data[0]['detail'],
-            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce1.id}/")
+            response.data[0]["detail"],
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce1.id}/",
+        )
 
     def test_collection_id_filter(self):
         wce1 = WorkflowCollectionEngagementFactory(
             workflow_collection=self.workflow_collection,
             user=self.user,
-            started=timezone.now() - timedelta(10)
+            started=timezone.now() - timedelta(10),
         )
         wce2 = WorkflowCollectionEngagementFactory(
             workflow_collection=WorkflowCollectionFactory(),
             user=self.user,
-            started=timezone.now()
+            started=timezone.now(),
         )
 
         request = self.factory.get(
-            self.view_url,
-            data={
-                "collection_id": self.workflow_collection.id
-            }
+            self.view_url, data={"collection_id": self.workflow_collection.id}
         )
         request.user = self.user
         response = self.view(request)
@@ -162,8 +173,9 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(
-            response.data[0]['detail'],
-            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce1.id}/")
+            response.data[0]["detail"],
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wce1.id}/",
+        )
 
     def test_start_end_error(self):
         request = self.factory.get(
@@ -171,7 +183,7 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
             data={
                 "start": timezone.now(),
                 "end": timezone.now() - timedelta(5),
-            }
+            },
         )
         request.user = self.user
         response = self.view(request)
@@ -183,7 +195,7 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
             self.view_url,
             data={
                 "start": "yesterdayish",
-            }
+            },
         )
         request.user = self.user
         response = self.view(request)
@@ -192,10 +204,7 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
 
     def test_bad_collection_id(self):
         request = self.factory.get(
-            self.view_url,
-            data={
-                "collection_id": "not_a_real_uuid"
-            }
+            self.view_url, data={"collection_id": "not_a_real_uuid"}
         )
         request.user = self.user
         response = self.view(request)
@@ -207,20 +216,23 @@ class TestWorkflowCollectionEngagementsViewFiltering(TestCase):
             workflow_collection=self.workflow_collection,
             user=self.user,
             finished=None,
-            workflowcollectionengagementdetail_set=[{
-                "step": self.workflow_collection.workflowcollectionmember_set.all()[0].workflow.workflowstep_set.all()[0]
-            }]
+            workflowcollectionengagementdetail_set=[
+                {
+                    "step": self.workflow_collection.workflowcollectionmember_set.all()[
+                        0
+                    ].workflow.workflowstep_set.all()[0]
+                }
+            ],
         )
         request = self.factory.get(
             self.view_url,
             data={
                 "include_details": True,
-            }
+            },
         )
         request.user = self.user
         response = self.view(request)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertIn('workflowcollectionengagementdetail_set', response.data[0].keys())
-
+        self.assertIn("workflowcollectionengagementdetail_set", response.data[0].keys())

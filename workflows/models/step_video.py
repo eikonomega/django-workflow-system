@@ -24,17 +24,16 @@ class WorkflowStepVideo(CreatedModifiedAbstractModel):
         url (URLField): The video location
 
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow_step = models.ForeignKey(
-        WorkflowStep,
-        on_delete=models.PROTECT)
+    workflow_step = models.ForeignKey(WorkflowStep, on_delete=models.PROTECT)
     ui_identifier = models.CharField(max_length=200)
     url = models.URLField()
 
     class Meta:
-        db_table = 'workflow_system_step_video'
+        db_table = "workflow_system_step_video"
         verbose_name_plural = "Workflow Step Videos"
-        unique_together = ['workflow_step', 'ui_identifier']
+        unique_together = ["workflow_step", "ui_identifier"]
 
     def __str__(self):
         return self.ui_identifier

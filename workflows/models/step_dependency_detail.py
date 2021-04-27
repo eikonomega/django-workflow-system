@@ -23,22 +23,25 @@ class WorkflowStepDependencyDetail(CreatedModifiedAbstractModel):
         required_response (JSONField): The user response that is required for the dependency to be
                                        considered fulfilled.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     dependency_group = models.ForeignKey(
-        WorkflowStepDependencyGroup, on_delete=models.CASCADE)
+        WorkflowStepDependencyGroup, on_delete=models.CASCADE
+    )
     dependency_step = models.ForeignKey(WorkflowStep, on_delete=models.CASCADE)
     required_response = models.JSONField()
 
     class Meta:
         db_table = "workflow_system_step_dependency_detail"
-        verbose_name_plural = 'Workflow Step Dependency Details'
-        unique_together = ('dependency_group', 'dependency_step')
+        verbose_name_plural = "Workflow Step Dependency Details"
+        unique_together = ("dependency_group", "dependency_step")
 
     def __str__(self):
         return "{} -> {}".format(
             self.dependency_group.workflow_step.code,
             self.dependency_group.workflow_collection.code,
-            self.dependency_step.code)
+            self.dependency_step.code,
+        )
 
     def clean(self):
         """
@@ -61,22 +64,28 @@ class WorkflowStepDependencyDetail(CreatedModifiedAbstractModel):
         try:
             Draft7Validator.check_schema(self.required_response)
         except SchemaError as error:
-            raise ValidationError({
-                'required_response': (
-                    'There is something wrong in your schema definition. '
-                    'Details {}'.format(error))})
+            raise ValidationError(
+                {
+                    "required_response": (
+                        "There is something wrong in your schema definition. "
+                        "Details {}".format(error)
+                    )
+                }
+            )
 
         # dependency_step's Workflow must be a
         # member of the dependency_group's Workflow Collection
         try:
-            dependency_step_workflow = \
-                WorkflowCollectionMember.objects.get(
-                    workflow_collection=dependency_group.workflow_collection,
-                    workflow=dependency_step.workflow)
+            dependency_step_workflow = WorkflowCollectionMember.objects.get(
+                workflow_collection=dependency_group.workflow_collection,
+                workflow=dependency_step.workflow,
+            )
         except ObjectDoesNotExist:
-            raise ValidationError("dependency_step's Workflow must be a "
-                                  "member of the dependency_group's "
-                                  "Workflow Collection")
+            raise ValidationError(
+                "dependency_step's Workflow must be a "
+                "member of the dependency_group's "
+                "Workflow Collection"
+            )
         else:
             dependency_step_workflow_order = dependency_step_workflow.order
 
@@ -84,24 +93,27 @@ class WorkflowStepDependencyDetail(CreatedModifiedAbstractModel):
             # You cannot create a circular dependency.
             if dependency_step == dependency_group.workflow_step:
                 raise ValidationError(
-                    'The value of dependency_step cannot be equal to the '
-                    'value of workflow_step in the associated dependency_'
-                    'group. This would represent a circular dependency.')
+                    "The value of dependency_step cannot be equal to the "
+                    "value of workflow_step in the associated dependency_"
+                    "group. This would represent a circular dependency."
+                )
             # The Dependency Step order cannot be later than the Workflow Step
             elif dependency_step.order > dependency_group.workflow_step.order:
                 raise ValidationError(
-                    'Dependency Step order cannot be later '
-                    'than the Workflow Step order.')
+                    "Dependency Step order cannot be later "
+                    "than the Workflow Step order."
+                )
         # Dependency Step Workflow Order cannot be later
         # than the Workflow Step Workflow order
         else:
-            workflow_step_workflow_order = \
-                WorkflowCollectionMember.objects.get(
-                    workflow_collection=dependency_group.workflow_collection,
-                    workflow=dependency_group.workflow_step.workflow).order
+            workflow_step_workflow_order = WorkflowCollectionMember.objects.get(
+                workflow_collection=dependency_group.workflow_collection,
+                workflow=dependency_group.workflow_step.workflow,
+            ).order
 
-            if dependency_step_workflow_order > \
-                workflow_step_workflow_order:
-                raise ValidationError('Dependency Step Workflow Order '
-                                      'cannot be later than the Workflow '
-                                      'Step Workflow order.')
+            if dependency_step_workflow_order > workflow_step_workflow_order:
+                raise ValidationError(
+                    "Dependency Step Workflow Order "
+                    "cannot be later than the Workflow "
+                    "Step Workflow order."
+                )

@@ -10,11 +10,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .....utils.logging_utils import generate_extra
-from .....models import (
-    WorkflowCollectionEngagement, WorkflowCollection)
+from .....models import WorkflowCollectionEngagement, WorkflowCollection
 from ....serializers.user.workflows.engagement import (
     WorkflowCollectionEngagementDetailedSerializer,
-    WorkflowCollectionEngagementSummarySerializer, WorkflowCollectionEngagementAndDetailsSerializer)
+    WorkflowCollectionEngagementSummarySerializer,
+    WorkflowCollectionEngagementAndDetailsSerializer,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ class WorkflowCollectionEngagementsView(APIView):
     * Post: Create a new Workflow Collection Engagement the requesting user.
     """
 
-    required_scopes = ['read', 'write']
+    required_scopes = ["read", "write"]
 
     def get(self, request):
         """
@@ -40,7 +41,7 @@ class WorkflowCollectionEngagementsView(APIView):
         end (optional datetime): upper bound for start time of engagements. defaults to None
         include_finished (optional bool): defaults to false for compatibility reasons
         collection_id (optional uuid): uuid of the collection for which to retrieve engagements
-        include_details (optional bool): whether or not to include engagement details, using the 
+        include_details (optional bool): whether or not to include engagement details, using the
                                          detailed serializer
 
         Returns:
@@ -56,8 +57,8 @@ class WorkflowCollectionEngagementsView(APIView):
             ]
         """
         ### Validation ###
-        start = request.query_params.get('start', None)
-        end = request.query_params.get('end', None)
+        start = request.query_params.get("start", None)
+        end = request.query_params.get("end", None)
         include_finished = request.query_params.get("include_finished", False)
         include_details = request.query_params.get("include_details", False)
         collection_id = request.query_params.get("collection_id", None)
@@ -76,7 +77,9 @@ class WorkflowCollectionEngagementsView(APIView):
                 end = None
 
         if start and end and start > end:
-            errors["non_field_errors"] = [ErrorDetail("Invalid Start and End time order", "invalid")]
+            errors["non_field_errors"] = [
+                ErrorDetail("Invalid Start and End time order", "invalid")
+            ]
 
         if include_finished not in (True, False, "true", "True", "false", "False"):
             errors["include_finished"] = [ErrorDetail("Invalid value")]
@@ -91,7 +94,9 @@ class WorkflowCollectionEngagementsView(APIView):
                 errors["collection_id"] = [ErrorDetail("Badly formed UUID")]
             else:
                 if not WorkflowCollection.objects.filter(pk=collection_id):
-                    errors["collection_id"] = [ErrorDetail("No workflow collection with matching ID found")]
+                    errors["collection_id"] = [
+                        ErrorDetail("No workflow collection with matching ID found")
+                    ]
 
         if errors:
             return Response(data=dict(errors), status=status.HTTP_400_BAD_REQUEST)
@@ -110,14 +115,12 @@ class WorkflowCollectionEngagementsView(APIView):
 
         if include_details in (True, "True", "true"):
             serializer = WorkflowCollectionEngagementAndDetailsSerializer(
-                engagements,
-                many=True,
-                context={'request': request})
+                engagements, many=True, context={"request": request}
+            )
         else:
             serializer = WorkflowCollectionEngagementSummarySerializer(
-                engagements,
-                many=True,
-                context={'request': request})
+                engagements, many=True, context={"request": request}
+            )
 
         return Response(data=serializer.data)
 
@@ -175,7 +178,8 @@ class WorkflowCollectionEngagementsView(APIView):
             }
         """
         serializer = WorkflowCollectionEngagementDetailedSerializer(
-            data=request.data, context={'request': request})
+            data=request.data, context={"request": request}
+        )
 
         try:
             serializer.is_valid(raise_exception=True)
@@ -186,20 +190,25 @@ class WorkflowCollectionEngagementsView(APIView):
                 extra=generate_extra(
                     request=request,
                     serializer_errors=serializer.errors,
-                )
+                ),
             )
 
             # Handling if resource is an attempt of a duplicate engagement
-            if ('non_field_errors' in serializer.errors and
-                    serializer.errors['non_field_errors'][0].code == 'unique') or \
-                ('non_field_errors' in serializer.errors and
-                 serializer.errors['non_field_errors'][0] == (
-                    'The user has an existing incomplete engagement for this workflow collection.')):
+            if (
+                "non_field_errors" in serializer.errors
+                and serializer.errors["non_field_errors"][0].code == "unique"
+            ) or (
+                "non_field_errors" in serializer.errors
+                and serializer.errors["non_field_errors"][0]
+                == (
+                    "The user has an existing incomplete engagement for this workflow collection."
+                )
+            ):
 
                 return Response(
-                    data={
-                        'detail': serializer.errors['non_field_errors'][0]},
-                    status=status.HTTP_409_CONFLICT)
+                    data={"detail": serializer.errors["non_field_errors"][0]},
+                    status=status.HTTP_409_CONFLICT,
+                )
             raise e
         else:
             instance: WorkflowCollectionEngagement = serializer.save()
@@ -214,7 +223,7 @@ class WorkflowCollectionEngagementsView(APIView):
                         event_code="WORKFLOW_COLLECTION_ENGAGEMENT_COMPLETED",
                         request=request,
                         workflow_collection_engagement=instance,
-                    )
+                    ),
                 )
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -224,13 +233,13 @@ class WorkflowCollectionEngagementView(APIView):
     """
     **Supported HTTP Methods**
 
-    * Get: Retrieve a detailed representation of a specific Workflow 
+    * Get: Retrieve a detailed representation of a specific Workflow
       Engagement owned by the requesting user.
     * Patch: Modifying an existing Workflow Engagement resource owned by
       the requesting user.
     """
 
-    required_scopes = ['read', 'write']
+    required_scopes = ["read", "write"]
 
     def get(self, request, id):
         """
@@ -286,7 +295,7 @@ class WorkflowCollectionEngagementView(APIView):
         )
 
         serializer = WorkflowCollectionEngagementDetailedSerializer(
-            user_engagement, context={'request': request}
+            user_engagement, context={"request": request}
         )
 
         return Response(data=serializer.data)
@@ -299,7 +308,7 @@ class WorkflowCollectionEngagementView(APIView):
             id (str): The UUID of the workflow user engagement target to modify.
 
         Body Parameters:
-            workflow_collection (foreign key): The Workflow Collection object associated with the 
+            workflow_collection (foreign key): The Workflow Collection object associated with the
                                                engagement.
             user (foreign key): The User object who is engaging the Workflow.
             started (datetime): The start date for the engagement.
@@ -363,7 +372,8 @@ class WorkflowCollectionEngagementView(APIView):
             user_engagement,
             data=request.data,
             partial=True,
-            context={'request': request})
+            context={"request": request},
+        )
 
         try:
             serializer.is_valid(raise_exception=True)
@@ -375,10 +385,9 @@ class WorkflowCollectionEngagementView(APIView):
                     request=request,
                     workflow_collection_engagement=user_engagement,
                     serializer_errors=serializer.errors,
-                )
+                ),
             )
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             instance: WorkflowCollectionEngagement = serializer.save()
             if instance.finished and originally_unfinished:
@@ -391,6 +400,6 @@ class WorkflowCollectionEngagementView(APIView):
                         event_code="WORKFLOW_COLLECTION_ENGAGEMENT_COMPLETED",
                         request=request,
                         workflow_collection_engagement=instance,
-                    )
+                    ),
                 )
             return Response(serializer.data)

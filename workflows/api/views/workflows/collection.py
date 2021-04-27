@@ -10,10 +10,14 @@ from rest_framework import status
 
 from ...serializers.workflows.collection import (
     WorkflowCollectionSummarySerializer,
-    WorkflowCollectionDetailedSerializer, WorkflowCollectionWithStepsSerializer)
+    WorkflowCollectionDetailedSerializer,
+    WorkflowCollectionWithStepsSerializer,
+)
 from ....models import (
-    WorkflowCollection, WorkflowCollectionAssignment,
-    WorkflowCollectionSubscription)
+    WorkflowCollection,
+    WorkflowCollectionAssignment,
+    WorkflowCollectionSubscription,
+)
 
 
 class WorkflowCollectionsView(APIView):
@@ -25,7 +29,8 @@ class WorkflowCollectionsView(APIView):
     be it through an assignment, engagement, or suggestion, PLUS the newest version of
     all remaining workflow collections.
     """
-    required_scopes = ['read']
+
+    required_scopes = ["read"]
 
     def get(self, request):
         """
@@ -34,7 +39,7 @@ class WorkflowCollectionsView(APIView):
         unless a user has an open assignment/engagement/suggestion with an earlier version
         of that workflow. It also returns deactivated versions for which the user is
         still "connected".
-        
+
         Returns:
             A JSON object representation of all Active Workflow Collections.
             [
@@ -91,7 +96,9 @@ class WorkflowCollectionsView(APIView):
 
         user = request.user
         if not user.username:
-            return Response(data={"error": "Must be logged in."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data={"error": "Must be logged in."}, status=status.HTTP_400_BAD_REQUEST
+            )
         now = timezone.now()
 
         # these three queries are used to determine which OLD versions the user should see.
@@ -100,8 +107,8 @@ class WorkflowCollectionsView(APIView):
             user=user,
             status__in=(
                 WorkflowCollectionAssignment.ASSIGNED,
-                WorkflowCollectionAssignment.IN_PROGRESS
-            )
+                WorkflowCollectionAssignment.IN_PROGRESS,
+            ),
         )
         open_subscriptions = WorkflowCollectionSubscription.objects.filter(
             user=user,
@@ -123,7 +130,8 @@ class WorkflowCollectionsView(APIView):
         all_bois = (old_bois | new_bois).distinct()
 
         serializer = WorkflowCollectionSummarySerializer(
-            all_bois, many=True, context={'request': request})
+            all_bois, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
 
@@ -135,7 +143,7 @@ class WorkflowCollectionView(APIView):
     Collection.
     """
 
-    required_scopes = ['read']
+    required_scopes = ["read"]
 
     def get(self, request, id):
         """
@@ -145,7 +153,7 @@ class WorkflowCollectionView(APIView):
             id (str): id of Workflow Collection
 
         Query Parameters:
-            include_steps (str): "True", "true", "False", or "false", indicating whether or not to 
+            include_steps (str): "True", "true", "False", or "false", indicating whether or not to
                                  include workflow steps. Defaults to false.
 
         Returns:
@@ -225,13 +233,17 @@ class WorkflowCollectionView(APIView):
         elif include_steps in ("False", "false"):
             include_steps = False
         else:
-            raise ValidationError(f"Invalid value for include_steps: {include_steps}", "invalid")
+            raise ValidationError(
+                f"Invalid value for include_steps: {include_steps}", "invalid"
+            )
 
         workflow_collection = get_object_or_404(WorkflowCollection, id=id)
         if include_steps:
             serializer = WorkflowCollectionWithStepsSerializer(
-                workflow_collection, context={'request': request})
+                workflow_collection, context={"request": request}
+            )
         else:
             serializer = WorkflowCollectionDetailedSerializer(
-                workflow_collection, context={'request': request})
+                workflow_collection, context={"request": request}
+            )
         return Response(serializer.data)

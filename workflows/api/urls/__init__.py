@@ -19,7 +19,7 @@ from .workflows import workflow_endpoints
 from ..views import workflow_api_root
 
 urlpatterns = [
-    path('workflow_system/users/', include(user_endpoints)),
-    path('workflow_system/', include(workflow_endpoints)),
-    path('', workflow_api_root)
+    path("workflow_system/users/", include(user_endpoints)),
+    path("workflow_system/", include(workflow_endpoints)),
+    path("", workflow_api_root),
 ]

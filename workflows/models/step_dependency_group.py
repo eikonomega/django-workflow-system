@@ -22,17 +22,16 @@ class WorkflowStepDependencyGroup(CreatedModifiedAbstractModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow_collection = models.ForeignKey(
-        WorkflowCollection, on_delete=models.CASCADE)
+        WorkflowCollection, on_delete=models.CASCADE
+    )
     workflow_step = models.ForeignKey("WorkflowStep", on_delete=models.CASCADE)
 
     class Meta:
         db_table = "workflow_system_step_dependency_group"
-        verbose_name_plural = 'Workflow Step Dependency Groups'
+        verbose_name_plural = "Workflow Step Dependency Groups"
 
     def __str__(self):
-        return "{} - {}".format(
-            self.workflow_step.code,
-            self.workflow_collection.code)
+        return "{} - {}".format(self.workflow_step.code, self.workflow_collection.code)
 
     def clean(self):
         """
@@ -42,7 +41,9 @@ class WorkflowStepDependencyGroup(CreatedModifiedAbstractModel):
         try:
             WorkflowCollectionMember.objects.get(
                 workflow_collection=self.workflow_collection,
-                workflow=self.workflow_step.workflow)
+                workflow=self.workflow_step.workflow,
+            )
         except ObjectDoesNotExist:
             raise ValidationError(
-                "Step's workflow must be a member of the Workflow Collection.")
+                "Step's workflow must be a member of the Workflow Collection."
+            )

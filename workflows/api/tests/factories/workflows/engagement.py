@@ -23,7 +23,7 @@ class WorkflowCollectionEngagementFactory(DjangoModelFactory):
         for workflowcollectionengagementdetail in extracted:
             WorkflowCollectionEngagementDetailFactory(
                 workflow_collection_engagement=self,
-                **workflowcollectionengagementdetail
+                **workflowcollectionengagementdetail,
             )
 
 

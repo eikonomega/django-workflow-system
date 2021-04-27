@@ -3,11 +3,16 @@ from django.utils import timezone
 
 from rest_framework.test import APIRequestFactory
 
-from workflows.api.tests.factories import (WorkflowCollectionAssignmentFactory, UserFactory,
-                                           WorkflowCollectionFactory,
-                                           WorkflowCollectionEngagementFactory)
-from workflows.api.views.user.workflows import (WorkflowCollectionAssignmentsView,
-                                                WorkflowCollectionAssignmentView)
+from workflows.api.tests.factories import (
+    WorkflowCollectionAssignmentFactory,
+    UserFactory,
+    WorkflowCollectionFactory,
+    WorkflowCollectionEngagementFactory,
+)
+from workflows.api.views.user.workflows import (
+    WorkflowCollectionAssignmentsView,
+    WorkflowCollectionAssignmentView,
+)
 from workflows.models import WorkflowCollectionAssignment
 
 
@@ -22,24 +27,22 @@ class TestWorkflowAssignmentsView(TestCase):
 
         self.workflow_collection = WorkflowCollectionFactory()
         self.workflow_engagement = WorkflowCollectionEngagementFactory(
-            workflow_collection=self.workflow_collection,
-            user=self.user
+            workflow_collection=self.workflow_collection, user=self.user
         )
         self.workflow_assignment = WorkflowCollectionAssignmentFactory(
             user=self.user,
             workflow_collection=self.workflow_collection,
-            engagement=self.workflow_engagement
+            engagement=self.workflow_engagement,
         )
 
         self.workflow_collection_2 = WorkflowCollectionFactory()
         self.workflow_engagement_2 = WorkflowCollectionEngagementFactory(
-            workflow_collection=self.workflow_collection_2,
-            user=self.user
+            workflow_collection=self.workflow_collection_2, user=self.user
         )
         self.workflow_assignment_2 = WorkflowCollectionAssignmentFactory(
             user=self.user,
             workflow_collection=self.workflow_collection_2,
-            engagement=self.workflow_engagement_2
+            engagement=self.workflow_engagement_2,
         )
 
         self.welcome_assessment = WorkflowCollectionFactory(
@@ -79,7 +82,7 @@ class TestWorkflowAssignmentsView(TestCase):
         self.assertEqual(response.data[1]["status"], "ASSIGNED")
         self.assertEqual(
             response.data[1]["engagement"],
-            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.workflow_assignment_2.engagement.id}/"
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.workflow_assignment_2.engagement.id}/",
         )
 
 
@@ -93,18 +96,17 @@ class TestWorkflowAssignmentView(TestCase):
         self.user_2 = UserFactory()
         self.workflow_collection = WorkflowCollectionFactory()
         self.workflow_engagement = WorkflowCollectionEngagementFactory(
-            workflow_collection=self.workflow_collection,
-            user=self.user
+            workflow_collection=self.workflow_collection, user=self.user
         )
         self.workflow_assignment = WorkflowCollectionAssignmentFactory(
             user=self.user,
             workflow_collection=self.workflow_collection,
-            engagement=self.workflow_engagement
+            engagement=self.workflow_engagement,
         )
         self.workflow_assignment_3 = WorkflowCollectionAssignmentFactory(
             user=self.user,
             workflow_collection=self.workflow_collection,
-            engagement=self.workflow_engagement
+            engagement=self.workflow_engagement,
         )
 
     def test_get__unauthenticated_detail(self):
@@ -144,7 +146,7 @@ class TestWorkflowAssignmentView(TestCase):
         self.assertEqual(response.data["status"], self.workflow_assignment.status)
         self.assertEqual(
             response.data["engagement"],
-            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.workflow_assignment.engagement.id}/"
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{self.workflow_assignment.engagement.id}/",
         )
 
     def test_get__assignment_id_nonexistent_detail(self):
@@ -175,7 +177,7 @@ class TestWorkflowAssignmentView(TestCase):
             data={
                 "status": "IN_PROGRESS",
                 "engagement": f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
-                              f"{self.workflow_assignment.engagement.id}/"
+                f"{self.workflow_assignment.engagement.id}/",
             },
             format="json",
         )
@@ -237,7 +239,7 @@ class TestWorkflowAssignmentView(TestCase):
                 workflow_collection=wc,
                 user=self.user,
                 finished=None,
-            )
+            ),
         )
 
         request = self.factory.patch(
@@ -251,10 +253,12 @@ class TestWorkflowAssignmentView(TestCase):
         response = self.detail_view(request, wca.id)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["status"], WorkflowCollectionAssignment.CLOSED_COMPLETE)
+        self.assertEqual(
+            response.data["status"], WorkflowCollectionAssignment.CLOSED_COMPLETE
+        )
         self.assertEqual(
             response.data["engagement"],
-            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wca.engagement.id}/"
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/{wca.engagement.id}/",
         )
         wca.refresh_from_db()
         self.assertTrue(wca.engagement.finished)
