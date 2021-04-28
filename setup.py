@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def read(f):
@@ -7,14 +7,14 @@ def read(f):
 
 setup(
     name="django-workflow-system",
-    version="0.3",
+    version="0.4",
     description="A highly customizable workflow system for Django. Create surveys, activities, etc.",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     author="Center for Research Computing",
     author_email="prometheus-team@nd.edu",
     license="MIT",
-    packages=["django_workflow_system"],
+    packages=find_packages(include=["django_workflow_system", 'django_workflow_system.*'],
     python_requires=">3.8",
     install_requires=["Pillow>=6.2.0", "jsonschema==3.0.1", "Django >= 3.1.0"],
     zip_safe=False,
