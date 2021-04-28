@@ -26,21 +26,18 @@ class WorkflowStepInput(CreatedModifiedAbstractModel):
         response_schema (ForeignKey): A JSON Schema specification used to validate/reject user
                                       responses.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow_step = models.ForeignKey(
-        WorkflowStep,
-        on_delete=models.CASCADE)
+    workflow_step = models.ForeignKey(WorkflowStep, on_delete=models.CASCADE)
     ui_identifier = models.CharField(max_length=200)
     content = models.CharField(max_length=500)
     required = models.BooleanField()
-    response_schema = models.ForeignKey(
-        JSONSchema,
-        on_delete=models.PROTECT)
+    response_schema = models.ForeignKey(JSONSchema, on_delete=models.PROTECT)
 
     class Meta:
-        db_table = 'workflow_system_step_input'
+        db_table = "workflow_system_step_input"
         unique_together = ["workflow_step", "ui_identifier"]
-        verbose_name_plural = 'Workflow Step Inputs'
+        verbose_name_plural = "Workflow Step Inputs"
 
     def __str__(self):
         return self.ui_identifier

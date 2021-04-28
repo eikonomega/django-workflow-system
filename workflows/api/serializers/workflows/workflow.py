@@ -12,14 +12,12 @@ class WorkflowTerseSerializer(serializers.ModelSerializer):
     """
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow', lookup_field='id')
+        view_name="workflow", lookup_field="id"
+    )
 
     class Meta:
         model = Workflow
-        fields = (
-            'name',
-            'detail'
-        )
+        fields = ("name", "detail")
 
 
 class WorkflowSummarySerializer(serializers.ModelSerializer):
@@ -28,15 +26,15 @@ class WorkflowSummarySerializer(serializers.ModelSerializer):
     """
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow', lookup_field='id')
+        view_name="workflow", lookup_field="id"
+    )
 
     author = WorkflowAuthorSummarySerializer()
     images = serializers.SerializerMethodField()
 
     class Meta:
         model = Workflow
-        fields = (
-            'id', 'name', 'detail', 'images', 'author')
+        fields = ("id", "name", "detail", "images", "author")
 
     def get_images(self, instance):
         """
@@ -49,7 +47,9 @@ class WorkflowSummarySerializer(serializers.ModelSerializer):
             List of Image objects in JSON format.
 
         """
-        return get_images_helper(self.context.get("request"), instance.workflowimage_set.all())
+        return get_images_helper(
+            self.context.get("request"), instance.workflowimage_set.all()
+        )
 
 
 class WorkflowDetailedSerializer(serializers.ModelSerializer):
@@ -60,15 +60,21 @@ class WorkflowDetailedSerializer(serializers.ModelSerializer):
     author = WorkflowAuthorSummarySerializer()
     workflowstep_set = WorkflowStepSummarySerializer(many=True)
     self_detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow',
-        lookup_field='id')
+        view_name="workflow", lookup_field="id"
+    )
     images = serializers.SerializerMethodField()
-
 
     class Meta:
         model = Workflow
         fields = (
-            'id', 'self_detail', 'code', 'name', 'author', 'images', 'workflowstep_set')
+            "id",
+            "self_detail",
+            "code",
+            "name",
+            "author",
+            "images",
+            "workflowstep_set",
+        )
 
     def get_images(self, instance):
         """
@@ -81,7 +87,9 @@ class WorkflowDetailedSerializer(serializers.ModelSerializer):
             List of Image objects in JSON format.
 
         """
-        return get_images_helper(self.context.get("request"), instance.workflowimage_set.all())
+        return get_images_helper(
+            self.context.get("request"), instance.workflowimage_set.all()
+        )
 
 
 class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
@@ -92,14 +100,21 @@ class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
     author = WorkflowAuthorSummarySerializer()
     workflowstep_set = WorkflowStepSummarySerializer(many=True)
     detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow',
-        lookup_field='id')
+        view_name="workflow", lookup_field="id"
+    )
     images = serializers.SerializerMethodField()
 
     class Meta:
         model = Workflow
         fields = (
-            'id', 'detail', 'code', 'name', 'author', 'images', 'workflowstep_set')
+            "id",
+            "detail",
+            "code",
+            "name",
+            "author",
+            "images",
+            "workflowstep_set",
+        )
 
     def get_images(self, instance):
         """
@@ -112,4 +127,6 @@ class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
             List of Image objects in JSON format.
 
         """
-        return get_images_helper(self.context.get("request"), instance.workflowimage_set.all())
+        return get_images_helper(
+            self.context.get("request"), instance.workflowimage_set.all()
+        )

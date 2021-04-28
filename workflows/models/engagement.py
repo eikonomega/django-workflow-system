@@ -46,7 +46,9 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow_collection = models.ForeignKey(WorkflowCollection, on_delete=models.PROTECT)
+    workflow_collection = models.ForeignKey(
+        WorkflowCollection, on_delete=models.PROTECT
+    )
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     started = models.DateTimeField(default=timezone.now)
     finished = models.DateTimeField(blank=True, null=True)
@@ -256,18 +258,21 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
         return False
 
     def __str__(self):
-        return "Engagement: {} - {}".format(self.workflow_collection.name, self.user.username)
+        return "Engagement: {} - {}".format(
+            self.workflow_collection.name, self.user.username
+        )
 
     def clean(self, *args, **kwargs):
         # User must be active to engage in a collection
         if not self.user.is_active:
-            raise ValidationError({"user": "User must be active to engage in a collection."})
+            raise ValidationError(
+                {"user": "User must be active to engage in a collection."}
+            )
 
         # If this engagement's collection has an unassigned assignment associated with it then
         try:
             assignment = self.workflow_collection.workflowcollectionassignment_set.get(
-                engagement=None,
-                status="ASSIGNED"
+                engagement=None, status="ASSIGNED"
             )
             assignment.engagement = self
             assignment.save()
@@ -315,4 +320,3 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
         if self.finished is not None:
             # Clean the finished engagement by deleting unfinished details
             self.workflowcollectionengagementdetail_set.filter(finished=None).delete()
-

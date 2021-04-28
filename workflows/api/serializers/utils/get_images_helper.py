@@ -16,7 +16,7 @@ def get_images_helper(request, images):
     for image in images:
         image_dict = {
             "image_url": f"{request.scheme}://{request.get_host()}{image.image.url}",
-            "image_type": image.type.type
+            "image_type": image.type.type,
         }
         image_list.append(image_dict)
 

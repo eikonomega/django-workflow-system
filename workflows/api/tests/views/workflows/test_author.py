@@ -20,7 +20,7 @@ class TestWorkflowAuthorsView(TestCase):
 
     def test_get__success(self):
         """Checking for authors returned"""
-        request = self.factory.get('/workflows/authors/')
+        request = self.factory.get("/workflows/authors/")
         request.user = self.user
         response = self.view(request)
         self.assertEqual(response.status_code, 200)
@@ -29,32 +29,30 @@ class TestWorkflowAuthorsView(TestCase):
         self.assertEqual(len(response.data), 2)
 
         # Inspect Author 1
+        self.assertEqual(response.data[0]["title"], self.author.title)
         self.assertEqual(
-            response.data[0]['title'],
-            self.author.title)
+            response.data[0]["image"],
+            f"http://testserver/mediafiles/{str(self.author.image)}",
+        )
         self.assertEqual(
-            response.data[0]['image'],
-            f"http://testserver/mediafiles/{str(self.author.image)}")
+            response.data[0]["user"]["first_name"], self.author.user.first_name
+        )
         self.assertEqual(
-            response.data[0]['user']['first_name'],
-            self.author.user.first_name)
-        self.assertEqual(
-            response.data[0]['user']['last_name'],
-            self.author.user.last_name)
+            response.data[0]["user"]["last_name"], self.author.user.last_name
+        )
 
         # Inspect Author 2
+        self.assertEqual(response.data[1]["title"], self.author_2.title)
         self.assertEqual(
-            response.data[1]['title'],
-            self.author_2.title)
+            response.data[1]["image"],
+            f"http://testserver/mediafiles/{str(self.author_2.image)}",
+        )
         self.assertEqual(
-            response.data[1]['image'],
-            f"http://testserver/mediafiles/{str(self.author_2.image)}")
+            response.data[1]["user"]["first_name"], self.author_2.user.first_name
+        )
         self.assertEqual(
-            response.data[1]['user']['first_name'],
-            self.author_2.user.first_name)
-        self.assertEqual(
-            response.data[1]['user']['last_name'],
-            self.author_2.user.last_name)
+            response.data[1]["user"]["last_name"], self.author_2.user.last_name
+        )
 
     def test_get__no_authors(self):
         """checking for when no authors exist"""
@@ -63,7 +61,7 @@ class TestWorkflowAuthorsView(TestCase):
         WorkflowAuthor.objects.all().delete()
         self.assertEqual(len(WorkflowAuthor.objects.all()), 0)
 
-        request = self.factory.get('/workflows/authors/')
+        request = self.factory.get("/workflows/authors/")
         request.user = self.user
         response = self.view(request)
 
@@ -88,26 +86,21 @@ class TestWorkflowAuthorView(TestCase):
         response = self.view(request, self.author.id)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['title'], self.author.title)
+        self.assertEqual(response.data["title"], self.author.title)
         self.assertEqual(
-            response.data['image'],
-            f"http://testserver/mediafiles/{str(self.author.image)}")
+            response.data["image"],
+            f"http://testserver/mediafiles/{str(self.author.image)}",
+        )
+        self.assertEqual(response.data["biography"], self.author.biography)
         self.assertEqual(
-            response.data['biography'],
-            self.author.biography)
-        self.assertEqual(
-            response.data['user']['first_name'],
-            self.author.user.first_name)
-        self.assertEqual(
-            response.data['user']['last_name'],
-            self.author.user.last_name)
-        self.assertEqual(
-            response.data['workflow_set'][0]['name'],
-            self.workflow.name)
+            response.data["user"]["first_name"], self.author.user.first_name
+        )
+        self.assertEqual(response.data["user"]["last_name"], self.author.user.last_name)
+        self.assertEqual(response.data["workflow_set"][0]["name"], self.workflow.name)
 
     def test_get__no_author_detail(self):
         """Non-Existent Author ID returns 404."""
-        made_up_uuid = '4f84f799-9cc5-43d3-0000-24840b7eb8ce'
+        made_up_uuid = "4f84f799-9cc5-43d3-0000-24840b7eb8ce"
         request = self.factory.get(f"/workflows/authors/{made_up_uuid}/")
         request.user = self.user
         response = self.view(request, made_up_uuid)
@@ -115,4 +108,5 @@ class TestWorkflowAuthorView(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertDictEqual(
             response.data,
-            {"detail": ErrorDetail(string='Not found.', code='not_found')})
+            {"detail": ErrorDetail(string="Not found.", code="not_found")},
+        )

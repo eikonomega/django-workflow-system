@@ -17,8 +17,8 @@ class WorkflowCollectionMemberSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkflowCollectionMember
         fields = (
-            'order',
-            'workflow',
+            "order",
+            "workflow",
         )
 
 
@@ -32,8 +32,8 @@ class WorkflowCollectionMemberDetailedSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkflowCollectionMember
         fields = (
-            'order',
-            'workflow',
+            "order",
+            "workflow",
         )
 
 
@@ -72,7 +72,7 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
         Returns:
             List of Author objects in JSON format.
         """
-        return get_authors_helper(self.context['request'], instance)
+        return get_authors_helper(self.context["request"], instance)
 
     def get_images(self, instance):
         """
@@ -85,7 +85,9 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
             List of Image objects in JSON format.
 
         """
-        return get_images_helper(self.context.get("request"), instance.workflowcollectionimage_set.all())
+        return get_images_helper(
+            self.context.get("request"), instance.workflowcollectionimage_set.all()
+        )
 
     def get_newer_version(self, obj: WorkflowCollection):
         latest_version = (
@@ -96,8 +98,10 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
         if latest_version == None:
             return None
         if obj != latest_version:
-            relative_url = reverse('workflow-collection', kwargs={"id": latest_version.id})
-            return self.context['request'].build_absolute_uri(relative_url)
+            relative_url = reverse(
+                "workflow-collection", kwargs={"id": latest_version.id}
+            )
+            return self.context["request"].build_absolute_uri(relative_url)
         else:
             return None
 
@@ -108,28 +112,29 @@ class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
     """
 
     detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-collection', lookup_field='id')
+        view_name="workflow-collection", lookup_field="id"
+    )
 
     class Meta:
         model = WorkflowCollection
         fields = (
-            'id',
-            'detail',
-            'code',
-            'version',
-            'active',
-            'created_date',
-            'modified_date',
-            'description',
-            'assignment_only',
-            'recommendable',
-            'name',
-            'ordered',
-            'authors',
-            'images',
-            'category',
-            'tags',
-            'newer_version',
+            "id",
+            "detail",
+            "code",
+            "version",
+            "active",
+            "created_date",
+            "modified_date",
+            "description",
+            "assignment_only",
+            "recommendable",
+            "name",
+            "ordered",
+            "authors",
+            "images",
+            "category",
+            "tags",
+            "newer_version",
         )
 
 
@@ -138,33 +143,32 @@ class WorkflowCollectionDetailedSerializer(WorkflowCollectionBaseSerializer):
     Detailed level serializer for WorkflowCollection objects.
     """
 
-    workflowcollectionmember_set = WorkflowCollectionMemberSummarySerializer(
-        many=True)
+    workflowcollectionmember_set = WorkflowCollectionMemberSummarySerializer(many=True)
     self_detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-collection',
-        lookup_field='id')
+        view_name="workflow-collection", lookup_field="id"
+    )
 
     class Meta:
         model = WorkflowCollection
         fields = (
-            'self_detail',
-            'id',
-            'code',
-            'version',
-            'active',
-            'created_date',
-            'modified_date',
-            'description',
-            'assignment_only',
-            'recommendable',
-            'name',
-            'ordered',
-            'workflowcollectionmember_set',
-            'authors',
-            'images',
-            'category',
-            'tags',
-            'newer_version',
+            "self_detail",
+            "id",
+            "code",
+            "version",
+            "active",
+            "created_date",
+            "modified_date",
+            "description",
+            "assignment_only",
+            "recommendable",
+            "name",
+            "ordered",
+            "workflowcollectionmember_set",
+            "authors",
+            "images",
+            "category",
+            "tags",
+            "newer_version",
         )
 
 
@@ -173,33 +177,32 @@ class WorkflowCollectionWithStepsSerializer(WorkflowCollectionBaseSerializer):
     Detailed level serializer for WorkflowCollection objects, but with steps.
     """
 
-    workflowcollectionmember_set = WorkflowCollectionMemberDetailedSerializer(
-        many=True)
+    workflowcollectionmember_set = WorkflowCollectionMemberDetailedSerializer(many=True)
     self_detail = serializers.HyperlinkedIdentityField(
-        view_name='workflow-collection',
-        lookup_field='id')
+        view_name="workflow-collection", lookup_field="id"
+    )
 
     class Meta:
         model = WorkflowCollection
         fields = (
-            'self_detail',
-            'id',
-            'code',
-            'version',
-            'active',
-            'created_date',
-            'modified_date',
-            'description',
-            'assignment_only',
-            'recommendable',
-            'name',
-            'ordered',
-            'workflowcollectionmember_set',
-            'authors',
-            'images',
-            'category',
-            'tags',
-            'newer_version',
+            "self_detail",
+            "id",
+            "code",
+            "version",
+            "active",
+            "created_date",
+            "modified_date",
+            "description",
+            "assignment_only",
+            "recommendable",
+            "name",
+            "ordered",
+            "workflowcollectionmember_set",
+            "authors",
+            "images",
+            "category",
+            "tags",
+            "newer_version",
         )
 
 
@@ -219,12 +222,14 @@ def get_authors_helper(request, instance):
     for member in instance.workflowcollectionmember_set.all():
         authors.append(
             WorkflowAuthorSummarySerializer(
-                member.workflow.author, context={'request': request}).data)
+                member.workflow.author, context={"request": request}
+            ).data
+        )
     # Ensure that the id's for all authors are unique to avoid duplicate
     # entries
     # Here we're making a dict with the key being the id. This filters out the duplicates.
     # The values() of the dict will be make up the list
-    return list({author['id']: author for author in authors}.values())
+    return list({author["id"]: author for author in authors}.values())
 
 
 def get_tags_helper(instance):
@@ -239,4 +244,7 @@ def get_tags_helper(instance):
         List of Tag objects in JSON format.
 
     """
-    return [{"tag_type": tag.type.type, "tag_value": tag.text} for tag in instance.tags.all()]
+    return [
+        {"tag_type": tag.type.type, "tag_value": tag.text}
+        for tag in instance.tags.all()
+    ]

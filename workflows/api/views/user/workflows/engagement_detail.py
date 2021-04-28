@@ -7,12 +7,13 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .....models import (
-    WorkflowCollectionEngagement,
-    WorkflowCollectionEngagementDetail)
-from ....serializers.user.workflows.engagement import WorkflowCollectionEngagementBaseSerializer
+from .....models import WorkflowCollectionEngagement, WorkflowCollectionEngagementDetail
+from ....serializers.user.workflows.engagement import (
+    WorkflowCollectionEngagementBaseSerializer,
+)
 from ....serializers.user.workflows.engagement_detail import (
-    WorkflowCollectionEngagementDetailSummarySerializer)
+    WorkflowCollectionEngagementDetailSummarySerializer,
+)
 from .....utils.logging_utils import generate_extra
 
 
@@ -29,7 +30,7 @@ class WorkflowCollectionEngagementDetailsView(APIView):
       given WorkflowEngagement on behalf of the requesting user.
     """
 
-    required_scopes = ['read', 'write']
+    required_scopes = ["read", "write"]
 
     def get(self, request, id):
         """
@@ -57,12 +58,12 @@ class WorkflowCollectionEngagementDetailsView(APIView):
         """
         engagement_details = WorkflowCollectionEngagementDetail.objects.filter(
             workflow_collection_engagement=id,
-            workflow_collection_engagement__user=request.user)
+            workflow_collection_engagement__user=request.user,
+        )
 
         serializer = WorkflowCollectionEngagementDetailSummarySerializer(
-            engagement_details,
-            context={'request': request},
-            many=True)
+            engagement_details, context={"request": request}, many=True
+        )
 
         return Response(data=serializer.data)
 
@@ -75,10 +76,10 @@ class WorkflowCollectionEngagementDetailsView(APIView):
                       a new WorkflowCollectionEngagementDetail resource.
 
         Body Parameters:
-            workflow_collection_engagement (foreign key): The WorkflowCollectionEngagement object 
+            workflow_collection_engagement (foreign key): The WorkflowCollectionEngagement object
                                                           associated with the engagement detail.
             step (foreign key): The WorkflowStep associated with the engagement detail.
-            user_response (dict): Internal representation of JSON response from user.   
+            user_response (dict): Internal representation of JSON response from user.
             started (datetime): The start date of the engagement detail.
             finished (datetime): The finish date of the engagement detail.
 
@@ -119,10 +120,11 @@ class WorkflowCollectionEngagementDetailsView(APIView):
 
         # The workflow_collection_engagement attribute needed by the serializer
         # is captured in the URL route. Injecting it into the payload here.
-        request.data['workflow_collection_engagement'] = id
+        request.data["workflow_collection_engagement"] = id
 
         serializer = WorkflowCollectionEngagementDetailSummarySerializer(
-            data=request.data, context={'request': request})
+            data=request.data, context={"request": request}
+        )
 
         try:
             serializer.is_valid(raise_exception=True)
@@ -133,16 +135,19 @@ class WorkflowCollectionEngagementDetailsView(APIView):
                 extra=generate_extra(
                     request=request,
                     serializer_errors=serializer.errors,
-                )
+                ),
             )
 
             # Handle uniqueness constraint violation
-            if 'non_field_errors' in serializer.errors and \
-                    serializer.errors['non_field_errors'][0].code == 'unique':
+            if (
+                "non_field_errors" in serializer.errors
+                and serializer.errors["non_field_errors"][0].code == "unique"
+            ):
 
                 return Response(
-                    data={'detail': serializer.errors['non_field_errors'][0]},
-                    status=status.HTTP_409_CONFLICT)
+                    data={"detail": serializer.errors["non_field_errors"][0]},
+                    status=status.HTTP_409_CONFLICT,
+                )
             raise e
         else:
             serializer.save()
@@ -153,14 +158,15 @@ class WorkflowCollectionEngagementDetailsView(APIView):
             # WorkflowCollectionEngagement object.
 
             engagement = WorkflowCollectionEngagement.objects.get(
-                id=request.data['workflow_collection_engagement'])
+                id=request.data["workflow_collection_engagement"]
+            )
 
             engagement_serializer = WorkflowCollectionEngagementBaseSerializer(
                 instance=engagement,
-                context={'request': request},
+                context={"request": request},
             )
             data = serializer.data
-            data['state'] = engagement_serializer.data['state']
+            data["state"] = engagement_serializer.data["state"]
             return Response(data=data, status=status.HTTP_201_CREATED)
 
 
@@ -178,7 +184,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
 
     """READ/UPDATE operations for WorkflowCollectionEngagementDetail resources."""
 
-    required_scopes = ['read', 'write']
+    required_scopes = ["read", "write"]
 
     def get(self, request, engagement_id, id):
         """
@@ -220,11 +226,12 @@ class WorkflowCollectionEngagementDetailView(APIView):
         engagement_detail = get_object_or_404(
             WorkflowCollectionEngagementDetail,
             id=id,
-            workflow_collection_engagement__user=request.user
+            workflow_collection_engagement__user=request.user,
         )
 
         serializer = WorkflowCollectionEngagementDetailSummarySerializer(
-            engagement_detail, context={'request': request})
+            engagement_detail, context={"request": request}
+        )
 
         return Response(data=serializer.data)
 
@@ -236,7 +243,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             id (str): The UUID of the workflow user engagement detail to modify.
 
         Body Parameters:
-            workflow_collection_engagement (foreign key): The WorkflowEngagement object associated 
+            workflow_collection_engagement (foreign key): The WorkflowEngagement object associated
                                                           with the engagement detail.
             step (foreign key): The WorkflowStep associated with the engagement detail.
             user_response (dict): Internal representation of JSON response from user.
@@ -286,14 +293,15 @@ class WorkflowCollectionEngagementDetailView(APIView):
         engagement_detail = get_object_or_404(
             WorkflowCollectionEngagementDetail,
             id=id,
-            workflow_collection_engagement__user=request.user
+            workflow_collection_engagement__user=request.user,
         )
 
         serializer = WorkflowCollectionEngagementDetailSummarySerializer(
             engagement_detail,
             data=request.data,
             partial=True,
-            context={'request': request})
+            context={"request": request},
+        )
 
         try:
             serializer.is_valid(raise_exception=True)
@@ -305,7 +313,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
                     request=request,
                     workflow_collection_engagement_detail=engagement_detail,
                     serializer_errors=serializer.errors,
-                )
+                ),
             )
             raise e
         else:
@@ -319,8 +327,8 @@ class WorkflowCollectionEngagementDetailView(APIView):
             engagement = engagement_detail.workflow_collection_engagement
             engagement_serializer = WorkflowCollectionEngagementBaseSerializer(
                 instance=engagement,
-                context={'request': request},
+                context={"request": request},
             )
             data = serializer.data
-            data['state'] = engagement_serializer.data['state']
+            data["state"] = engagement_serializer.data["state"]
             return Response(data=data, status=status.HTTP_200_OK)

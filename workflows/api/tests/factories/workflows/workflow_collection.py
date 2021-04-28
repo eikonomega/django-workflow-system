@@ -16,15 +16,15 @@ class WorkflowCollectionFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowCollection
 
-    name = factory.sequence(lambda n: 'workflow collection name {}'.format(n))
-    code = factory.sequence(lambda n: 'workflow_collection_code_{}'.format(n))
+    name = factory.sequence(lambda n: "workflow collection name {}".format(n))
+    code = factory.sequence(lambda n: "workflow_collection_code_{}".format(n))
     description = "Blank"
     ordered = True
     version = 1
     created_by = factory.SubFactory(UserFactory, is_staff=True)
     assignment_only = False
     active = True
-    category = 'ACTIVITY'
+    category = "ACTIVITY"
     recommendable = False
 
     @factory.post_generation
@@ -37,13 +37,11 @@ class WorkflowCollectionFactory(DjangoModelFactory):
                 _WorkflowCollectionMemberFactory.create(
                     workflow_collection=self,
                     workflow=WorkflowFactory(**workflow),
-                    order=i + 1
+                    order=i + 1,
                 )
             elif isinstance(workflow, models.Workflow):
                 _WorkflowCollectionMemberFactory.create(
-                    workflow_collection=self,
-                    workflow=workflow,
-                    order=i + 1
+                    workflow_collection=self, workflow=workflow, order=i + 1
                 )
             else:
                 raise TypeError("unsupported element in workflows list")
@@ -55,8 +53,13 @@ class WorkflowCollectionFactory(DjangoModelFactory):
         for dependency_group in extracted:
             if isinstance(dependency_group, dict):
                 if isinstance(dependency_group["workflow_step"], dict):
-                    dependency_group["workflow_step"] = models.WorkflowStep.objects \
-                        .get_or_create(**dependency_group["workflow_step"])[0]
+                    dependency_group[
+                        "workflow_step"
+                    ] = models.WorkflowStep.objects.get_or_create(
+                        **dependency_group["workflow_step"]
+                    )[
+                        0
+                    ]
                 _WorkflowStepDependencyGroup(
                     workflow_collection=self,
                     **dependency_group,
@@ -99,9 +102,14 @@ class _WorkflowStepDependencyGroup(DjangoModelFactory):
         if not create or not extracted:
             return
         for dependency in extracted:
-            if isinstance(dependency['dependency_step'], dict):
-                dependency["dependency_step"] = models.WorkflowStep.objects \
-                    .get_or_create(**dependency["dependency_step"])[0]
+            if isinstance(dependency["dependency_step"], dict):
+                dependency[
+                    "dependency_step"
+                ] = models.WorkflowStep.objects.get_or_create(
+                    **dependency["dependency_step"]
+                )[
+                    0
+                ]
             _WorkflowStepDependencyDetailFactory(
                 dependency_group=self,
                 **dependency,
@@ -120,15 +128,17 @@ class _WorkflowStepDependencyDetailFactory(DjangoModelFactory):
 class WorkflowCollectionTagTypeFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowCollectionTagType
-        django_get_or_create = ['type']
+        django_get_or_create = ["type"]
 
 
 class WorkflowCollectionTagOptionFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowCollectionTagOption
-        django_get_or_create = ['text', 'type']
+        django_get_or_create = ["text", "type"]
 
 
-__all__ = ["WorkflowCollectionFactory",
-           "WorkflowCollectionTagOptionFactory",
-           "WorkflowCollectionTagTypeFactory"]
+__all__ = [
+    "WorkflowCollectionFactory",
+    "WorkflowCollectionTagOptionFactory",
+    "WorkflowCollectionTagTypeFactory",
+]

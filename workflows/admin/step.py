@@ -21,7 +21,8 @@ from ..models import (
     WorkflowStepVideo,
     WorkflowStepUITemplate,
     WorkflowStepDependencyGroup,
-    WorkflowStepDependencyDetail)
+    WorkflowStepDependencyDetail,
+)
 
 
 class StepTextForm(forms.ModelForm):
@@ -29,7 +30,7 @@ class StepTextForm(forms.ModelForm):
 
     class Meta:
         model = WorkflowStepText
-        fields = ['ui_identifier', 'content', 'storage_value']
+        fields = ["ui_identifier", "content", "storage_value"]
 
 
 class SteptextInline(admin.TabularInline):
@@ -43,7 +44,7 @@ class StepInputForm(forms.ModelForm):
 
     class Meta:
         model = WorkflowStepInput
-        fields = ['ui_identifier', 'content', 'required', 'response_schema']
+        fields = ["ui_identifier", "content", "required", "response_schema"]
 
 
 class StepInputInLine(admin.TabularInline):
@@ -69,7 +70,7 @@ class StepVideoInline(admin.TabularInline):
 
 @admin.register(WorkflowStep)
 class WorkflowStepAdmin(admin.ModelAdmin):
-    list_display = ['workflow', 'code', 'order', 'ui_template']
+    list_display = ["workflow", "code", "order", "ui_template"]
     inlines = [
         StepInputInLine,
         SteptextInline,
@@ -77,23 +78,23 @@ class WorkflowStepAdmin(admin.ModelAdmin):
         StepAudioInline,
         StepVideoInline,
     ]
-    list_filter = ['workflow', StepInCollectionFilter]
+    list_filter = ["workflow", StepInCollectionFilter]
 
-    actions = ['copy']
+    actions = ["copy"]
 
     def copy(self, request, queryset):
         step: WorkflowStep
         for step in queryset:
             old_step = WorkflowStep.objects.get(pk=step.pk)
             step.pk = None  # creates a new instance when saved
-            max_order = step.workflow.workflowstep_set.order_by('-order')[0].order
+            max_order = step.workflow.workflowstep_set.order_by("-order")[0].order
             step.order = max_order + 1
-            step.code += '_copy'
+            step.code += "_copy"
             try:
                 step.save()  # our new step gets a primary key here
             except IntegrityError:
                 for num_existing_copies in count(1):
-                    step.code = '{}_copy_{}'.format(old_step.code, num_existing_copies)
+                    step.code = "{}_copy_{}".format(old_step.code, num_existing_copies)
                     try:
                         step.save()
                     except IntegrityError:
@@ -116,7 +117,7 @@ class WorkflowStepAdmin(admin.ModelAdmin):
                 step_media.save()  # our new step gets a primary key here
 
     copy.short_description = "Copy selected steps"
-    copy.allowed_permissions = ('add',)
+    copy.allowed_permissions = ("add",)
 
 
 @admin.register(WorkflowStepUITemplate)
@@ -135,17 +136,19 @@ class WorkflowStepDependencyDetailInLineFormSet(forms.BaseInlineFormSet):
 
     def get_form_kwargs(self, index):
         kwargs = super().get_form_kwargs(index)
-        kwargs['parent_object'] = self.instance
+        kwargs["parent_object"] = self.instance
         return kwargs
 
 
 class WorkflowStepDependencyDetailInLineForm(forms.ModelForm):
     class Meta:
         model = WorkflowStepDependencyDetail
-        fields = ['dependency_step', 'required_response']
+        fields = ["dependency_step", "required_response"]
 
     def __init__(self, *args, **kwargs):
-        parent_object: Optional[WorkflowStepDependencyGroup] = kwargs.pop('parent_object', None)
+        parent_object: Optional[WorkflowStepDependencyGroup] = kwargs.pop(
+            "parent_object", None
+        )
         super(WorkflowStepDependencyDetailInLineForm, self).__init__(*args, **kwargs)
         if parent_object:
             try:
@@ -153,15 +156,19 @@ class WorkflowStepDependencyDetailInLineForm(forms.ModelForm):
             except WorkflowCollection.DoesNotExist:
                 return
             step_to_member = workflow_collection.workflowcollectionmember_set.filter(
-                workflow=OuterRef('workflow'))
+                workflow=OuterRef("workflow")
+            )
             # take all steps\
             # in a workflow in the workflow collection
             # annotate the steps with the order of (a workflow_member (of their workflow) in the collection)
             # order first by the annotated wf_order, then the step's order in the workflow
-            self.fields['dependency_step'].queryset = WorkflowStep.objects \
-                .filter(workflow__workflowcollectionmember__workflow_collection=workflow_collection) \
-                .annotate(wf_order=Subquery(step_to_member.values('order')[:1])) \
-                .order_by('wf_order', 'order')
+            self.fields["dependency_step"].queryset = (
+                WorkflowStep.objects.filter(
+                    workflow__workflowcollectionmember__workflow_collection=workflow_collection
+                )
+                .annotate(wf_order=Subquery(step_to_member.values("order")[:1]))
+                .order_by("wf_order", "order")
+            )
 
 
 class WorkflowStepDependencyDetailInline(admin.TabularInline):
@@ -174,7 +181,7 @@ class WorkflowStepDependencyDetailInline(admin.TabularInline):
 class WorkflowStepDependencyGroupForm(forms.ModelForm):
     class Meta:
         model = WorkflowStepDependencyGroup
-        fields = ['workflow_collection', 'workflow_step']
+        fields = ["workflow_collection", "workflow_step"]
 
     def __init__(self, *args, **kwargs):
         super(WorkflowStepDependencyGroupForm, self).__init__(*args, **kwargs)
@@ -184,20 +191,24 @@ class WorkflowStepDependencyGroupForm(forms.ModelForm):
             except WorkflowCollection.DoesNotExist:
                 return
             step_to_member = workflow_collection.workflowcollectionmember_set.filter(
-                workflow=OuterRef('workflow'))
-            self.fields['workflow_step'].queryset = WorkflowStep.objects \
-                .filter(workflow__workflowcollectionmember__workflow_collection=self.instance.workflow_collection) \
-                .annotate(wf_order=Subquery(step_to_member.values('order')[:1])) \
-                .order_by('wf_order', 'order')
+                workflow=OuterRef("workflow")
+            )
+            self.fields["workflow_step"].queryset = (
+                WorkflowStep.objects.filter(
+                    workflow__workflowcollectionmember__workflow_collection=self.instance.workflow_collection
+                )
+                .annotate(wf_order=Subquery(step_to_member.values("order")[:1]))
+                .order_by("wf_order", "order")
+            )
 
 
 @admin.register(WorkflowStepDependencyGroup)
 class WorkflowStepDependencyGroupAdmin(admin.ModelAdmin):
-    list_display = ['workflow_step', 'workflow_collection']
+    list_display = ["workflow_step", "workflow_collection"]
     inlines = [WorkflowStepDependencyDetailInline]
     form = WorkflowStepDependencyGroupForm
 
 
 @admin.register(WorkflowStepDependencyDetail)
 class WorkflowStepDependencyDetailAdmin(admin.ModelAdmin):
-    list_display = ['dependency_group', 'dependency_step']
+    list_display = ["dependency_group", "dependency_step"]

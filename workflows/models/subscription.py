@@ -50,6 +50,6 @@ class WorkflowCollectionSubscription(CreatedModifiedAbstractModel):
     # User must be active to subscribe a collection to them
     def clean(self):
         if not self.user.is_active:
-            raise ValidationError({"user": "User must be active to subscribe to a collection."})
-
-
+            raise ValidationError(
+                {"user": "User must be active to subscribe to a collection."}
+            )

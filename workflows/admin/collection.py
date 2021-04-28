@@ -16,8 +16,11 @@ from ..models import (
     WorkflowStep,
     WorkflowStepDependencyGroup,
     WorkflowStepDependencyDetail,
-    WorkflowCollectionAssignment, WorkflowCollectionEngagement,
-    WorkflowCollectionTagAssignment, WorkflowCollectionImage)
+    WorkflowCollectionAssignment,
+    WorkflowCollectionEngagement,
+    WorkflowCollectionTagAssignment,
+    WorkflowCollectionImage,
+)
 
 
 @admin.register(WorkflowCollectionTagOption)
@@ -62,7 +65,7 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                     ("version", "created_by"),
                     ("assignment_only", "recommendable", "active", "ordered"),
                     "description",
-                    ("category",)
+                    ("category",),
                 ]
             },
         ),
@@ -73,9 +76,11 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
         "open_subscriptions",
     ]
 
-    inlines = [WorkflowCollectionTagOptionInline,
-               WorkflowCollectionMemberInline,
-               WorkflowCollectionImageInline]
+    inlines = [
+        WorkflowCollectionTagOptionInline,
+        WorkflowCollectionMemberInline,
+        WorkflowCollectionImageInline,
+    ]
 
     actions = ["copy", "deep_copy", "kill_stragglers"]
     list_filter = ["tags", IsActiveCollectionFilter]
@@ -84,14 +89,12 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
         return instance.workflowcollectionassignment_set.filter(
             status__in=(
                 WorkflowCollectionAssignment.ASSIGNED,
-                WorkflowCollectionAssignment.IN_PROGRESS
+                WorkflowCollectionAssignment.IN_PROGRESS,
             )
         ).count()
 
     def open_subscriptions(self, instance: WorkflowCollection):
-        return instance.workflowcollectionsubscription_set.filter(
-            active=True
-        ).count()
+        return instance.workflowcollectionsubscription_set.filter(active=True).count()
 
     def copy(self, request, queryset):
         """
@@ -102,16 +105,22 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
         """
         workflow_collection: WorkflowCollection
         for workflow_collection in queryset:
-            old_workflow_collection = WorkflowCollection.objects.get(pk=workflow_collection.pk)
+            old_workflow_collection = WorkflowCollection.objects.get(
+                pk=workflow_collection.pk
+            )
             workflow_collection.pk = None
-            workflow_collection.code += '_copy'
-            workflow_collection.name += ' (copy)'
+            workflow_collection.code += "_copy"
+            workflow_collection.name += " (copy)"
             try:
                 workflow_collection.save()  # our new collection gets a primary key here
             except IntegrityError:
                 for num_existing_copies in count(1):
-                    workflow_collection.code = '{}_copy_{}'.format(old_workflow_collection.code, num_existing_copies)
-                    workflow_collection.name = '{} (copy {})'.format(old_workflow_collection.name, num_existing_copies)
+                    workflow_collection.code = "{}_copy_{}".format(
+                        old_workflow_collection.code, num_existing_copies
+                    )
+                    workflow_collection.name = "{} (copy {})".format(
+                        old_workflow_collection.name, num_existing_copies
+                    )
                     try:
                         workflow_collection.save()
                     except IntegrityError:
@@ -126,15 +135,24 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                 member.save()
 
             workflow_step_dependency_group: WorkflowStepDependencyGroup
-            for workflow_step_dependency_group in old_workflow_collection.workflowstepdependencygroup_set.all():
-                old_workflow_step_dependency_group = WorkflowStepDependencyGroup.objects.get(
-                    pk=workflow_step_dependency_group.pk)
+            for (
+                workflow_step_dependency_group
+            ) in old_workflow_collection.workflowstepdependencygroup_set.all():
+                old_workflow_step_dependency_group = (
+                    WorkflowStepDependencyGroup.objects.get(
+                        pk=workflow_step_dependency_group.pk
+                    )
+                )
                 workflow_step_dependency_group.pk = None
                 workflow_step_dependency_group.workflow_collection = workflow_collection
                 workflow_step_dependency_group.save()
 
                 dependency_detail: WorkflowStepDependencyDetail
-                for dependency_detail in old_workflow_step_dependency_group.workflowstepdependencydetail_set.all():
+                for (
+                    dependency_detail
+                ) in (
+                    old_workflow_step_dependency_group.workflowstepdependencydetail_set.all()
+                ):
                     dependency_detail.id = None
                     dependency_detail.dependency_group = workflow_step_dependency_group
                     dependency_detail.save()
@@ -142,7 +160,7 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
             workflow_collection.tags.set(old_workflow_collection.tags.all())
 
     copy.short_description = "Copy selected workflow collections"
-    copy.allowed_permissions = ('add',)
+    copy.allowed_permissions = ("add",)
 
     def deep_copy(self, request, queryset):
         """
@@ -153,16 +171,22 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
         """
         workflow_collection: WorkflowCollection
         for workflow_collection in queryset:
-            old_workflow_collection = WorkflowCollection.objects.get(pk=workflow_collection.pk)
+            old_workflow_collection = WorkflowCollection.objects.get(
+                pk=workflow_collection.pk
+            )
             workflow_collection.pk = None
-            workflow_collection.code += '_copy'
-            workflow_collection.name += ' (copy)'
+            workflow_collection.code += "_copy"
+            workflow_collection.name += " (copy)"
             try:
                 workflow_collection.save()  # our new collection gets a primary key here
             except IntegrityError:
                 for num_existing_copies in count(1):
-                    workflow_collection.code = '{}_copy_{}'.format(old_workflow_collection.code, num_existing_copies)
-                    workflow_collection.name = '{} (copy {})'.format(old_workflow_collection.name, num_existing_copies)
+                    workflow_collection.code = "{}_copy_{}".format(
+                        old_workflow_collection.code, num_existing_copies
+                    )
+                    workflow_collection.name = "{} (copy {})".format(
+                        old_workflow_collection.name, num_existing_copies
+                    )
                     try:
                         workflow_collection.save()
                     except IntegrityError:
@@ -177,8 +201,8 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                 new_workflow = Workflow.objects.get(pk=member.workflow.pk)
 
                 new_workflow.pk = None
-                new_workflow.code += '_copy'
-                new_workflow.name += ' (copy)'
+                new_workflow.code += "_copy"
+                new_workflow.name += " (copy)"
                 new_workflow.save()  # our new workflow gets a primary key here
 
                 member.pk = None
@@ -211,20 +235,36 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                         step_media.save()  # our new step gets a primary key here
 
                 workflow_step_dependency_group: WorkflowStepDependencyGroup
-                for workflow_step_dependency_group in old_workflow_collection.workflowstepdependencygroup_set.all():
-                    old_workflow_step_dependency_group = WorkflowStepDependencyGroup.objects.get(
-                        pk=workflow_step_dependency_group.pk)
+                for (
+                    workflow_step_dependency_group
+                ) in old_workflow_collection.workflowstepdependencygroup_set.all():
+                    old_workflow_step_dependency_group = (
+                        WorkflowStepDependencyGroup.objects.get(
+                            pk=workflow_step_dependency_group.pk
+                        )
+                    )
                     workflow_step_dependency_group.pk = None
-                    workflow_step_dependency_group.workflow_collection = workflow_collection
+                    workflow_step_dependency_group.workflow_collection = (
+                        workflow_collection
+                    )
                     workflow_step_dependency_group.workflow_step = old_to_new_step[
-                        workflow_step_dependency_group.workflow_step]
+                        workflow_step_dependency_group.workflow_step
+                    ]
                     workflow_step_dependency_group.save()
 
                     dependency_detail: WorkflowStepDependencyDetail
-                    for dependency_detail in old_workflow_step_dependency_group.workflowstepdependencydetail_set.all():
+                    for (
+                        dependency_detail
+                    ) in (
+                        old_workflow_step_dependency_group.workflowstepdependencydetail_set.all()
+                    ):
                         dependency_detail.id = None
-                        dependency_detail.dependency_group = workflow_step_dependency_group
-                        dependency_detail.dependency_step = old_to_new_step[dependency_detail.dependency_step]
+                        dependency_detail.dependency_group = (
+                            workflow_step_dependency_group
+                        )
+                        dependency_detail.dependency_step = old_to_new_step[
+                            dependency_detail.dependency_step
+                        ]
                         dependency_detail.save()
 
             workflow_collection.tags.set(old_workflow_collection.tags.all())
@@ -247,7 +287,7 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
             workflow_collection.workflowcollectionassignment_set.filter(
                 status__in=(
                     WorkflowCollectionAssignment.ASSIGNED,
-                    WorkflowCollectionAssignment.IN_PROGRESS
+                    WorkflowCollectionAssignment.IN_PROGRESS,
                 )
             ).update(status=WorkflowCollectionAssignment.CLOSED_INCOMPLETE)
 

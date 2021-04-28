@@ -4,7 +4,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ...serializers.workflows.author import (
-    WorkflowAuthorSummarySerializer, WorkflowAuthorDetailedSerializer)
+    WorkflowAuthorSummarySerializer,
+    WorkflowAuthorDetailedSerializer,
+)
 from ....models import WorkflowAuthor
 
 
@@ -14,7 +16,8 @@ class WorkflowAuthorsView(APIView):
 
     * Get: Retrieve summary representations of all Workflow authors.
     """
-    required_scopes = ['read']
+
+    required_scopes = ["read"]
 
     def get(self, request):
         """
@@ -36,9 +39,8 @@ class WorkflowAuthorsView(APIView):
             ]
         """
         serializer = WorkflowAuthorSummarySerializer(
-            WorkflowAuthor.objects.all(),
-            many=True,
-            context={'request': request})
+            WorkflowAuthor.objects.all(), many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
 
@@ -49,7 +51,7 @@ class WorkflowAuthorView(APIView):
     * Get: Retrieve a detailed representation of a specific Workflow Author.
     """
 
-    required_scopes = ['read']
+    required_scopes = ["read"]
 
     def get(self, request, id):
         """
@@ -89,5 +91,6 @@ class WorkflowAuthorView(APIView):
         """
         author = get_object_or_404(WorkflowAuthor, id=id)
         serializer = WorkflowAuthorDetailedSerializer(
-            author, context={'request': request})
+            author, context={"request": request}
+        )
         return Response(serializer.data)

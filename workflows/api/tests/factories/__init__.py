@@ -14,6 +14,7 @@ from .workflows.step import *
 from .workflows.subscription import *
 from .workflows.workflow_collection import *
 from .workflows.workflows import *
+from .workflows.recommendation import *
 
 from . import *
 

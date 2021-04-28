@@ -24,18 +24,17 @@ class WorkflowStepText(CreatedModifiedAbstractModel):
                                       This is used when multiple WorkflowStepInputs are used to
                                       represent single-choice options.
     """
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow_step = models.ForeignKey(
-        WorkflowStep,
-        on_delete=models.CASCADE)
+    workflow_step = models.ForeignKey(WorkflowStep, on_delete=models.CASCADE)
     ui_identifier = models.CharField(max_length=200)
     content = models.CharField(max_length=500)
     storage_value = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        db_table = 'workflow_system_step_text'
+        db_table = "workflow_system_step_text"
         unique_together = ["workflow_step", "ui_identifier"]
-        verbose_name_plural = 'Workflow Step Texts'
+        verbose_name_plural = "Workflow Step Texts"
 
     def __str__(self):
         return self.ui_identifier
