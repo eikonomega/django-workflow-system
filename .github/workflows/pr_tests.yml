@@ -36,4 +36,4 @@ jobs:
           pip install -r requirements.txt
       - name: Run Tests
         run: |
-          coverage run manage.py test django_workflow_system.api.tests && coverage html
+          python manage.py test
