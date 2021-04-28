@@ -21,7 +21,7 @@ from django.views.static import serve
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include("workflows.api.urls")),
+    path("api/", include("django_workflow_system.api.urls")),
 ]
 
 if settings.DEBUG:

@@ -2,15 +2,15 @@
 # A list of file name patterns, the files to leave out of measurement or reporting.
 omit =
         */__init__.py
-        workflows/api/tests/*
-        workflows/api/urls/*
-        workflows/tests/*
-        workflows/models/*
-        workflows/admin/*
-        workflows/migrations/*
-        workflows/apps.py
-        workflows/tests.py
+        django_workflow_system/api/tests/*
+        django_workflow_system/api/urls/*
+        django_workflow_system/tests/*
+        django_workflow_system/models/*
+        django_workflow_system/admin/*
+        django_workflow_system/migrations/*
+        django_workflow_system/apps.py
+        django_workflow_system/tests.py
 
 
 # A list of packages or directories, the source to measure during execution.
-source = workflows
+source = django_workflow_system
