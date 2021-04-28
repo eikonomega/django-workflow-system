@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "workflows.apps.WorkflowsConfig",
+    "django_workflow_system",
     "rest_framework",
 ]
 
