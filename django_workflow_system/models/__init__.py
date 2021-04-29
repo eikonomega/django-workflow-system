@@ -20,7 +20,7 @@ from django_workflow_system.models.collection import (
 from django_workflow_system.models.collection_member import WorkflowCollectionMember
 
 from django_workflow_system.models.json_schema import JSONSchema
-from .recommendation import WorkflowCollectionRecommendation
+from django_workflow_system.models.recommendation import WorkflowCollectionRecommendation
 from django_workflow_system.models.step import WorkflowStep
 from django_workflow_system.models.step_audio import WorkflowStepAudio
 from django_workflow_system.models.step_dependency_detail import WorkflowStepDependencyDetail
