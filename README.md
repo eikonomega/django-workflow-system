@@ -1,5 +1,12 @@
 # Django Workflow System
 
+[![pypi-version]][pypi]
+
+**Finally, an awesome Django Workflow System.**
+
+Full documentation for the package is currently being written....but for now, here's what you need to get up and running.
+
+
 # Requirements
 
 - Python (3.5, 3.6, 3.7, 3.8)
@@ -35,9 +42,5 @@ REST_FRAMEWORK = {
 }
 ```
 
-
-
-[![crc-logo]][crc-site]
-
-[crc-logo]: https://docs.crc.nd.edu/_static/CRC_Logo.png
-[crc-site]: https://crc.nd.edu/
+[pypi-version]: https://img.shields.io/pypi/v/django-workflow-system.svg
+[pypi]: https://pypi.org/project/django-workflow-system/
