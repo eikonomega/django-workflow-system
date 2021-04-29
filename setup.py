@@ -16,6 +16,11 @@ setup(
     license="MIT",
     packages=find_packages(include=["django_workflow_system", 'django_workflow_system.*']),
     python_requires=">3.8",
-    install_requires=["Pillow>=6.2.0", "jsonschema==3.0.1", "Django >= 3.1.0"],
+    install_requires=[
+        "Pillow>=6.2.0",
+        "jsonschema>=3.0.1",
+        "Django >= 3.1.0",
+        "djangorestframework>=3.12.2",
+        "factory_boy>=3.2.0"],
     zip_safe=False,
 )

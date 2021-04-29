@@ -2,7 +2,7 @@
 import uuid
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.utils import timezone
 
 from .abstract_models import CreatedModifiedAbstractModel
@@ -33,7 +33,7 @@ class WorkflowCollectionRecommendation(CreatedModifiedAbstractModel):
     workflow_collection = models.ForeignKey(
         WorkflowCollection, on_delete=models.CASCADE
     )
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     start = models.DateTimeField(default=timezone.now)
     end = models.DateTimeField(null=True, blank=True, default=None)
 

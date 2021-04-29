@@ -82,7 +82,7 @@ class Command(BaseCommand):
         # Mark any in progress assignments with unfinished engagements as incomplete
         assignments_marked_incomplete = WorkflowCollectionAssignment.objects.filter(
             workflow_collection__category__in=assignment_types,
-            assigned_on__lte=timezone.now() - timedelta(days=days_old),
+            start__lte=timezone.now() - timedelta(days=days_old),
         ).exclude(
             status__in=(
                 WorkflowCollectionAssignment.CLOSED_COMPLETE,

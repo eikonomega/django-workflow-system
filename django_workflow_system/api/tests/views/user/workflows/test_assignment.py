@@ -21,7 +21,7 @@ class TestWorkflowAssignmentsView(TestCase):
         self.view = WorkflowCollectionAssignmentsView.as_view()
         self.view_url = "/users/self/workflows/assignments/"
         self.factory = APIRequestFactory()
-        self.assigned_on = timezone.now().date()
+        self.start = timezone.now()
 
         self.user = UserFactory()
 
@@ -63,7 +63,7 @@ class TestWorkflowAssignmentsView(TestCase):
             f"http://testserver/api/workflow_system/collections/{self.workflow_assignment.workflow_collection.id}/",
         )
         self.assertEqual(
-            response.data[0]["assigned_on"], self.assigned_on.strftime("%Y-%m-%d")
+            response.data[0]["start"][0:10], self.start.strftime("%Y-%m-%d")
         )
         self.assertEqual(response.data[0]["status"], "ASSIGNED")
         self.assertEqual(
@@ -77,7 +77,7 @@ class TestWorkflowAssignmentsView(TestCase):
             f"http://testserver/api/workflow_system/collections/{self.workflow_assignment_2.workflow_collection.id}/",
         )
         self.assertEqual(
-            response.data[1]["assigned_on"], self.assigned_on.strftime("%Y-%m-%d")
+            response.data[1]["start"][0:10], self.start.strftime("%Y-%m-%d")
         )
         self.assertEqual(response.data[1]["status"], "ASSIGNED")
         self.assertEqual(
@@ -90,7 +90,7 @@ class TestWorkflowAssignmentView(TestCase):
     def setUp(self):
         self.detail_view = WorkflowCollectionAssignmentView.as_view()
         self.factory = APIRequestFactory()
-        self.assigned_on = timezone.now().date()
+        self.start = timezone.now()
 
         self.user = UserFactory()
         self.user_2 = UserFactory()
@@ -141,7 +141,8 @@ class TestWorkflowAssignmentView(TestCase):
             f"http://testserver/api/workflow_system/collections/{self.workflow_assignment.workflow_collection.id}/",
         )
         self.assertEqual(
-            response.data["assigned_on"], self.assigned_on.strftime("%Y-%m-%d")
+            response.data["start"][0:10], self.start.strftime("%Y-%m-%d")
+
         )
         self.assertEqual(response.data["status"], self.workflow_assignment.status)
         self.assertEqual(

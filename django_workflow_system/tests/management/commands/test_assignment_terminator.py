@@ -50,7 +50,7 @@ class TestCommand(TestCase):
         self.assignment_1 = WorkflowCollectionAssignmentFactory(
             user=self.workflow_collection.created_by,
             engagement=self.workflow_collection_engagement_1,
-            assigned_on=timezone.now() - timedelta(days=42),
+            start=timezone.now() - timedelta(days=42),
             status=WorkflowCollectionAssignment.IN_PROGRESS,
             workflow_collection=self.workflow_collection,
         )
@@ -121,7 +121,7 @@ class TestCommand(TestCase):
         self.assignment_5 = WorkflowCollectionAssignmentFactory(
             engagement=self.workflow_collection_engagement_5,
             status=WorkflowCollectionAssignment.IN_PROGRESS,
-            assigned_on=timezone.now() - timedelta(days=4),
+            start=timezone.now() - timedelta(days=4),
             user=self.user_5,
             workflow_collection=self.workflow_collection,
         )
@@ -219,7 +219,7 @@ class TestCommand(TestCase):
             workflow_collection=workflow_collection,
             user=user,
             engagement=wce,
-            assigned_on=timezone.now() - timedelta(days=300),
+            start=timezone.now() - timedelta(days=300),
             status=WorkflowCollectionAssignment.IN_PROGRESS,
         )
 
