@@ -46,7 +46,7 @@ In your main urls.py file you will need to add the following line:
 ```python
 path('api/', include('django_workflow_system.api.urls'))
 ```
-`api` can be whatever you want.
+`'api/'` can be whatever you want.
 
 [pypi-version]: https://img.shields.io/pypi/v/django-workflow-system.svg
 [pypi]: https://pypi.org/project/django-workflow-system/
