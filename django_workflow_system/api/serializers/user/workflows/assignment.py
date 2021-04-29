@@ -35,6 +35,6 @@ class WorkflowCollectionAssignmentSummarySerializer(serializers.ModelSerializer)
             "workflow_collection",
             "detail",
             "engagement",
-            "assigned_on",
+            "start",
             "status",
         )
