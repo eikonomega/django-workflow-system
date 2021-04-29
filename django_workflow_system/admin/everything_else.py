@@ -30,6 +30,7 @@ from ..models import (
     WorkflowCollectionImageType,
     WorkflowImageType,
     WorkflowImage,
+    WorkflowCollectionRecommendation
 )
 
 # assignment.py
@@ -344,3 +345,10 @@ class WorkflowCollectionImageTypeAdmin(admin.ModelAdmin):
 @admin.register(WorkflowImageType)
 class WorkflowImageTypeAdmin(admin.ModelAdmin):
     list_display = ["type"]
+
+
+@admin.register(WorkflowCollectionRecommendation)
+class WorkflowCollectionRecommendationAdmin(admin.ModelAdmin):
+    list_display = ["user", "workflow_collection", "start", "end"]
+    ordering = ["user"]
+    search_fields = USER_SEARCH_FIELDS + ("workflow_collection__code",)
