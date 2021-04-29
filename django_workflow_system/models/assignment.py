@@ -1,15 +1,15 @@
 """Django model definition."""
 import uuid
-from datetime import date
 
-from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db import models
 from django.db.models import Q
+from django.utils import timezone
 
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
-from django_workflow_system.models.engagement import WorkflowCollectionEngagement
 from django_workflow_system.models.collection import WorkflowCollection
+from django_workflow_system.models.engagement import WorkflowCollectionEngagement
 
 
 class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
@@ -42,9 +42,8 @@ class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
     # FK to Django user.
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
 
-    # TODO: If time allows, we should make these datetime fields to allow users to have more precise control over assignements.
-    assigned_on = models.DateField(default=date.today)
-    expiration = models.DateField(default=settings.WORKFLOWS_DEFAULT_EXPIRATION)
+    start = models.DateTimeField(default=timezone.now)
+    end = models.DateTimeField(null=True, blank=True)
     status = models.CharField(choices=STATUS_CHOICES, max_length=17, default=ASSIGNED)
 
     # Used to track if a collection engagement has been associated with this assignment.
@@ -55,7 +54,7 @@ class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
     class Meta:
         db_table = "workflow_system_collection_assignment"
         verbose_name_plural = "Workflow Collection Assignments"
-        ordering = ["workflow_collection", "assigned_on"]
+        ordering = ["workflow_collection", "start"]
         constraints = [
             models.UniqueConstraint(
                 condition=Q(status="ASSIGNED") | Q(status="IN_PROGRESS"),

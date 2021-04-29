@@ -40,7 +40,7 @@ class WorkflowCollectionAssignmentsView(APIView):
                     "workflow_collection": "http://127.0.0.1:8000/workflow_system/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/",
                     "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/assignments/f9ddca6b-513b-4436-b6e3-cd2c51c6458a/",
                     "engagement": null,
-                    "assigned_on": "2021-03-09",
+                    "start": "2021-03-09 09:00:00",
                     "status": "ASSIGNED"
                 }
             ]
@@ -101,7 +101,7 @@ class WorkflowCollectionAssignmentView(APIView):
                 "workflow_collection": "http://127.0.0.1:8000/workflow_system/collections/c7b1940f-f19d-49ab-9ed5-7161dd185087/",
                 "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/assignments/f9ddca6b-513b-4436-b6e3-cd2c51c6458a/",
                 "engagement": null,
-                "assigned_on": "2021-03-09",
+                "start": "2021-03-09 09:00:00",
                 "status": "ASSIGNED"
             }
 
@@ -131,7 +131,7 @@ class WorkflowCollectionAssignmentView(APIView):
         Body Parameters:
             workflow_collection (foreign key): The WorkflowCollection object associated with the Assignment.
             user (foreign key): The User being assigned the Workflow.
-            assigned_on (datetime): The date of the Assignment.
+            start (datetime): The datetime of the Assignment.
             status (charfield): Whether the assignment is active, stale, or complete
 
         Returns:
@@ -143,7 +143,7 @@ class WorkflowCollectionAssignmentView(APIView):
                 "workflow_collection": "c971e924-3898-4304-bb0a-2d903669faeb",
                 "detail": "http://localhost:8000/api_v3/users/self/workflows/assignments/8b03d086-14ba-4616-a8cf-dbf308f6e38b/",
                 "engagement": "http://localhost:8000/api_v3/users/self/workflows/engagements/270e8ad2-cabb-4623-a047-32a40e6ee640/",
-                "assigned_on": "2019-02-06",
+                "start": "2019-02-06 09:00:00",
                 "status": "IN_PROGRESS"
             }
 

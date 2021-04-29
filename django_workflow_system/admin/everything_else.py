@@ -40,7 +40,7 @@ class WorkflowCollectionAssignmentAdmin(admin.ModelAdmin):
     list_display = [
         "workflow_collection",
         "user",
-        "assigned_on",
+        "start",
         "status",
         "engagement",
     ]

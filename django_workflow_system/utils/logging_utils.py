@@ -159,8 +159,8 @@ def generate_extra(
     if workflow_collection_assignment:
         extra["workflow_collection_assignment__id"] = workflow_collection_assignment.id
         extra[
-            "workflow_collection_assignment__assigned_on"
-        ] = workflow_collection_assignment.assigned_on
+            "workflow_collection_assignment__start"
+        ] = workflow_collection_assignment.start
         extra[
             "workflow_collection_assignment__status"
         ] = workflow_collection_assignment.status
