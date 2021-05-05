@@ -49,7 +49,6 @@ class WorkflowCollectionAssignmentAdmin(admin.ModelAdmin):
     search_fields = USER_SEARCH_FIELDS + ("workflow_collection__code",)
 
     readonly_fields = ["engagement"]
-    autocomplete_fields = ["user"]
 
 
 # author.py
