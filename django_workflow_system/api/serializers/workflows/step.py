@@ -17,7 +17,7 @@ class WorkflowStepTextSummarySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WorkflowStepText
-        fields = ("id", "workflow_step", "content", "ui_identifier", "storage_value")
+        fields = ("id", "workflow_step", "text", "ui_identifier")
 
 
 class WorkflowStepInputSummarySerializer(serializers.ModelSerializer):

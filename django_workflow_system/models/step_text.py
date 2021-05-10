@@ -19,17 +19,13 @@ class WorkflowStepText(CreatedModifiedAbstractModel):
         workflow_step (ForeignKey): The WorkflowStep object that will own this object.
         ui_identifier (CharField): A simple string which is used to indicate to a user interface
                                    where to display this object within a template.
-        content (CharField): The actual text.
-        storage_value (IntegerField): The value that will be stored, in place of direct user input.
-                                      This is used when multiple WorkflowStepInputs are used to
-                                      represent single-choice options.
+        text (CharField): The actual text.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow_step = models.ForeignKey(WorkflowStep, on_delete=models.CASCADE)
     ui_identifier = models.CharField(max_length=200)
-    content = models.CharField(max_length=500)
-    storage_value = models.IntegerField(blank=True, null=True)
+    text = models.CharField(max_length=1000)
 
     class Meta:
         db_table = "workflow_system_step_text"

@@ -72,8 +72,7 @@ class _WorkflowStepTextFactory(DjangoModelFactory):
 
     workflow_step = None  # required in kwargs
     ui_identifier = factory.sequence(lambda n: f"text_{n}")
-    content = factory.Faker("paragraph")
-    storage_value = factory.Sequence(lambda n: int(n + 1))
+    text = factory.Faker("paragraph")
 
 
 class _WorkflowStepImageFactory(DjangoModelFactory):

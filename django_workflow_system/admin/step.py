@@ -26,11 +26,11 @@ from ..models import (
 
 
 class StepTextForm(forms.ModelForm):
-    content = forms.CharField(widget=forms.Textarea)
+    text = forms.CharField(widget=forms.Textarea)
 
     class Meta:
         model = WorkflowStepText
-        fields = ["ui_identifier", "content", "storage_value"]
+        fields = ["ui_identifier", "text"]
 
 
 class SteptextInline(admin.TabularInline):

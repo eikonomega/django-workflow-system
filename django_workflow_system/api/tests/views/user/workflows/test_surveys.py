@@ -58,7 +58,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                             },
                             {
                                 "code": "step3",
-                                "workflowsteptext_set": [{"content": "Thank u"}],
+                                "workflowsteptext_set": [{"text": "Thank u"}],
                             },
                         ],
                     }
@@ -77,8 +77,8 @@ class TestWorkflowCollectionSurveys(TestCase):
                             {
                                 "code": "cat_or_dog",
                                 "workflowsteptext_set": [
-                                    {"content": "cats", "storage_value": 0},
-                                    {"content": "dogs", "storage_value": 1},
+                                    {"text": "cats"},
+                                    {"text": "dogs"},
                                 ],
                                 "workflowstepinput_set": [
                                     {
@@ -114,7 +114,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                             {
                                 "code": "final_step",
                                 "workflowsteptext_set": [
-                                    {"content": "Thank you for completing the survey!"}
+                                    {"text": "Thank you for completing the survey!"}
                                 ],
                             },
                         ],
@@ -208,9 +208,9 @@ class TestWorkflowCollectionSurveys(TestCase):
                             {
                                 "code": "cat_or_dog_or_bees",
                                 "workflowsteptext_set": [
-                                    {"content": "cats", "storage_value": 0},
-                                    {"content": "dogs", "storage_value": 1},
-                                    {"content": "bees", "storage_value": 2},
+                                    {"text": "cats"},
+                                    {"text": "dogs"},
+                                    {"text": "bees"},
                                 ],
                                 "workflowstepinput_set": [
                                     {
@@ -227,14 +227,14 @@ class TestWorkflowCollectionSurveys(TestCase):
                                 "code": "good_choice",
                                 "workflowsteptext_set": [
                                     {
-                                        "content": "good choice!",
+                                        "text": "good choice!",
                                     }
                                 ],
                             },
                             {
                                 "code": "final_step",
                                 "workflowsteptext_set": [
-                                    {"content": "Thank you for completing the survey!"}
+                                    {"text": "Thank you for completing the survey!"}
                                 ],
                             },
                         ],
@@ -692,7 +692,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                     "workflowstep_set": [
                         {
                             "code": "step1",
-                            "workflowsteptext_set": [{"content": "in tarnation?"}],
+                            "workflowsteptext_set": [{"text": "in tarnation?"}],
                         }
                     ],
                 },
@@ -1147,8 +1147,8 @@ class TestWorkflowCollectionSurveys(TestCase):
                             {
                                 "code": "have_rice",
                                 "workflowsteptext_set": [
-                                    {"content": "yes", "storage_value": 1},
-                                    {"content": "no", "storage_value": 0},
+                                    {"text": "yes"},
+                                    {"text": "no"},
                                 ],
                                 "workflowstepinput_set": [
                                     {
@@ -1164,8 +1164,8 @@ class TestWorkflowCollectionSurveys(TestCase):
                             {
                                 "code": "red_rice",
                                 "workflowsteptext_set": [
-                                    {"content": "yes", "storage_value": 1},
-                                    {"content": "no", "storage_value": 0},
+                                    {"text": "yes"},
+                                    {"text": "no"},
                                 ],
                                 "workflowstepinput_set": [
                                     {
@@ -1181,13 +1181,13 @@ class TestWorkflowCollectionSurveys(TestCase):
                             {
                                 "code": "nice_rice",
                                 "workflowsteptext_set": [
-                                    {"content": "I like red rice!"}
+                                    {"text": "I like red rice!"}
                                 ],
                             },
                             {
                                 "code": "final_step",
                                 "workflowsteptext_set": [
-                                    {"content": "Thank you for completing the survey!"}
+                                    {"text": "Thank you for completing the survey!"}
                                 ],
                             },
                         ],
