@@ -25,6 +25,7 @@ from django_workflow_system.models.step import WorkflowStep
 from django_workflow_system.models.step_audio import WorkflowStepAudio
 from django_workflow_system.models.step_dependency_detail import WorkflowStepDependencyDetail
 from django_workflow_system.models.step_dependency_group import WorkflowStepDependencyGroup
+from django_workflow_system.models.step_external_link import WorkflowStepExternalLink
 from django_workflow_system.models.step_image import WorkflowStepImage
 from django_workflow_system.models.step_input import WorkflowStepInput
 from django_workflow_system.models.step_text import WorkflowStepText
@@ -55,6 +56,7 @@ __all__ = [
     "JSONSchema",
     "WorkflowStep",
     "WorkflowStepAudio",
+    "WorkflowStepExternalLink",
     "WorkflowStepImage",
     "WorkflowStepText",
     "WorkflowStepInput",

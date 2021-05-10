@@ -53,6 +53,13 @@ class WorkflowStepFactory(DjangoModelFactory):
             _WorkflowStepInputFactory.create(workflow_step=self, **input)
 
     @factory.post_generation
+    def workflowstepexternallink_set(self, create, extracted, **kwargs):
+        if not create or not extracted:
+            return
+        for input in extracted:
+            _WorkflowStepExternalLinkFactory.create(workflow_step=self, **input)
+
+    @factory.post_generation
     def data_groups(self, create, extracted, **kwargs):
         if not create or not extracted:
             return
@@ -73,6 +80,16 @@ class _WorkflowStepTextFactory(DjangoModelFactory):
     workflow_step = None  # required in kwargs
     ui_identifier = factory.sequence(lambda n: f"text_{n}")
     text = factory.Faker("paragraph")
+
+
+class _WorkflowStepExternalLinkFactory(DjangoModelFactory):
+    class Meta:
+        model = models.WorkflowStepExternalLink
+        django_get_or_create = ['workflow_step', "ui_identifier"]
+    
+    workflow_step = None
+    ui_identifier = factory.sequence(lambda n: f"external_link_{n}")
+    link = factory.Faker('https://www.google.com')
 
 
 class _WorkflowStepImageFactory(DjangoModelFactory):
