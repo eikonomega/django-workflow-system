@@ -391,7 +391,7 @@ class TestWorkflowCollectionView(TestCase):
                         "code",
                         "order",
                         "ui_template",
-                        "workflowstepinput_set",
+                        "workflowstepuserinput_set",
                         "workflowsteptext_set",
                         "workflowstepaudio_set",
                         "workflowstepimage_set",

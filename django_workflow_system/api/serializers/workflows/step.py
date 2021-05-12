@@ -5,7 +5,7 @@ from ....models import (
     WorkflowStepAudio,
     WorkflowStepImage,
     WorkflowStepText,
-    WorkflowStepInput,
+    WorkflowStepUserInput,
     WorkflowStepVideo,
     WorkflowStepExternalLink
 )
@@ -30,20 +30,20 @@ class WorkflowStepExternalLinkSummarySerializer(serializers.ModelSerializer):
         fields = ("id", "workflow_step", "link", "ui_identifier")
 
 
-class WorkflowStepInputSummarySerializer(serializers.ModelSerializer):
+class WorkflowStepUserInputSummarySerializer(serializers.ModelSerializer):
     """
-    Summary level serializer for WorkflowStepInput objects.
+    Summary level serializer for WorkflowStepUserInput objects.
     """
 
     class Meta:
-        model = WorkflowStepInput
+        model = WorkflowStepUserInput
         fields = (
             "id",
             "workflow_step",
-            "content",
             "ui_identifier",
             "required",
-            "response_schema",
+            "type",
+            "specification"
         )
 
 
@@ -83,7 +83,7 @@ class WorkflowStepSummarySerializer(serializers.ModelSerializer):
     """
 
     ui_template = serializers.SlugRelatedField(slug_field="name", read_only=True)
-    workflowstepinput_set = WorkflowStepInputSummarySerializer(many=True)
+    workflowstepuserinput_set = WorkflowStepUserInputSummarySerializer(many=True)
     workflowsteptext_set = WorkflowStepTextSummarySerializer(many=True)
     workflowstepaudio_set = WorkflowStepAudioSummarySerializer(many=True)
     workflowstepimage_set = WorkflowStepImageSummarySerializer(many=True)
@@ -97,7 +97,7 @@ class WorkflowStepSummarySerializer(serializers.ModelSerializer):
             "code",
             "order",
             "ui_template",
-            "workflowstepinput_set",
+            "workflowstepuserinput_set",
             "workflowsteptext_set",
             "workflowstepaudio_set",
             "workflowstepimage_set",

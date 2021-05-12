@@ -3,7 +3,6 @@ from factory.django import DjangoModelFactory
 
 import django_workflow_system.models as models
 from .data_group import WorkflowStepDataGroupFactory
-from .json_schema import JSONSchemaFactory
 
 
 class WorkflowStepUITemplateFactory(DjangoModelFactory):
@@ -46,11 +45,11 @@ class WorkflowStepFactory(DjangoModelFactory):
             _WorkflowStepAudioFactory.create(workflow_step=self, **audio)
 
     @factory.post_generation
-    def workflowstepinput_set(self, create, extracted, **kwargs):
+    def workflowstepuserinput_set(self, create, extracted, **kwargs):
         if not create or not extracted:
             return
         for input in extracted:
-            _WorkflowStepInputFactory.create(workflow_step=self, **input)
+            _WorkflowStepUserInputFactory.create(workflow_step=self, **input)
 
     @factory.post_generation
     def workflowstepexternallink_set(self, create, extracted, **kwargs):
@@ -122,16 +121,27 @@ class _WorkflowStepAudioFactory(DjangoModelFactory):
     url = factory.Faker("file_name", extension="mp3")
 
 
-class _WorkflowStepInputFactory(DjangoModelFactory):
+class _WorkflowStepUserInputType(DjangoModelFactory):
     class Meta:
-        model = models.WorkflowStepInput
+        model = models.WorkflowStepUserInputType
+    
+    name = factory.sequence(lambda n: "Question Type {}".format(n))
+    json_schema = {}
+    placeholder_specification = {}
+    response_schema = {}
+
+
+class _WorkflowStepUserInputFactory(DjangoModelFactory):
+    class Meta:
+        model = models.WorkflowStepUserInput
         django_get_or_create = ["workflow_step", "ui_identifier"]
 
     workflow_step = None  # required in kwargs
     ui_identifier = factory.sequence(lambda n: f"input_{n}")
-    content = factory.Faker("sentence")
     required = False
-    response_schema = factory.SubFactory(JSONSchemaFactory)
+    specification = {}
+
+
 
 
 __all__ = ["WorkflowStepUITemplateFactory", "WorkflowStepFactory"]

@@ -11,6 +11,7 @@ from django_workflow_system.api.tests.factories.workflows import (
     WorkflowCollectionEngagementFactory,
     WorkflowCollectionEngagementDetailFactory,
 )
+from django_workflow_system.api.tests.factories.workflows.step import _WorkflowStepUserInputType
 from django_workflow_system.api.views.user.workflows import (
     WorkflowCollectionEngagementsView,
     WorkflowCollectionEngagementDetailsView,
@@ -19,7 +20,7 @@ from django_workflow_system.api.views.user.workflows import (
 from django_workflow_system.models import (
     Workflow,
     WorkflowStep,
-    WorkflowStepInput,
+    WorkflowStepUserInput,
     WorkflowCollectionEngagementDetail,
 )
 
@@ -40,19 +41,21 @@ class TestWorkflowCollectionSurveys(TestCase):
                         "workflowstep_set": [
                             {
                                 "code": "step1",
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "what's ur favorite dino?",
-                                        "response_schema": JSONSchemaTrueFactory(),
+                                        "required": True,
+                                        "type": _WorkflowStepUserInputType(),
+                                        "specification": {}
                                     }
                                 ],
                             },
                             {
                                 "code": "step2",
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "What's ur favorite color?",
-                                        "response_schema": JSONSchemaTrueFactory(),
+                                        "required": True,
+                                        "type": _WorkflowStepUserInputType(),
+                                        "specification": {}
                                     }
                                 ],
                             },
@@ -80,34 +83,32 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {"text": "cats"},
                                     {"text": "dogs"},
                                 ],
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "Do you like cats or dogs?",
                                         "ui_identifier": "question_1",
                                         "required": True,
-                                        "response_schema": JSONSchemaFactory(
-                                            schema={"type": "number", "enum": [0, 1]}
-                                        ),
+                                        "type": _WorkflowStepUserInputType(),
+                                        "specification": {}
                                     }
                                 ],
                             },
                             {
                                 "code": "fav_cat",
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "What's your favorite cat?",
                                         "required": True,
-                                        "response_schema": JSONSchemaTrueFactory(),  # accept anything
+                                        "type": _WorkflowStepUserInputType(),
+                                        "specification": {}  # accept anything
                                     }
                                 ],
                             },
                             {
                                 "code": "fav_dog",
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "What's your favorite dog?",
                                         "required": True,
-                                        "response_schema": JSONSchemaTrueFactory(),  # accept anything
+                                        "type": _WorkflowStepUserInputType(),
+                                        "specification": {}  # accept anything
                                     }
                                 ],
                             },
@@ -212,14 +213,12 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {"text": "dogs"},
                                     {"text": "bees"},
                                 ],
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "Do you like cats, dogs, or angry bees?",
                                         "ui_identifier": "question_1",
                                         "required": True,
-                                        "response_schema": JSONSchemaFactory(
-                                            schema={"type": "number", "enum": [0, 1, 2]}
-                                        ),
+                                        "type": _WorkflowStepUserInputType(response_schema={"type": "number", "enum": [0, 1, 2]}),
+                                        "specification": {}
                                     }
                                 ],
                             },
@@ -365,7 +364,7 @@ class TestWorkflowCollectionSurveys(TestCase):
         """
         workflow_user_engagement_id = str(response.data["self_detail"]).split("/")[-2]
         # get step info... the wrong way
-        step_input = WorkflowStepInput.objects.get(workflow_step=steps[0])
+        step_input = WorkflowStepUserInput.objects.get(workflow_step=steps[0])
         ################
         request = self.factory.post(
             f"/users/self/workflows/engagements/{workflow_user_engagement_id}/details/",
@@ -408,7 +407,7 @@ class TestWorkflowCollectionSurveys(TestCase):
         )
 
         # get step info... the wrong way
-        step_input = WorkflowStepInput.objects.get(workflow_step=steps[1])
+        step_input = WorkflowStepUserInput.objects.get(workflow_step=steps[1])
         request = self.factory.post(
             f"/users/self/workflows/engagements/{workflow_user_engagement_id}/details/",
             data={
@@ -547,7 +546,7 @@ class TestWorkflowCollectionSurveys(TestCase):
         """
         workflow_user_engagement_id = str(response.data["self_detail"]).split("/")[-2]
         # get step info... a less wrong way
-        step_input = steps[0].workflowstepinput_set.get()
+        step_input = steps[0].workflowstepuserinput_set.get()
 
         request = self.factory.post(
             f"/users/self/workflows/engagements/{workflow_user_engagement_id}/details/",
@@ -592,7 +591,7 @@ class TestWorkflowCollectionSurveys(TestCase):
         )
 
         # get step info... the wrong way
-        step_input_2 = WorkflowStepInput.objects.get(workflow_step=steps[2])
+        step_input_2 = WorkflowStepUserInput.objects.get(workflow_step=steps[2])
         request = self.factory.post(
             "/users/self/workflows/engagements/{}/details/".format(
                 workflow_user_engagement_id
@@ -683,7 +682,11 @@ class TestWorkflowCollectionSurveys(TestCase):
                     "workflowstep_set": [
                         {
                             "code": "step1",
-                            "workflowstepinput_set": [{"content": "What"}],
+                            "workflowstepuserinput_set": [{
+                                "ui_identifier": "question_1",
+                                "type": _WorkflowStepUserInputType(),
+                                "specification": {}
+                            }],
                         }
                     ],
                 },
@@ -743,7 +746,7 @@ class TestWorkflowCollectionSurveys(TestCase):
         # http://testserver/api_v3/users/self/workflows/engagements/62eb8dd9-f961-4448-8408-50e3a6e5b80b/
         workflow_user_engagement_id = str(response.data["self_detail"]).split("/")[-2]
         # get step info... the wrong way
-        step_input = WorkflowStepInput.objects.get(workflow_step=steps[0])
+        step_input = WorkflowStepUserInput.objects.get(workflow_step=steps[0])
 
         request = self.factory.post(
             f"/users/self/workflows/engagements/{workflow_user_engagement_id}/details/",
@@ -848,9 +851,9 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "user_response": {
                     "questions": [
                         {
-                            "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                            "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
                             "stepInputUIIdentifier": str(
-                                steps[0].workflowstepinput_set.get().ui_identifier
+                                steps[0].workflowstepuserinput_set.get().ui_identifier
                             ),
                             "response": 0,
                         }
@@ -900,9 +903,9 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "user_response": {
                     "questions": [
                         {
-                            "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                            "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
                             "stepInputUIIdentifier": str(
-                                steps[0].workflowstepinput_set.get().ui_identifier
+                                steps[0].workflowstepuserinput_set.get().ui_identifier
                             ),
                             "response": 1,
                         }
@@ -952,9 +955,9 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "user_response": {
                     "questions": [
                         {
-                            "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                            "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
                             "stepInputUIIdentifier": str(
-                                steps[0].workflowstepinput_set.get().ui_identifier
+                                steps[0].workflowstepuserinput_set.get().ui_identifier
                             ),
                             "response": 2,
                         }
@@ -1004,9 +1007,9 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "user_response": {
                     "questions": [
                         {
-                            # "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                            # "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
                             "stepInputUIIdentifier": str(
-                                steps[0].workflowstepinput_set.get().ui_identifier
+                                steps[0].workflowstepuserinput_set.get().ui_identifier
                             ),
                             "response": 0,
                         }
@@ -1042,9 +1045,9 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "user_response": {
                     "questions": [
                         {
-                            "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                            "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
                             # "stepInputUIIdentifier": str(
-                            #     steps[0].workflowstepinput_set.get().ui_identifier),
+                            #     steps[0].workflowstepuserinput_set.get().ui_identifier),
                             "response": 0,
                         }
                     ]
@@ -1081,7 +1084,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                         {
                             "stepInputID": "hotdog",
                             "stepInputUIIdentifier": str(
-                                steps[0].workflowstepinput_set.get().ui_identifier
+                                steps[0].workflowstepuserinput_set.get().ui_identifier
                             ),
                             "response": 0,
                         }
@@ -1117,7 +1120,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "user_response": {
                     "questions": [
                         {
-                            "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                            "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
                             "stepInputUIIdentifier": "burger",
                             "response": 0,
                         }
@@ -1150,14 +1153,12 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {"text": "yes"},
                                     {"text": "no"},
                                 ],
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "Do you have rice?",
                                         "ui_identifier": "question_1",
                                         "required": True,
-                                        "response_schema": JSONSchemaFactory(
-                                            schema={"type": "number", "enum": [0, 1]}
-                                        ),
+                                        "type": _WorkflowStepUserInputType(),
+                                        "specification": {}
                                     }
                                 ],
                             },
@@ -1167,14 +1168,12 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {"text": "yes"},
                                     {"text": "no"},
                                 ],
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "Is your rice red?",
                                         "ui_identifier": "question_1",
                                         "required": True,
-                                        "response_schema": JSONSchemaFactory(
-                                            schema={"type": "number", "enum": [0, 1]}
-                                        ),
+                                        "type": _WorkflowStepUserInputType(),
+                                        "specification": {}
                                     }
                                 ],
                             },
@@ -1287,7 +1286,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "user_response": {
                     "questions": [
                         {
-                            "stepInputID": str(steps[0].workflowstepinput_set.get().id),
+                            "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
                             "stepInputUIIdentifier": "question_1",
                             "response": 0,
                         }

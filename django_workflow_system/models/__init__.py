@@ -27,7 +27,7 @@ from django_workflow_system.models.step_dependency_detail import WorkflowStepDep
 from django_workflow_system.models.step_dependency_group import WorkflowStepDependencyGroup
 from django_workflow_system.models.step_external_link import WorkflowStepExternalLink
 from django_workflow_system.models.step_image import WorkflowStepImage
-from django_workflow_system.models.step_input import WorkflowStepInput
+from django_workflow_system.models.step_user_input import WorkflowStepUserInput, WorkflowStepUserInputType
 from django_workflow_system.models.step_text import WorkflowStepText
 from django_workflow_system.models.step_ui_template import WorkflowStepUITemplate
 from django_workflow_system.models.step_video import WorkflowStepVideo
@@ -59,7 +59,8 @@ __all__ = [
     "WorkflowStepExternalLink",
     "WorkflowStepImage",
     "WorkflowStepText",
-    "WorkflowStepInput",
+    "WorkflowStepUserInput",
+    "WorkflowStepUserInputType",
     "WorkflowStepUITemplate",
     "WorkflowStepVideo",
     "WorkflowStepDependencyDetail",

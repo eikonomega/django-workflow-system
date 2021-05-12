@@ -14,7 +14,8 @@ from ..utils.admin_utils import StepInCollectionFilter
 from ..models import (
     WorkflowCollection,
     WorkflowStep,
-    WorkflowStepInput,
+    WorkflowStepUserInput,
+    WorkflowStepUserInputType,
     WorkflowStepAudio,
     WorkflowStepExternalLink,
     WorkflowStepImage,
@@ -40,18 +41,20 @@ class SteptextInline(admin.TabularInline):
     form = StepTextForm
 
 
-class StepInputForm(forms.ModelForm):
-    content = forms.CharField(widget=forms.Textarea)
-
+class StepUserInputForm(forms.ModelForm):
     class Meta:
-        model = WorkflowStepInput
-        fields = ["ui_identifier", "content", "required", "response_schema"]
+        model = WorkflowStepUserInput
+        fields = ["ui_identifier", "required", "type", "specification"]
+    
+    class Media:
+        js = ('admin/js/jquery.init.js',)
 
 
-class StepInputInLine(admin.TabularInline):
-    model = WorkflowStepInput
+class StepUserInputInLine(admin.TabularInline):
+    model = WorkflowStepUserInput
     extra = 1
-    form = StepInputForm
+    form = StepUserInputForm
+
 
 
 class StepAudioInline(admin.TabularInline):
@@ -78,7 +81,7 @@ class StepExternalLinkInline(admin.TabularInline):
 class WorkflowStepAdmin(admin.ModelAdmin):
     list_display = ["workflow", "code", "order", "ui_template"]
     inlines = [
-        StepInputInLine,
+        StepUserInputInLine,
         SteptextInline,
         StepImageInline,
         StepAudioInline,
@@ -115,7 +118,7 @@ class WorkflowStepAdmin(admin.ModelAdmin):
                 old_step.workflowstepaudio_set.all(),
                 old_step.workflowstepvideo_set.all(),
                 old_step.workflowstepimage_set.all(),
-                old_step.workflowstepinput_set.all(),
+                old_step.workflowstepuserinput_set.all(),
                 old_step.workflowsteptext_set.all(),
                 old_step.workflowstepexternallink_set.all()
             )
@@ -220,3 +223,8 @@ class WorkflowStepDependencyGroupAdmin(admin.ModelAdmin):
 @admin.register(WorkflowStepDependencyDetail)
 class WorkflowStepDependencyDetailAdmin(admin.ModelAdmin):
     list_display = ["dependency_group", "dependency_step"]
+
+
+@admin.register(WorkflowStepUserInputType)
+class WorkflowStepUserInputType(admin.ModelAdmin):
+    list_display = ["name"]

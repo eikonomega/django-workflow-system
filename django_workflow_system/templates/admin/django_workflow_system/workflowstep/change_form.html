@@ -1,0 +1,26 @@
+{% extends "admin/change_form.html" %}
+{% csrf_token %}
+{% block extrahead %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    function getUserInputType(uuid, specification) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'step_user_input_type_helper' %}" + `?uuid=${uuid}`,
+            success: function(data, _status) {
+                $(specification).val(JSON.stringify(data.specification));
+            },
+            dataType: "json"
+          });
+    }
+      $(document).ready(function() {
+        $("[id^='id_workflowstepuserinput_set-'][id$='-type']").change(function() {
+          let userInputType = `#${this.id}`;
+          let specification = `#${this.id.replace('type', 'specification')}`
+            if ($(userInputType).val()) {
+                getUserInputType($(userInputType).val(), specification);
+            }
+        });
+      });
+  </script>
+{% endblock %}

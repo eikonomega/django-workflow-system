@@ -14,7 +14,7 @@
 # from website.api_v3.views.user.workflows import (
 #     WorkflowCollectionEngagementDetailsView,
 #     WorkflowCollectionEngagementDetailView)
-# from website.workflows.models import WorkflowStep, WorkflowStepInput, WorkflowCollection
+# from website.workflows.models import WorkflowStep, WorkflowStepUserInput, WorkflowCollection
 import dateutil
 from django.test import TestCase
 from django.utils import timezone
@@ -29,11 +29,12 @@ from django_workflow_system.api.tests.factories import (
     WorkflowCollectionEngagementDetailFactory,
 )
 from django_workflow_system.api.tests.factories.workflows import json_schema
+from django_workflow_system.api.tests.factories.workflows.step import _WorkflowStepUserInputType
 from django_workflow_system.api.views.user.workflows import (
     WorkflowCollectionEngagementDetailsView,
     WorkflowCollectionEngagementDetailView,
 )
-from django_workflow_system.models import WorkflowCollection, WorkflowStep, WorkflowStepInput
+from django_workflow_system.models import WorkflowCollection, WorkflowStep, WorkflowStepUserInput
 
 
 class TestWorkflowEngagementDetailsView(TestCase):
@@ -68,11 +69,11 @@ class TestWorkflowEngagementDetailsView(TestCase):
                     {
                         "workflowstep_set": [
                             {
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "whatever",
                                         "required": True,
-                                        "response_schema": json_schema.JSONSchemaOneToFiveFactory(),
+                                        "type": _WorkflowStepUserInputType(),
+                                        "specification": {}
                                     }
                                 ]
                             }
@@ -88,7 +89,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
             self.single_survey_collection__workflow.workflowstep_set.get()
         )
         self.single_survey_collection__input = (
-            self.single_survey_collection__step.workflowstepinput_set.get()
+            self.single_survey_collection__step.workflowstepuserinput_set.get()
         )
 
         self.user_with_activity_engagement = UserFactory()
@@ -298,8 +299,8 @@ class TestWorkflowEngagementDetailsView(TestCase):
                     {
                         "workflowstep_set": [
                             {
-                                "workflowstepinput_set": [
-                                    {"content": "whatever", "required": False}
+                                "workflowstepuserinput_set": [
+                                    {"required": False}
                                 ]
                             }
                         ]
@@ -311,7 +312,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         my_step = WorkflowStep.objects.get(
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
-        my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
+        my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
@@ -661,11 +662,11 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                     {
                         "workflowstep_set": [
                             {
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "one to fiveeee",
                                         "required": True,
-                                        "response_schema": json_schema.JSONSchemaOneToFiveFactory(),
+                                        "type": _WorkflowStepUserInputType(response_schema={"type": "number", "enum": [1, 2, 3, 4, 5]}),
+                                        "specification": {}
                                     }
                                 ]
                             }
@@ -677,7 +678,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         my_step = WorkflowStep.objects.get(
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
-        my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
+        my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
@@ -724,11 +725,11 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                     {
                         "workflowstep_set": [
                             {
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "one to fiveeee",
                                         "required": True,
-                                        "response_schema": json_schema.JSONSchemaOneToFiveFactory(),
+                                        "type": _WorkflowStepUserInputType(response_schema={"type": "number", "enum": [1, 2, 3, 4, 5]}),
+                                        "specification": {}
                                     }
                                 ]
                             }
@@ -740,7 +741,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         my_step = WorkflowStep.objects.get(
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
-        my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
+        my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
@@ -796,11 +797,11 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                     {
                         "workflowstep_set": [
                             {
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "one to fiveeee",
                                         "required": True,
-                                        "response_schema": json_schema.JSONSchemaOneToFiveFactory(),
+                                        "type": _WorkflowStepUserInputType(),
+                                        "specification": {}
                                     }
                                 ]
                             }
@@ -812,7 +813,9 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         my_step = WorkflowStep.objects.get(
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
-        my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
+        my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
+        my_step_input.type.response_schema = {"type": "number", "enum": [1, 2, 3, 4, 5]}
+        my_step_input.type.save()
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
@@ -865,8 +868,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                     {
                         "workflowstep_set": [
                             {
-                                "workflowstepinput_set": [
-                                    {"content": "whatever", "required": False}
+                                "workflowstepuserinput_set": [
+                                    {"required": False}
                                 ]
                             }
                         ]
@@ -878,7 +881,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         my_step = WorkflowStep.objects.get(
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
-        my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
+        my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
@@ -915,11 +918,11 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                     {
                         "workflowstep_set": [
                             {
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "You DO need to answer 1 to 5",
                                         "required": True,
-                                        "response_schema": json_schema.JSONSchemaOneToFiveFactory(),
+                                        "type": _WorkflowStepUserInputType(),
+                                        "specification": {}
                                     }
                                 ]
                             }
@@ -932,7 +935,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         my_step = WorkflowStep.objects.get(
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
-        my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
+        my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
@@ -969,11 +972,11 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                     {
                         "workflowstep_set": [
                             {
-                                "workflowstepinput_set": [
+                                "workflowstepuserinput_set": [
                                     {
-                                        "content": "You DO need to answer 1 to 5",
                                         "required": True,
-                                        "response_schema": json_schema.JSONSchemaOneToFiveFactory(),
+                                        "type": _WorkflowStepUserInputType(),
+                                        "specification": {}
                                     }
                                 ]
                             }
@@ -986,7 +989,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         my_step = WorkflowStep.objects.get(
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
-        my_step_input = WorkflowStepInput.objects.get(workflow_step=my_step)
+        my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
