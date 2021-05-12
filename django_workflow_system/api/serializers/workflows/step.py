@@ -7,6 +7,7 @@ from ....models import (
     WorkflowStepText,
     WorkflowStepInput,
     WorkflowStepVideo,
+    WorkflowStepExternalLink
 )
 
 
@@ -17,7 +18,16 @@ class WorkflowStepTextSummarySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WorkflowStepText
-        fields = ("id", "workflow_step", "content", "ui_identifier", "storage_value")
+        fields = ("id", "workflow_step", "text", "ui_identifier")
+
+
+class WorkflowStepExternalLinkSummarySerializer(serializers.ModelSerializer):
+    """
+    Summary level serializer for WorkflowStepExternalLink objects.
+    """
+    class Meta:
+        model = WorkflowStepExternalLink
+        fields = ("id", "workflow_step", "link", "ui_identifier")
 
 
 class WorkflowStepInputSummarySerializer(serializers.ModelSerializer):
@@ -78,6 +88,7 @@ class WorkflowStepSummarySerializer(serializers.ModelSerializer):
     workflowstepaudio_set = WorkflowStepAudioSummarySerializer(many=True)
     workflowstepimage_set = WorkflowStepImageSummarySerializer(many=True)
     workflowstepvideo_set = WorkflowStepVideoSummarySerializer(many=True)
+    workflowstepexternallink_set = WorkflowStepExternalLinkSummarySerializer(many=True)
 
     class Meta:
         model = WorkflowStep
@@ -91,4 +102,5 @@ class WorkflowStepSummarySerializer(serializers.ModelSerializer):
             "workflowstepaudio_set",
             "workflowstepimage_set",
             "workflowstepvideo_set",
+            "workflowstepexternallink_set"
         )

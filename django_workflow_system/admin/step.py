@@ -16,6 +16,7 @@ from ..models import (
     WorkflowStep,
     WorkflowStepInput,
     WorkflowStepAudio,
+    WorkflowStepExternalLink,
     WorkflowStepImage,
     WorkflowStepText,
     WorkflowStepVideo,
@@ -26,11 +27,11 @@ from ..models import (
 
 
 class StepTextForm(forms.ModelForm):
-    content = forms.CharField(widget=forms.Textarea)
+    text = forms.CharField(widget=forms.Textarea)
 
     class Meta:
         model = WorkflowStepText
-        fields = ["ui_identifier", "content", "storage_value"]
+        fields = ["ui_identifier", "text"]
 
 
 class SteptextInline(admin.TabularInline):
@@ -68,6 +69,11 @@ class StepVideoInline(admin.TabularInline):
     extra = 1
 
 
+class StepExternalLinkInline(admin.TabularInline):
+    model = WorkflowStepExternalLink
+    extra = 1
+
+
 @admin.register(WorkflowStep)
 class WorkflowStepAdmin(admin.ModelAdmin):
     list_display = ["workflow", "code", "order", "ui_template"]
@@ -77,6 +83,7 @@ class WorkflowStepAdmin(admin.ModelAdmin):
         StepImageInline,
         StepAudioInline,
         StepVideoInline,
+        StepExternalLinkInline
     ]
     list_filter = ["workflow", StepInCollectionFilter]
 
@@ -110,6 +117,7 @@ class WorkflowStepAdmin(admin.ModelAdmin):
                 old_step.workflowstepimage_set.all(),
                 old_step.workflowstepinput_set.all(),
                 old_step.workflowsteptext_set.all(),
+                old_step.workflowstepexternallink_set.all()
             )
             for step_media in step_media_iterator:
                 step_media.pk = None  # creates a new instance when saved

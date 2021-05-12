@@ -396,6 +396,7 @@ class TestWorkflowCollectionView(TestCase):
                         "workflowstepaudio_set",
                         "workflowstepimage_set",
                         "workflowstepvideo_set",
+                        "workflowstepexternallink_set"
                     ],
                 )
 

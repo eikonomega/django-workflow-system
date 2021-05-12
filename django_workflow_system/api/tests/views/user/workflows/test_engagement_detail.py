@@ -47,7 +47,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 "workflow_set": [
                     {
                         "workflowstep_set": [
-                            {"workflowsteptext_set": [{"content": "You did it"}]}
+                            {"workflowsteptext_set": [{"text": "You did it"}]}
                         ]
                     }
                 ],
@@ -357,7 +357,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
                         {
                             "code": "step1",
                             "workflowsteptext_set": [
-                                {"content": "Who careeees, skip this"}
+                                {"text": "Who careeees, skip this"}
                             ],
                         }
                     ],
@@ -367,11 +367,11 @@ class TestWorkflowEngagementDetailsView(TestCase):
                     "workflowstep_set": [
                         {
                             "code": "step1",
-                            "workflowsteptext_set": [{"content": "setup of joke"}],
+                            "workflowsteptext_set": [{"text": "setup of joke"}],
                         },
                         {
                             "code": "step2",
-                            "workflowsteptext_set": [{"content": "punchline of joke"}],
+                            "workflowsteptext_set": [{"text": "punchline of joke"}],
                         },
                     ],
                 },
@@ -425,12 +425,12 @@ class TestWorkflowEngagementDetailsView(TestCase):
                         {
                             "code": "step1",
                             "workflowsteptext_set": [
-                                {"content": "Who careeees, skip this"}
+                                {"text": "Who careeees, skip this"}
                             ],
                         },
                         {
                             "code": "step2",
-                            "workflowsteptext_set": [{"content": "punchline of joke"}],
+                            "workflowsteptext_set": [{"text": "punchline of joke"}],
                         },
                     ],
                 }
@@ -480,7 +480,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
                         {
                             "code": "step1",
                             "workflowsteptext_set": [
-                                {"content": "Who careeees, skip this"}
+                                {"text": "Who careeees, skip this"}
                             ],
                         }
                     ],
@@ -490,11 +490,11 @@ class TestWorkflowEngagementDetailsView(TestCase):
                     "workflowstep_set": [
                         {
                             "code": "step1",
-                            "workflowsteptext_set": [{"content": "setup of joke"}],
+                            "workflowsteptext_set": [{"text": "setup of joke"}],
                         },
                         {
                             "code": "step2",
-                            "workflowsteptext_set": [{"content": "punchline of joke"}],
+                            "workflowsteptext_set": [{"text": "punchline of joke"}],
                         },
                     ],
                 },
@@ -538,7 +538,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                 "workflow_set": [
                     {
                         "workflowstep_set": [
-                            {"workflowsteptext_set": [{"content": "You did it"}]}
+                            {"workflowsteptext_set": [{"text": "You did it"}]}
                         ]
                     }
                 ],
