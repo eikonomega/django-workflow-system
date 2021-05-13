@@ -217,8 +217,8 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {
                                         "ui_identifier": "question_1",
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(response_schema={"type": "number", "enum": [0, 1, 2]}),
-                                        "specification": {}
+                                        "type": _WorkflowStepUserInputType(json_schema={"properties": {"correctAnswer": {"type": "number", "enum": [0, 1, 2]}, "options": {"type": "array", "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
+                                        "specification": {"options": [0, 1, 2], "correctAnswer": 0}
                                     }
                                 ],
                             },

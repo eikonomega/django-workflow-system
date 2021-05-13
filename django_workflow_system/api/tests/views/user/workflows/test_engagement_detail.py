@@ -665,8 +665,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(response_schema={"type": "number", "enum": [1, 2, 3, 4, 5]}),
-                                        "specification": {}
+                                        "type": _WorkflowStepUserInputType(json_schema={"properties": {"correctAnswer": {"type": "number", "enum": [0, 1, 2]}, "options": {"type": "array", "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
+                                        "specification": {"options": [1, 2, 3, 4, 5], "correctAnswer": 1}
                                     }
                                 ]
                             }
@@ -728,8 +728,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(response_schema={"type": "number", "enum": [1, 2, 3, 4, 5]}),
-                                        "specification": {}
+                                        "type": _WorkflowStepUserInputType(json_schema={"properties": {"correctAnswer": {"type": "number", "enum": [0, 1, 2]}, "options": {"type": "array", "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
+                                        "specification": {"options": [1, 2, 3, 4, 5], "correctAnswer": 1}
                                     }
                                 ]
                             }
@@ -800,8 +800,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(),
-                                        "specification": {}
+                                        "type": _WorkflowStepUserInputType(json_schema={"properties": {"correctAnswer": {"anyOf": [{"type": "string"}, {"type": "number"}]}, "options": {"type": "array", "minItems": 2, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
+                                        "specification": {"options": ["Red", "Blue"], "correctAnswer": "Blue"}
                                     }
                                 ]
                             }
@@ -814,8 +814,10 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
         my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
-        my_step_input.type.response_schema = {"type": "number", "enum": [1, 2, 3, 4, 5]}
+        my_step_input.type.json_schema = {"properties": {"correctAnswer": {"anyOf": [{"type": "string"}, {"type": "number"}]}, "options": {"type": "array", "minItems": 2, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}
         my_step_input.type.save()
+        my_step_input.specification = {"options": [1, 2, 3, 4, 5], "correctAnswer": 1}
+        my_step_input.save()
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,

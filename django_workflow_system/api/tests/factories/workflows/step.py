@@ -124,21 +124,21 @@ class _WorkflowStepAudioFactory(DjangoModelFactory):
 class _WorkflowStepUserInputType(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepUserInputType
-    
+
     name = factory.sequence(lambda n: "Question Type {}".format(n))
     json_schema = {}
     placeholder_specification = {}
-    response_schema = {}
 
 
 class _WorkflowStepUserInputFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepUserInput
-        django_get_or_create = ["workflow_step", "ui_identifier"]
+        django_get_or_create = ["workflow_step", "ui_identifier", "type"]
 
     workflow_step = None  # required in kwargs
     ui_identifier = factory.sequence(lambda n: f"input_{n}")
     required = False
+    type = factory.SubFactory(_WorkflowStepUserInputType)
     specification = {}
 
 

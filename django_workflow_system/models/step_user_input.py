@@ -25,7 +25,6 @@ class WorkflowStepUserInputType(CreatedModifiedAbstractModel):
     name = models.CharField(max_length=150)
     json_schema = models.JSONField(help_text="Used to specify input, label, options, and correct answers.", verbose_name='JSON Schema')
     placeholder_specification = models.JSONField(help_text="Placeholder specification.")
-    response_schema = models.JSONField(help_text="The schema that a user response must adhere to.")
 
     class Meta:
         db_table = "workflow_system_step_user_input_type"
@@ -55,7 +54,7 @@ class WorkflowStepUserInputType(CreatedModifiedAbstractModel):
         except jsonschema.ValidationError as error:
             raise ValidationError(
                 {
-                    "placeholder_spec": (
+                    "placeholder_specification": (
                         "There is something wrong in your placeholder_spec definition. "
                         "Details {}".format(error)
                     )
@@ -99,15 +98,31 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
     def clean_fields(self, exclude=None):
         super(WorkflowStepUserInput, self).clean_fields(exclude=exclude)
 
-        if self.specification and self.type:
-            try:
-                jsonschema.validate(instance=self.specification, schema=self.type.json_schema)
-            except jsonschema.ValidationError as error:
-                raise ValidationError(
-                    {
-                        "specification": (
-                            "There is something wrong in your specification definition. "
-                            "Details {}".format(error)
-                        )
-                    }
-                )
+        try:
+            jsonschema.validate(instance=self.specification, schema=self.type.json_schema)
+        except jsonschema.ValidationError as error:
+            raise ValidationError(
+                {
+                    "specification": (
+                        "There is something wrong in your specification definition. "
+                        "Details {}".format(error)
+                    )
+                }
+            )
+
+    @property
+    def response_schema(self):
+        """
+        Returns the response schema for this given WorkflowStepUserInput.
+        """
+        try:
+            correct_answer_schema = self.type.json_schema['properties']['correctAnswer']
+            response_schema = {}
+            for key, value in correct_answer_schema.items():
+                if key in ['anyOf', 'type']:
+                    response_schema[key] = value
+                    response_schema['enum'] = self.specification['options']
+                    return response_schema
+        except KeyError:
+            # Not sure what we should do here.
+            return {}

@@ -186,7 +186,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                 response = answer_dict[step_input_id]
                 try:
                     jsonschema.validate(
-                        instance=response, schema=step_input.type.response_schema
+                        instance=response, schema=step_input.response_schema
                     )
                 except jsonschema.ValidationError as e:
                     raise serializers.ValidationError(
