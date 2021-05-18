@@ -816,7 +816,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
         my_step_input.type.json_schema = {"properties": {"correctAnswer": {"anyOf": [{"type": "string"}, {"type": "number"}]}, "options": {"type": "array", "minItems": 2, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}
         my_step_input.type.save()
-        my_step_input.specification = {"options": [1, 2, 3, 4, 5], "correctAnswer": 1}
+        my_step_input.specification = {"options": [1, 2, 3, 4, 5], "correctAnswer": 1, "requireCorrectAnswer": True}
         my_step_input.save()
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(

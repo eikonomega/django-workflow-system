@@ -121,7 +121,10 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
             for key, value in correct_answer_schema.items():
                 if key in ['anyOf', 'type']:
                     response_schema[key] = value
-                    response_schema['enum'] = self.specification['options']
+                    if self.specification['requireCorrectAnswer']:
+                        response_schema['enum'] = [self.specification['correctAnswer']]
+                    else:
+                        response_schema['enum'] = self.specification['options']
                     return response_schema
         except KeyError:
             # Not sure what we should do here.
