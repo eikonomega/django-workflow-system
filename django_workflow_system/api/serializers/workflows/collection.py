@@ -43,22 +43,10 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
     """
 
     authors = serializers.SerializerMethodField()
-    tags = serializers.SerializerMethodField()
+    metadata = serializers.SerializerMethodField()
     newer_version = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
 
-    def get_tags(self, instance):
-        """
-        Method to build an object for each corresponding Tag.
-
-        Parameters:
-            instance (WorkflowCollection object)
-
-        Returns:
-            List of Tag objects in JSON format.
-
-        """
-        return get_tags_helper(instance)
 
     def get_authors(self, instance):
         """
@@ -88,6 +76,12 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
         return get_images_helper(
             self.context.get("request"), instance.workflowcollectionimage_set.all()
         )
+    
+    def get_metadata(self, instance):
+        """
+        Method to build metadata hierarchy.
+        """
+        return get_metadata_helper(instance)
 
     def get_newer_version(self, obj: WorkflowCollection):
         latest_version = (
@@ -133,7 +127,7 @@ class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
             "authors",
             "images",
             "category",
-            "tags",
+            "metadata",
             "newer_version",
         )
 
@@ -167,7 +161,7 @@ class WorkflowCollectionDetailedSerializer(WorkflowCollectionBaseSerializer):
             "authors",
             "images",
             "category",
-            "tags",
+            "metadata",
             "newer_version",
         )
 
@@ -201,7 +195,7 @@ class WorkflowCollectionWithStepsSerializer(WorkflowCollectionBaseSerializer):
             "authors",
             "images",
             "category",
-            "tags",
+            "metadata",
             "newer_version",
         )
 
@@ -232,19 +226,18 @@ def get_authors_helper(request, instance):
     return list({author["id"]: author for author in authors}.values())
 
 
-def get_tags_helper(instance):
+def get_metadata_helper(instance):
     """
-    Helper method for gathering a collection's list of tags and formatting them along with their
-    corresponding types.
+    Helper method for gathering collection metadata
 
     Parameters:
     instance : WorkflowCollection object
 
     Returns:
-        List of Tag objects in JSON format.
-
+        List of Lists of Metadata associated with the Collection
     """
-    return [
-        {"tag_type": tag.type.type, "tag_value": tag.text}
-        for tag in instance.tags.all()
-    ]
+    metadata_list = []
+    for hierarchy in instance.metadata.all():
+        metadata_list.append(hierarchy.group_hierarchy)
+
+    return metadata_list

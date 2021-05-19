@@ -6,7 +6,6 @@ from rest_framework.test import APIRequestFactory
 from django_workflow_system.api.tests.factories import (
     UserFactory,
     WorkflowCollectionFactory,
-    WorkflowCollectionTagOptionFactory,
     WorkflowFactory,
 )
 from django_workflow_system.api.tests.factories.workflows import (
@@ -14,9 +13,9 @@ from django_workflow_system.api.tests.factories.workflows import (
     WorkflowCollectionImageFactory,
 )
 from django_workflow_system.api.tests.factories.workflows.workflow_collection import (
-    _WorkflowCollectionMemberFactory,
-    WorkflowCollectionTagTypeFactory,
+    _WorkflowCollectionMemberFactory
 )
+from django_workflow_system.api.tests.factories.workflows.metadata import WorkflowMetadataFactory
 from django_workflow_system.api.views.workflows import (
     WorkflowCollectionsView,
     WorkflowCollectionView,
@@ -31,53 +30,16 @@ class TestWorkflowCollectionsView(TestCase):
         self.factory = APIRequestFactory()
         self.user = UserFactory()
 
-        # TAGS
-        self.workflow_collection_tag_type = WorkflowCollectionTagTypeFactory(
-            type="The Type"
-        )
-        self.workflow_collection_tag_type_2 = WorkflowCollectionTagTypeFactory(
-            type="The Type 2"
-        )
-        self.workflow_collection_tag_option = WorkflowCollectionTagOptionFactory(
-            text="The Tag", type=self.workflow_collection_tag_type
-        )
-        self.workflow_collection_tag_option_2 = WorkflowCollectionTagOptionFactory(
-            text="The Tag 2", type=self.workflow_collection_tag_type_2
-        )
-        self.workflow_collection_tag_option_3 = WorkflowCollectionTagOptionFactory(
-            text="The Tag 3", type=self.workflow_collection_tag_type
-        )
-        self.workflow_collection_tag_option_4 = WorkflowCollectionTagOptionFactory(
-            text="The Tag 4", type=self.workflow_collection_tag_type_2
-        )
-        self.tag_1_dict = {
-            "tag_type": self.workflow_collection_tag_option.type.type,
-            "tag_value": self.workflow_collection_tag_option.text,
-        }
-        self.tag_2_dict = {
-            "tag_type": self.workflow_collection_tag_option_2.type.type,
-            "tag_value": self.workflow_collection_tag_option_2.text,
-        }
-        self.tag_3_dict = {
-            "tag_type": self.workflow_collection_tag_option_3.type.type,
-            "tag_value": self.workflow_collection_tag_option_3.text,
-        }
-        self.tag_4_dict = {
-            "tag_type": self.workflow_collection_tag_option_4.type.type,
-            "tag_value": self.workflow_collection_tag_option_4.text,
-        }
+        self.workflow_metadata_1 = WorkflowMetadataFactory(name="Eggs", description="Chicken Product")
+        self.workflow_metadata_2 = WorkflowMetadataFactory(name="Bacon", description="Pork Product")
 
         # WORKFLOW COLLECTION 1
         self.workflow_collection = WorkflowCollectionFactory()
-        self.workflow_collection.tags.add(self.workflow_collection_tag_option_2)
-        self.workflow_collection.tags.add(self.workflow_collection_tag_option)
+        self.workflow_collection.metadata.add(self.workflow_metadata_1)
 
         # WORKFLOW COLLECTION 2
         self.workflow_collection_2 = WorkflowCollectionFactory()
-
-        self.workflow_collection_2.tags.add(self.workflow_collection_tag_option_3)
-        self.workflow_collection_2.tags.add(self.workflow_collection_tag_option_4)
-
+        self.workflow_collection_2.metadata.add(self.workflow_metadata_2)
         # IMAGES
         self.workflow_collection_image_type = WorkflowCollectionImageTypeFactory(
             type="Detail"
@@ -136,7 +98,6 @@ class TestWorkflowCollectionsView(TestCase):
         response = self.view(request)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data[0]["tags"]), 2)
         for result in response.data:
             self.assertListEqual(
                 list(result.keys()),
@@ -156,7 +117,7 @@ class TestWorkflowCollectionsView(TestCase):
                     "authors",
                     "images",
                     "category",
-                    "tags",
+                    "metadata",
                     "newer_version",
                 ],
             )
@@ -167,9 +128,7 @@ class TestWorkflowCollectionsView(TestCase):
         self.assertEqual(
             response.data[0]["category"], self.workflow_collection.category
         )
-        self.assertCountEqual(
-            response.data[0]["tags"], [self.tag_1_dict, self.tag_2_dict]
-        )
+        self.assertEqual(response.data[0]['metadata'][0][0], 'Eggs')
 
         self.assertCountEqual(
             response.data[0]["images"], [self.image_1_dict, self.image_2_dict]
@@ -183,11 +142,9 @@ class TestWorkflowCollectionsView(TestCase):
         self.assertEqual(
             response.data[1]["category"], self.workflow_collection_2.category
         )
-        self.assertCountEqual(
-            response.data[1]["tags"], [self.tag_3_dict, self.tag_4_dict]
-        )
 
         self.assertCountEqual(response.data[1]["images"], [self.image_3_dict])
+        self.assertEqual(response.data[1]['metadata'][0][0], 'Bacon')
 
 
 class TestWorkflowCollectionView(TestCase):
@@ -223,16 +180,8 @@ class TestWorkflowCollectionView(TestCase):
             workflow=self.workflow, workflow_collection=self.workflow_collection
         )
 
-        # TAG
-        self.workflow_collection_tag_type = WorkflowCollectionTagTypeFactory(
-            type="The Type"
-        )
-        self.workflow_collection_tag_option = WorkflowCollectionTagOptionFactory(
-            text="tag", type=self.workflow_collection_tag_type
-        )
-        self.workflow_collection.tags.add(self.workflow_collection_tag_option)
-        self.tag_1_dict = {"tag_type": "The Type", "tag_value": "tag"}
-
+        self.workflow_metadata_1 = WorkflowMetadataFactory(name="Eggs", description="Chicken Product")
+        self.workflow_collection.metadata.add(self.workflow_metadata_1)
         # IMAGE
         self.workflow_collection_image_type = WorkflowCollectionImageTypeFactory(
             type="Detail"
@@ -287,7 +236,7 @@ class TestWorkflowCollectionView(TestCase):
                 "authors",
                 "images",
                 "category",
-                "tags",
+                "metadata",
                 "newer_version",
             ],
         )
@@ -314,7 +263,7 @@ class TestWorkflowCollectionView(TestCase):
             response.data["authors"][0]["user"]["last_name"],
             self.workflow.author.user.last_name,
         )
-        self.assertEqual(response.data["tags"], [self.tag_1_dict])
+        self.assertEqual(response.data["metadata"][0][0], "Eggs")
         self.assertEqual(
             response.data["images"], [self.image_1_dict, self.image_2_dict]
         )
@@ -359,7 +308,7 @@ class TestWorkflowCollectionView(TestCase):
                 "authors",
                 "images",
                 "category",
-                "tags",
+                "metadata",
                 "newer_version",
             ],
         )
@@ -379,6 +328,7 @@ class TestWorkflowCollectionView(TestCase):
                     "author",
                     "images",
                     "workflowstep_set",
+                    "metadata"
                 ],
             )
             workflow_step_set = workflow["workflowstep_set"]

@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import models
 
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
-from django_workflow_system.models.collection_tag import WorkflowCollectionTagOption
+from django_workflow_system.models.metadata import WorkflowMetadata
 from django_workflow_system.utils.validators import validate_code
 from django_workflow_system.utils.version_validator import version_validator
 
@@ -21,7 +21,7 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
         active (BooleanField): Indication of whether or not the Workflow Collection is
                                currently available for use.
         category (CharField): The "type" of Workflow.
-        tags (ManyToMany): A 'list' of tags associated to the collection
+        metadata (ManyToMany): A 'list' of metadata associated to the collection
     """
 
     COLLECTION_TYPES = (
@@ -80,8 +80,10 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
     # This may expand in the future.
     category = models.CharField(default=None, choices=COLLECTION_TYPES, max_length=8)
 
-    tags = models.ManyToManyField(
-        WorkflowCollectionTagOption, through="WorkflowCollectionTagAssignment"
+    metadata = models.ManyToManyField(
+        WorkflowMetadata,
+        blank=True,
+        help_text="A list of metadata that this collection is associated with.",
     )
 
     class Meta:

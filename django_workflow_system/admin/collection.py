@@ -12,31 +12,19 @@ from ..models import (
     Workflow,
     WorkflowCollection,
     WorkflowCollectionMember,
-    WorkflowCollectionTagOption,
     WorkflowStep,
     WorkflowStepDependencyGroup,
     WorkflowStepDependencyDetail,
     WorkflowCollectionAssignment,
     WorkflowCollectionEngagement,
-    WorkflowCollectionTagAssignment,
     WorkflowCollectionImage,
 )
-
-
-@admin.register(WorkflowCollectionTagOption)
-class WorkflowCollectionTagOptionAdmin(admin.ModelAdmin):
-    list_display = ["text"]
 
 
 class WorkflowCollectionMemberInline(admin.StackedInline):
     model = WorkflowCollectionMember
     extra = 1
     ordering = ["order"]
-
-
-class WorkflowCollectionTagOptionInline(admin.StackedInline):
-    model = WorkflowCollectionTagAssignment
-    extra = 1
 
 
 class WorkflowCollectionImageInline(admin.StackedInline):
@@ -65,7 +53,8 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                     ("version", "created_by"),
                     ("assignment_only", "recommendable", "active", "ordered"),
                     "description",
-                    ("category",),
+                    "category",
+                    "metadata"
                 ]
             },
         ),
@@ -77,13 +66,12 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
     ]
 
     inlines = [
-        WorkflowCollectionTagOptionInline,
         WorkflowCollectionMemberInline,
         WorkflowCollectionImageInline,
     ]
 
     actions = ["copy", "deep_copy", "kill_stragglers"]
-    list_filter = ["tags", IsActiveCollectionFilter]
+    list_filter = [IsActiveCollectionFilter]
 
     def open_assignments(self, instance: WorkflowCollection):
         return instance.workflowcollectionassignment_set.filter(
@@ -101,7 +89,7 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
         This method copies the workflow collection,
         it's LINKS to workflows,
         every dependency and dependency detail,
-        and LINKS to tag_options
+        and LINKS to metadata
         """
         workflow_collection: WorkflowCollection
         for workflow_collection in queryset:
@@ -157,7 +145,7 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                     dependency_detail.dependency_group = workflow_step_dependency_group
                     dependency_detail.save()
 
-            workflow_collection.tags.set(old_workflow_collection.tags.all())
+            workflow_collection.metadata.set(old_workflow_collection.metadata.all())
 
     copy.short_description = "Copy selected workflow collections"
     copy.allowed_permissions = ("add",)
@@ -167,7 +155,7 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
         This method copies the workflow collection,
         makes COPIES of every workflow,
         every dependency and dependency detail,
-        and LINKS to tag_options
+        and LINKS to metadata
         """
         workflow_collection: WorkflowCollection
         for workflow_collection in queryset:
@@ -267,7 +255,7 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                         ]
                         dependency_detail.save()
 
-            workflow_collection.tags.set(old_workflow_collection.tags.all())
+            workflow_collection.metadata.set(old_workflow_collection.metadata.all())
 
     deep_copy.short_description = "Copy selected workflow collections and its workflows"
     deep_copy.allowed_permissions = ("add",)

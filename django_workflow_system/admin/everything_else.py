@@ -25,8 +25,7 @@ from ..models import (
     WorkflowCollectionSubscriptionSchedule,
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
-    WorkflowStepDataGroup,
-    WorkflowCollectionTagType,
+    WorkflowMetadata,
     WorkflowCollectionImageType,
     WorkflowImageType,
     WorkflowImage,
@@ -69,7 +68,7 @@ def make_ordering():
     Let's break this down:
     `Case` acts like a if/elif/elif/elif/else statement on the SQL side
     Each case is represented by a `When` object.
-    This particular Case statement assigns to each WorkflowStepDataGroup an integer
+    This particular Case statement assigns to each WorkflowMetadata an integer
     based on the number of non-null parents it has. We'll call this generation number
     The order of the WSDGs is decided first by the reverse numerical order generation number,
     then by the name of the WSDG.
@@ -102,8 +101,8 @@ def make_ordering():
     ]
 
 
-@admin.register(WorkflowStepDataGroup)
-class DataGroupAdmin(admin.ModelAdmin):
+@admin.register(WorkflowMetadata)
+class WorkflowMetadataAdmin(admin.ModelAdmin):
     list_display = ["name", "full_path"]
     readonly_fields = ["full_path"]
     ordering = make_ordering()
@@ -258,6 +257,7 @@ class WorkflowAdmin(admin.ModelAdmin):
         "image_preview",
         "author",
         "created_by",
+        "metadata"
     ]
     readonly_fields = ["image_preview"]
 
@@ -310,7 +310,7 @@ class WorkflowAdmin(admin.ModelAdmin):
                     old_step.workflowstepaudio_set.all(),
                     old_step.workflowstepvideo_set.all(),
                     old_step.workflowstepimage_set.all(),
-                    old_step.workflowstepinput_set.all(),
+                    old_step.workflowstepuserinput_set.all(),
                     old_step.workflowsteptext_set.all(),
                 )
                 for step_media in step_media_iterator:
@@ -320,14 +320,6 @@ class WorkflowAdmin(admin.ModelAdmin):
 
     copy.short_description = "Copy selected workflows"
     copy.allowed_permissions = ("add",)
-
-
-# collection_tag_type.py
-
-
-@admin.register(WorkflowCollectionTagType)
-class WorkflowCollectionTagTypeAdmin(admin.ModelAdmin):
-    list_display = ["type"]
 
 
 # collection_image_type.py

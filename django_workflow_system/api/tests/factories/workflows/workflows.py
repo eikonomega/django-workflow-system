@@ -1,9 +1,10 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from django_workflow_system.models import Workflow, WorkflowStep
+from django_workflow_system.models import Workflow, WorkflowStep, WorkflowMetadata
 from .step import WorkflowStepFactory
 from .authors import AuthorFactory
+from .metadata import WorkflowMetadataFactory
 from ..user import UserFactory
 
 
@@ -29,6 +30,16 @@ class WorkflowFactory(DjangoModelFactory):
                 step.workflow = self
             else:
                 raise TypeError("step must be a dict or WorkflowStep")
+    
+    @factory.post_generation
+    def metadata(self, create, extracted, **kwargs):
+        if not create or not extracted:
+            return
+        for metadata in extracted:
+            if isinstance(metadata, WorkflowMetadata):
+                self.metadata.add(metadata)
+            elif isinstance(metadata, str):
+                self.metadata.add(WorkflowMetadataFactory(name=metadata, description="Eh, Whatever"))
 
 
 __all__ = ["WorkflowFactory"]

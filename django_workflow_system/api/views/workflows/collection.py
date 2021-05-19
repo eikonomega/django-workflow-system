@@ -79,15 +79,8 @@ class WorkflowCollectionsView(APIView):
                         }
                     ],
                     "category": "SURVEY",
-                    "tags": [
-                        {
-                            "tag_type": "Administrative",
-                            "tag_value": "phase_1"
-                        },
-                        {
-                            "tag_type": "Website",
-                            "tag_value": "Home_Page"
-                        }
+                    "metadata": [
+                        ["Breakfast", "Eggs", "Bacon"]
                     ],
                     "newer_version": null
                 }
@@ -204,15 +197,8 @@ class WorkflowCollectionView(APIView):
                     }
                 ],
                 "category": "SURVEY",
-                "tags": [
-                    {
-                        "tag_type": "Administrative",
-                        "tag_value": "phase_1"
-                    },
-                    {
-                        "tag_type": "Website",
-                        "tag_value": "Home_Page"
-                    }
+                "metadata": [
+                        ["Breakfast", "Eggs", "Bacon"]
                 ],
                 "newer_version": null
             }

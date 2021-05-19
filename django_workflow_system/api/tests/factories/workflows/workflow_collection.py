@@ -3,6 +3,7 @@ from factory.django import DjangoModelFactory
 
 import django_workflow_system.models as models
 from .workflows import WorkflowFactory
+from .metadata import WorkflowMetadataFactory
 from ..user import UserFactory
 
 
@@ -66,14 +67,14 @@ class WorkflowCollectionFactory(DjangoModelFactory):
                 )
 
     @factory.post_generation
-    def tags(self, create, extracted, **kwargs):
+    def metadata(self, create, extracted, **kwargs):
         if not create or not extracted:
             return
-        for tag in extracted:
-            if isinstance(tag, models.WorkflowCollectionTagOption):
-                self.tags.add(tag)
-            elif isinstance(tag, str):
-                self.tags.add(WorkflowCollectionTagOptionFactory(text=tag))
+        for metadata in extracted:
+            if isinstance(metadata, models.WorkflowMetadata):
+                self.metadata.add(metadata)
+            elif isinstance(metadata, str):
+                self.metadata.add(WorkflowMetadataFactory(name=metadata, description="Eh, Whatever"))
 
 
 class _WorkflowCollectionMemberFactory(DjangoModelFactory):
@@ -125,20 +126,7 @@ class _WorkflowStepDependencyDetailFactory(DjangoModelFactory):
     required_response = None  # Must be supplied in kwargs
 
 
-class WorkflowCollectionTagTypeFactory(DjangoModelFactory):
-    class Meta:
-        model = models.WorkflowCollectionTagType
-        django_get_or_create = ["type"]
-
-
-class WorkflowCollectionTagOptionFactory(DjangoModelFactory):
-    class Meta:
-        model = models.WorkflowCollectionTagOption
-        django_get_or_create = ["text", "type"]
-
 
 __all__ = [
-    "WorkflowCollectionFactory",
-    "WorkflowCollectionTagOptionFactory",
-    "WorkflowCollectionTagTypeFactory",
+    "WorkflowCollectionFactory"
 ]
