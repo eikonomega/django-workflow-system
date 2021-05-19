@@ -44,6 +44,7 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
 
     authors = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
+    metadata = serializers.SerializerMethodField()
     newer_version = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
 
@@ -88,6 +89,12 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
         return get_images_helper(
             self.context.get("request"), instance.workflowcollectionimage_set.all()
         )
+    
+    def get_metadata(self, instance):
+        """
+        Method to build metadata hierarchy.
+        """
+        return get_metadata_helper(instance)
 
     def get_newer_version(self, obj: WorkflowCollection):
         latest_version = (
@@ -134,6 +141,7 @@ class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
             "images",
             "category",
             "tags",
+            "metadata",
             "newer_version",
         )
 
@@ -168,6 +176,7 @@ class WorkflowCollectionDetailedSerializer(WorkflowCollectionBaseSerializer):
             "images",
             "category",
             "tags",
+            "metadata",
             "newer_version",
         )
 
@@ -202,6 +211,7 @@ class WorkflowCollectionWithStepsSerializer(WorkflowCollectionBaseSerializer):
             "images",
             "category",
             "tags",
+            "metadata",
             "newer_version",
         )
 
@@ -248,3 +258,20 @@ def get_tags_helper(instance):
         {"tag_type": tag.type.type, "tag_value": tag.text}
         for tag in instance.tags.all()
     ]
+
+
+def get_metadata_helper(instance):
+    """
+    Helper method for gathering collection metadata
+
+    Parameters:
+    instance : WorkflowCollection object
+
+    Returns:
+        List of Lists of Metadata associated with the Collection
+    """
+    metadata_list = []
+    for hierarchy in instance.metadata.all():
+        metadata_list.append(hierarchy.group_hierarchy)
+
+    return metadata_list

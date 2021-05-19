@@ -3,7 +3,7 @@ from .user import *
 
 from .workflows.assignment import *
 from .workflows.authors import *
-from .workflows.data_group import *
+from .workflows.metadata import *
 from .workflows.engagement import *
 from .workflows.json_schema import (
     JSONSchemaFactory as WorkflowJSONSchemaFactory,

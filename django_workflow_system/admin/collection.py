@@ -65,7 +65,8 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                     ("version", "created_by"),
                     ("assignment_only", "recommendable", "active", "ordered"),
                     "description",
-                    ("category",),
+                    "category",
+                    "metadata"
                 ]
             },
         ),

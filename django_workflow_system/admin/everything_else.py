@@ -258,6 +258,7 @@ class WorkflowAdmin(admin.ModelAdmin):
         "image_preview",
         "author",
         "created_by",
+        "metadata"
     ]
     readonly_fields = ["image_preview"]
 

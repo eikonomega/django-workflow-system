@@ -36,7 +36,7 @@ from django_workflow_system.models.subscription_schedule import (
     WorkflowCollectionSubscriptionSchedule,
 )
 from django_workflow_system.models.workflow import Workflow
-from django_workflow_system.models.data_group import WorkflowMetadata
+from django_workflow_system.models.metadata import WorkflowMetadata
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
 from django_workflow_system.models.workflow_image import WorkflowImage
 from django_workflow_system.models.workflow_image_type import WorkflowImageType

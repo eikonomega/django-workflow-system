@@ -31,10 +31,11 @@ class WorkflowSummarySerializer(serializers.ModelSerializer):
 
     author = WorkflowAuthorSummarySerializer()
     images = serializers.SerializerMethodField()
+    metadata = serializers.SerializerMethodField()
 
     class Meta:
         model = Workflow
-        fields = ("id", "name", "detail", "images", "author")
+        fields = ("id", "name", "detail", "images", "author", "metadata")
 
     def get_images(self, instance):
         """
@@ -50,6 +51,22 @@ class WorkflowSummarySerializer(serializers.ModelSerializer):
         return get_images_helper(
             self.context.get("request"), instance.workflowimage_set.all()
         )
+
+    def get_metadata(self, instance):
+        """
+        Helper method for gathering collection metadata
+
+        Parameters:
+        instance : WorkflowCollection object
+
+        Returns:
+            List of Lists of Metadata associated with the Collection
+        """
+        metadata_list = []
+        for hierarchy in instance.metadata.all():
+            metadata_list.append(hierarchy.group_hierarchy)
+
+        return metadata_list
 
 
 class WorkflowDetailedSerializer(serializers.ModelSerializer):
@@ -63,6 +80,7 @@ class WorkflowDetailedSerializer(serializers.ModelSerializer):
         view_name="workflow", lookup_field="id"
     )
     images = serializers.SerializerMethodField()
+    metadata = serializers.SerializerMethodField()
 
     class Meta:
         model = Workflow
@@ -74,6 +92,7 @@ class WorkflowDetailedSerializer(serializers.ModelSerializer):
             "author",
             "images",
             "workflowstep_set",
+            "metadata"
         )
 
     def get_images(self, instance):
@@ -90,6 +109,22 @@ class WorkflowDetailedSerializer(serializers.ModelSerializer):
         return get_images_helper(
             self.context.get("request"), instance.workflowimage_set.all()
         )
+
+    def get_metadata(self, instance):
+        """
+        Helper method for gathering collection metadata
+
+        Parameters:
+        instance : WorkflowCollection object
+
+        Returns:
+            List of Lists of Metadata associated with the Collection
+        """
+        metadata_list = []
+        for hierarchy in instance.metadata.all():
+            metadata_list.append(hierarchy.group_hierarchy)
+
+        return metadata_list
 
 
 class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
@@ -103,6 +138,7 @@ class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
         view_name="workflow", lookup_field="id"
     )
     images = serializers.SerializerMethodField()
+    metadata = serializers.SerializerMethodField()
 
     class Meta:
         model = Workflow
@@ -114,6 +150,7 @@ class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
             "author",
             "images",
             "workflowstep_set",
+            "metadata"
         )
 
     def get_images(self, instance):
@@ -130,3 +167,19 @@ class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
         return get_images_helper(
             self.context.get("request"), instance.workflowimage_set.all()
         )
+
+    def get_metadata(self, instance):
+        """
+        Helper method for gathering collection metadata
+
+        Parameters:
+        instance : WorkflowCollection object
+
+        Returns:
+            List of Lists of Metadata associated with the Collection
+        """
+        metadata_list = []
+        for hierarchy in instance.metadata.all():
+            metadata_list.append(hierarchy.group_hierarchy)
+
+        return metadata_list

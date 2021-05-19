@@ -2,7 +2,7 @@ import factory
 from factory.django import DjangoModelFactory
 
 import django_workflow_system.models as models
-from .data_group import WorkflowMetadataFactory
+from .metadata import WorkflowMetadataFactory
 
 
 class WorkflowStepUITemplateFactory(DjangoModelFactory):
