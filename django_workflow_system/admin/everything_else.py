@@ -26,7 +26,6 @@ from ..models import (
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
     WorkflowMetadata,
-    WorkflowCollectionTagType,
     WorkflowCollectionImageType,
     WorkflowImageType,
     WorkflowImage,
@@ -103,7 +102,7 @@ def make_ordering():
 
 
 @admin.register(WorkflowMetadata)
-class DataGroupAdmin(admin.ModelAdmin):
+class WorkflowMetadataAdmin(admin.ModelAdmin):
     list_display = ["name", "full_path"]
     readonly_fields = ["full_path"]
     ordering = make_ordering()
@@ -311,7 +310,7 @@ class WorkflowAdmin(admin.ModelAdmin):
                     old_step.workflowstepaudio_set.all(),
                     old_step.workflowstepvideo_set.all(),
                     old_step.workflowstepimage_set.all(),
-                    old_step.workflowstepinput_set.all(),
+                    old_step.workflowstepuserinput_set.all(),
                     old_step.workflowsteptext_set.all(),
                 )
                 for step_media in step_media_iterator:
@@ -321,14 +320,6 @@ class WorkflowAdmin(admin.ModelAdmin):
 
     copy.short_description = "Copy selected workflows"
     copy.allowed_permissions = ("add",)
-
-
-# collection_tag_type.py
-
-
-@admin.register(WorkflowCollectionTagType)
-class WorkflowCollectionTagTypeAdmin(admin.ModelAdmin):
-    list_display = ["type"]
 
 
 # collection_image_type.py

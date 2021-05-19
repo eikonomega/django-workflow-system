@@ -43,23 +43,10 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
     """
 
     authors = serializers.SerializerMethodField()
-    tags = serializers.SerializerMethodField()
     metadata = serializers.SerializerMethodField()
     newer_version = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
 
-    def get_tags(self, instance):
-        """
-        Method to build an object for each corresponding Tag.
-
-        Parameters:
-            instance (WorkflowCollection object)
-
-        Returns:
-            List of Tag objects in JSON format.
-
-        """
-        return get_tags_helper(instance)
 
     def get_authors(self, instance):
         """
@@ -140,7 +127,6 @@ class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
             "authors",
             "images",
             "category",
-            "tags",
             "metadata",
             "newer_version",
         )
@@ -175,7 +161,6 @@ class WorkflowCollectionDetailedSerializer(WorkflowCollectionBaseSerializer):
             "authors",
             "images",
             "category",
-            "tags",
             "metadata",
             "newer_version",
         )
@@ -210,7 +195,6 @@ class WorkflowCollectionWithStepsSerializer(WorkflowCollectionBaseSerializer):
             "authors",
             "images",
             "category",
-            "tags",
             "metadata",
             "newer_version",
         )
@@ -240,24 +224,6 @@ def get_authors_helper(request, instance):
     # Here we're making a dict with the key being the id. This filters out the duplicates.
     # The values() of the dict will be make up the list
     return list({author["id"]: author for author in authors}.values())
-
-
-def get_tags_helper(instance):
-    """
-    Helper method for gathering a collection's list of tags and formatting them along with their
-    corresponding types.
-
-    Parameters:
-    instance : WorkflowCollection object
-
-    Returns:
-        List of Tag objects in JSON format.
-
-    """
-    return [
-        {"tag_type": tag.type.type, "tag_value": tag.text}
-        for tag in instance.tags.all()
-    ]
 
 
 def get_metadata_helper(instance):

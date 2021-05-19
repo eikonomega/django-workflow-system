@@ -3,8 +3,6 @@ from django_workflow_system.models.author import WorkflowAuthor
 from django_workflow_system.models.assignment import WorkflowCollectionAssignment
 from django_workflow_system.models.collection_image import WorkflowCollectionImage
 from django_workflow_system.models.collection_image_type import WorkflowCollectionImageType
-from django_workflow_system.models.collection_tag_type import WorkflowCollectionTagType
-from django_workflow_system.models.collection_tag_assignment import WorkflowCollectionTagAssignment
 from django_workflow_system.models.engagement import (
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
@@ -13,8 +11,7 @@ from django_workflow_system.models.engagement_detail import WorkflowCollectionEn
 from django_workflow_system.models.engagement import WorkflowCollectionEngagement
 
 from django_workflow_system.models.collection import (
-    WorkflowCollection,
-    WorkflowCollectionTagOption,
+    WorkflowCollection
 )
 
 from django_workflow_system.models.collection_member import WorkflowCollectionMember
@@ -48,8 +45,6 @@ __all__ = [
     "WorkflowCollectionEngagementDetail",
     "WorkflowCollection",
     "WorkflowCollectionMember",
-    "WorkflowCollectionTagOption",
-    "WorkflowCollectionTagType",
     "WorkflowCollectionImageType",
     "WorkflowCollectionImage",
     "WorkflowCollectionRecommendation",
@@ -71,6 +66,5 @@ __all__ = [
     "WorkflowImage",
     "WorkflowImageType",
     "WorkflowMetadata",
-    "CreatedModifiedAbstractModel",
-    "WorkflowCollectionTagAssignment",
+    "CreatedModifiedAbstractModel"
 ]
