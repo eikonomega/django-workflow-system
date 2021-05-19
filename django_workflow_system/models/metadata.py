@@ -28,9 +28,8 @@ class WorkflowMetadata(CreatedModifiedAbstractModel):
     description = models.TextField(help_text="The description of the data group.")
 
     class Meta:
-        db_table = "workflow_system_data_group"
-        verbose_name_plural = "Workflow Step Data Groups"
-        #TODO: CHECK THIS
+        db_table = "workflow_system_metadata"
+        verbose_name_plural = "Workflow Step Metadata"
         unique_together = ['name', 'parent_group']
 
     def __str__(self):

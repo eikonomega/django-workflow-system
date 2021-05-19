@@ -207,8 +207,8 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
 
                     old_to_new_step[old_step] = step
 
-                    for data_group in old_step.data_groups.all():
-                        step.data_groups.add(data_group)
+                    for metadata in old_step.metadata.all():
+                        step.metadata.add(metadata)
 
                     step_media_iterator = chain(
                         old_step.workflowstepaudio_set.all(),

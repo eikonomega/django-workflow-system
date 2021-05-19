@@ -60,9 +60,6 @@ class AuthorAdmin(admin.ModelAdmin):
     search_fields = USER_SEARCH_FIELDS
 
 
-# data_group.py
-
-
 def make_ordering():
     """
     Let's break this down:
@@ -303,8 +300,8 @@ class WorkflowAdmin(admin.ModelAdmin):
                 step.workflow = workflow
                 step.save()  # our new step gets a primary key here
 
-                for data_group in old_step.data_groups.all():
-                    step.data_groups.add(data_group)
+                for metadata in old_step.metadata.all():
+                    step.metadata.add(metadata)
 
                 step_media_iterator = chain(
                     old_step.workflowstepaudio_set.all(),

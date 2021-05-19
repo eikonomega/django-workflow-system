@@ -42,7 +42,7 @@ class WorkflowStep(CreatedModifiedAbstractModel):
         on_delete=models.PROTECT,
         help_text="The UI template associated with the step.",
     )
-    data_groups = models.ManyToManyField(
+    metadata = models.ManyToManyField(
         WorkflowMetadata,
         blank=True,
         help_text="A list of data groups that this step is associated with.",

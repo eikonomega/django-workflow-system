@@ -59,16 +59,16 @@ class WorkflowStepFactory(DjangoModelFactory):
             _WorkflowStepExternalLinkFactory.create(workflow_step=self, **input)
 
     @factory.post_generation
-    def data_groups(self, create, extracted, **kwargs):
+    def metadata(self, create, extracted, **kwargs):
         if not create or not extracted:
             return
-        for data_group in extracted:
-            if isinstance(data_group, dict):
-                self.data_groups.add(WorkflowMetadataFactory(**data_group))
-            elif isinstance(data_group, models.WorkflowMetadata):
-                self.data_groups.add(data_group)
+        for metadata in extracted:
+            if isinstance(metadata, dict):
+                self.metadata.add(WorkflowMetadataFactory(**metadata))
+            elif isinstance(metadata, models.WorkflowMetadata):
+                self.metadata.add(metadata)
             else:
-                raise TypeError("data_group must be a dict or WorkflowMetadata")
+                raise TypeError("metadata must be a dict or WorkflowMetadata")
 
 
 class _WorkflowStepTextFactory(DjangoModelFactory):
