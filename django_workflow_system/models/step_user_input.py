@@ -122,10 +122,7 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
                 if key in ['anyOf', 'type']:
                     response_schema[key] = value
                     if self.specification['requireCorrectAnswer']:
-                        if isinstance(self.specification['correctAnswer'], list):
-                            response_schema['enum'] = self.specification['correctAnswer']
-                        else:
-                            response_schema['enum'] = [self.specification['correctAnswer']]
+                        response_schema['enum'] = [self.specification['correctAnswer']]
                     else:
                         response_schema['enum'] = self.specification['options']
                     return response_schema
