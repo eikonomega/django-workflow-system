@@ -9,8 +9,7 @@ from django_workflow_system.models import WorkflowStepUserInputType
 @csrf_protect
 def get_user_input_type_helper(request):
     """
-    Get information on whether the text message has been sent, or whether the
-    user has successfully deactivated their UserTarget.
+    Get the placeholder_specification of a given WorkflowStepUserInputType
     """
     if request.GET.get('uuid', None):
         uuid = request.GET.get('uuid', None)
