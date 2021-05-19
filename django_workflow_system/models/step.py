@@ -6,7 +6,7 @@ from django.db import models
 
 from django_workflow_system.models.step_ui_template import WorkflowStepUITemplate
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
-from django_workflow_system.models.data_group import WorkflowStepDataGroup
+from django_workflow_system.models.data_group import WorkflowMetadata
 from django_workflow_system.models.workflow import Workflow
 from django_workflow_system.utils.validators import validate_code
 
@@ -43,7 +43,7 @@ class WorkflowStep(CreatedModifiedAbstractModel):
         help_text="The UI template associated with the step.",
     )
     data_groups = models.ManyToManyField(
-        WorkflowStepDataGroup,
+        WorkflowMetadata,
         blank=True,
         help_text="A list of data groups that this step is associated with.",
     )

@@ -2,7 +2,7 @@ import factory
 from factory.django import DjangoModelFactory
 
 import django_workflow_system.models as models
-from .data_group import WorkflowStepDataGroupFactory
+from .data_group import WorkflowMetadataFactory
 
 
 class WorkflowStepUITemplateFactory(DjangoModelFactory):
@@ -64,11 +64,11 @@ class WorkflowStepFactory(DjangoModelFactory):
             return
         for data_group in extracted:
             if isinstance(data_group, dict):
-                self.data_groups.add(WorkflowStepDataGroupFactory(**data_group))
-            elif isinstance(data_group, models.WorkflowStepDataGroup):
+                self.data_groups.add(WorkflowMetadataFactory(**data_group))
+            elif isinstance(data_group, models.WorkflowMetadata):
                 self.data_groups.add(data_group)
             else:
-                raise TypeError("data_group must be a dict or WorkflowStepDataGroup")
+                raise TypeError("data_group must be a dict or WorkflowMetadata")
 
 
 class _WorkflowStepTextFactory(DjangoModelFactory):
@@ -85,7 +85,7 @@ class _WorkflowStepExternalLinkFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepExternalLink
         django_get_or_create = ['workflow_step', "ui_identifier"]
-    
+
     workflow_step = None
     ui_identifier = factory.sequence(lambda n: f"external_link_{n}")
     link = factory.Faker('https://www.google.com')
@@ -140,8 +140,6 @@ class _WorkflowStepUserInputFactory(DjangoModelFactory):
     required = False
     type = factory.SubFactory(_WorkflowStepUserInputType)
     specification = {}
-
-
 
 
 __all__ = ["WorkflowStepUITemplateFactory", "WorkflowStepFactory"]

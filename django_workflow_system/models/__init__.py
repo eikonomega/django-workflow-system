@@ -36,7 +36,7 @@ from django_workflow_system.models.subscription_schedule import (
     WorkflowCollectionSubscriptionSchedule,
 )
 from django_workflow_system.models.workflow import Workflow
-from django_workflow_system.models.data_group import WorkflowStepDataGroup
+from django_workflow_system.models.data_group import WorkflowMetadata
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
 from django_workflow_system.models.workflow_image import WorkflowImage
 from django_workflow_system.models.workflow_image_type import WorkflowImageType
@@ -70,7 +70,7 @@ __all__ = [
     "Workflow",
     "WorkflowImage",
     "WorkflowImageType",
-    "WorkflowStepDataGroup",
+    "WorkflowMetadata",
     "CreatedModifiedAbstractModel",
     "WorkflowCollectionTagAssignment",
 ]

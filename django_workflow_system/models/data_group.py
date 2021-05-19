@@ -6,9 +6,9 @@ from django.db import models
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
 
 
-class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
+class WorkflowMetadata(CreatedModifiedAbstractModel):
     """
-    WorkflowStepDataGroup allows clients to group together user-provided data.
+    WorkflowMetadata allows clients to group together user-provided data.
 
     This is especially useful for clients who are conducting surveys as
     it allows them to group together data from steps that work together
@@ -30,6 +30,8 @@ class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
     class Meta:
         db_table = "workflow_system_data_group"
         verbose_name_plural = "Workflow Step Data Groups"
+        #TODO: CHECK THIS
+        unique_together = ['name', 'parent_group']
 
     def __str__(self):
         return self.full_path
@@ -50,8 +52,12 @@ class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
         We then reverse this list so it is returned in the proper hierarchical form.
         """
         label_list = [self.name]
-        iter_group: WorkflowStepDataGroup = self.parent_group
+        iter_group: WorkflowMetadata = self.parent_group
         while iter_group is not None:
             label_list.append(iter_group.name)
             iter_group = iter_group.parent_group
         return tuple(reversed(label_list))
+
+    @property
+    def code(self):
+        return self.name.lower()

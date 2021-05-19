@@ -25,7 +25,7 @@ from ..models import (
     WorkflowCollectionSubscriptionSchedule,
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
-    WorkflowStepDataGroup,
+    WorkflowMetadata,
     WorkflowCollectionTagType,
     WorkflowCollectionImageType,
     WorkflowImageType,
@@ -69,7 +69,7 @@ def make_ordering():
     Let's break this down:
     `Case` acts like a if/elif/elif/elif/else statement on the SQL side
     Each case is represented by a `When` object.
-    This particular Case statement assigns to each WorkflowStepDataGroup an integer
+    This particular Case statement assigns to each WorkflowMetadata an integer
     based on the number of non-null parents it has. We'll call this generation number
     The order of the WSDGs is decided first by the reverse numerical order generation number,
     then by the name of the WSDG.
@@ -102,7 +102,7 @@ def make_ordering():
     ]
 
 
-@admin.register(WorkflowStepDataGroup)
+@admin.register(WorkflowMetadata)
 class DataGroupAdmin(admin.ModelAdmin):
     list_display = ["name", "full_path"]
     readonly_fields = ["full_path"]
