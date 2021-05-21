@@ -1,6 +1,7 @@
 """Django model definition."""
 import uuid
 
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
@@ -57,6 +58,16 @@ class WorkflowMetadata(CreatedModifiedAbstractModel):
             iter_group = iter_group.parent_group
         return tuple(reversed(label_list))
 
-    @property
-    def code(self):
-        return self.name.lower()
+    def clean(self, *args, **kwargs):
+        """
+        Ensure that the metadata name doesn't already exist at this level.
+        """
+        # Get all metadata objects
+        for obj in WorkflowMetadata.objects.all():
+            if obj.name.lower() == self.name.lower() and obj.parent_group == self.parent_group:
+                raise ValidationError(
+                    {"name": f"Name '{self.name}' with this same parent group already exists."})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super(WorkflowMetadata, self).save(*args, **kwargs)
