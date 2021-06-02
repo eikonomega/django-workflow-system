@@ -45,7 +45,7 @@ class StepUserInputForm(forms.ModelForm):
     class Meta:
         model = WorkflowStepUserInput
         fields = ["ui_identifier", "required", "type", "specification"]
-    
+
     class Media:
         js = ('admin/js/jquery.init.js',)
 
@@ -54,7 +54,6 @@ class StepUserInputInLine(admin.TabularInline):
     model = WorkflowStepUserInput
     extra = 1
     form = StepUserInputForm
-
 
 
 class StepAudioInline(admin.TabularInline):
@@ -88,9 +87,28 @@ class WorkflowStepAdmin(admin.ModelAdmin):
         StepVideoInline,
         StepExternalLinkInline
     ]
-    list_filter = ["workflow", StepInCollectionFilter]
-
     actions = ["copy"]
+    list_filter = ["workflow", StepInCollectionFilter]
+    filter_horizontal = ['metadata']
+    # I don't know why this works
+    # https://github.com/django/django/blob/1b4d1675b230cd6d47c2ffce41893d1881bf447b/django/contrib/auth/admin.py#L25
+    # Line 31
+
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        if db_field.name == 'metadata':
+            qs = kwargs.get('queryset', db_field.remote_field.model.objects)
+            # Avoid a major performance hit resolving permission names which
+            # triggers a content_type load:
+            kwargs['queryset'] = qs.select_related('parent_group')
+        return super().formfield_for_manytomany(db_field, request=request, **kwargs)
+
+    fields = [
+        "workflow",
+        "code",
+        "order",
+        "ui_template",
+        "metadata"
+    ]
 
     def copy(self, request, queryset):
         step: WorkflowStep
