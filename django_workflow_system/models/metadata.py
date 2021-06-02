@@ -41,7 +41,7 @@ class WorkflowMetadata(CreatedModifiedAbstractModel):
         """
         This will return the hierarchy of this data group in a string format.
         """
-        return "<".join(reversed(self.group_hierarchy))
+        return " -> ".join(self.group_hierarchy)
 
     @property
     def group_hierarchy(self):
