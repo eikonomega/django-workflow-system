@@ -6,6 +6,7 @@
 
 Full documentation for the package is currently being written....but for now, here's what you need to get up and running.
 
+**NOTE: THIS PROJECT IS STILL IN BETA, BREAKING CHANGES COULD BE INTRODUCED AT ANY TIME**
 
 # Requirements
 

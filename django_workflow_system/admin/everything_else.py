@@ -25,8 +25,7 @@ from ..models import (
     WorkflowCollectionSubscriptionSchedule,
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
-    WorkflowStepDataGroup,
-    WorkflowCollectionTagType,
+    WorkflowMetadata,
     WorkflowCollectionImageType,
     WorkflowImageType,
     WorkflowImage,
@@ -61,15 +60,12 @@ class AuthorAdmin(admin.ModelAdmin):
     search_fields = USER_SEARCH_FIELDS
 
 
-# data_group.py
-
-
 def make_ordering():
     """
     Let's break this down:
     `Case` acts like a if/elif/elif/elif/else statement on the SQL side
     Each case is represented by a `When` object.
-    This particular Case statement assigns to each WorkflowStepDataGroup an integer
+    This particular Case statement assigns to each WorkflowMetadata an integer
     based on the number of non-null parents it has. We'll call this generation number
     The order of the WSDGs is decided first by the reverse numerical order generation number,
     then by the name of the WSDG.
@@ -102,8 +98,8 @@ def make_ordering():
     ]
 
 
-@admin.register(WorkflowStepDataGroup)
-class DataGroupAdmin(admin.ModelAdmin):
+@admin.register(WorkflowMetadata)
+class WorkflowMetadataAdmin(admin.ModelAdmin):
     list_display = ["name", "full_path"]
     readonly_fields = ["full_path"]
     ordering = make_ordering()
@@ -235,6 +231,18 @@ class StepInLine(EditLinkToInlineObject, admin.StackedInline):
     model = WorkflowStep
     extra = 1
     readonly_fields = ("edit_link",)
+    filter_horizontal = ['metadata']
+    # I don't know why this works
+    # https://github.com/django/django/blob/1b4d1675b230cd6d47c2ffce41893d1881bf447b/django/contrib/auth/admin.py#L25
+    # Line 31
+
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        if db_field.name == 'metadata':
+            qs = kwargs.get('queryset', db_field.remote_field.model.objects)
+            # Avoid a major performance hit resolving permission names which
+            # triggers a content_type load:
+            kwargs['queryset'] = qs.select_related('parent_group')
+        return super().formfield_for_manytomany(db_field, request=request, **kwargs)
 
 
 class WorkflowImageInline(admin.StackedInline):
@@ -251,6 +259,19 @@ class WorkflowAdmin(admin.ModelAdmin):
         "workflowcollectionmember__workflow_collection",
         "workflowcollectionmember__workflow_collection__category",
     ]
+    filter_horizontal = ['metadata']
+    # I don't know why this works
+    # https://github.com/django/django/blob/1b4d1675b230cd6d47c2ffce41893d1881bf447b/django/contrib/auth/admin.py#L25
+    # Line 31
+
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        if db_field.name == 'metadata':
+            qs = kwargs.get('queryset', db_field.remote_field.model.objects)
+            # Avoid a major performance hit resolving permission names which
+            # triggers a content_type load:
+            kwargs['queryset'] = qs.select_related('parent_group')
+        return super().formfield_for_manytomany(db_field, request=request, **kwargs)
+
     fields = [
         "code",
         "name",
@@ -258,6 +279,7 @@ class WorkflowAdmin(admin.ModelAdmin):
         "image_preview",
         "author",
         "created_by",
+        "metadata"
     ]
     readonly_fields = ["image_preview"]
 
@@ -303,14 +325,14 @@ class WorkflowAdmin(admin.ModelAdmin):
                 step.workflow = workflow
                 step.save()  # our new step gets a primary key here
 
-                for data_group in old_step.data_groups.all():
-                    step.data_groups.add(data_group)
+                for metadata in old_step.metadata.all():
+                    step.metadata.add(metadata)
 
                 step_media_iterator = chain(
                     old_step.workflowstepaudio_set.all(),
                     old_step.workflowstepvideo_set.all(),
                     old_step.workflowstepimage_set.all(),
-                    old_step.workflowstepinput_set.all(),
+                    old_step.workflowstepuserinput_set.all(),
                     old_step.workflowsteptext_set.all(),
                 )
                 for step_media in step_media_iterator:
@@ -320,14 +342,6 @@ class WorkflowAdmin(admin.ModelAdmin):
 
     copy.short_description = "Copy selected workflows"
     copy.allowed_permissions = ("add",)
-
-
-# collection_tag_type.py
-
-
-@admin.register(WorkflowCollectionTagType)
-class WorkflowCollectionTagTypeAdmin(admin.ModelAdmin):
-    list_display = ["type"]
 
 
 # collection_image_type.py

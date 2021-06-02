@@ -6,7 +6,7 @@ from rest_framework import serializers
 
 from .....models import (
     WorkflowCollectionEngagementDetail,
-    WorkflowStepInput,
+    WorkflowStepUserInput,
     WorkflowStep,
     WorkflowCollection,
 )
@@ -57,8 +57,8 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
         a step if it is the previous step or the next step, or it is the first step
         submitted in an activity-type collection engagement and it is the first step of a workflow
 
-        Check that user_response has a valid entry for each WorkflowStepInput
-        according to that WorkflowStepInput's JSON Schema validator.
+        Check that user_response has a valid entry for each WorkflowStepUserInput
+        according to that WorkflowStepUserInput's JSON Schema validator.
 
         If a user is not finished:
             then we don't care about the state of user_response
@@ -93,7 +93,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
         finished = getattr_patched("finished")
         user_response = getattr_patched("user_response")
         has_required_inputs = bool(
-            WorkflowStepInput.objects.filter(workflow_step=step, required=True)
+            WorkflowStepUserInput.objects.filter(workflow_step=step, required=True)
         )
         workflow_collection_engagement = getattr_patched(
             "workflow_collection_engagement"
@@ -167,7 +167,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                 raise serializers.ValidationError(
                     "Missing key in questions entry {}".format(e.args[0])
                 )
-            if not WorkflowStepInput.objects.filter(
+            if not WorkflowStepUserInput.objects.filter(
                 id=step_input_id, ui_identifier=step_input_UI_identifier
             ):
                 raise serializers.ValidationError(
@@ -175,7 +175,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                 )
             answer_dict[step_input_id] = response
 
-        for step_input in WorkflowStepInput.objects.filter(workflow_step=step):
+        for step_input in WorkflowStepUserInput.objects.filter(workflow_step=step):
             step_input_id = str(step_input.id)
             if step_input_id not in answer_dict:  # if user did not give an answer...
                 if step_input.required:  # that's a problem if it was required
@@ -186,7 +186,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                 response = answer_dict[step_input_id]
                 try:
                     jsonschema.validate(
-                        instance=response, schema=step_input.response_schema.schema
+                        instance=response, schema=step_input.response_schema
                     )
                 except jsonschema.ValidationError as e:
                     raise serializers.ValidationError(

@@ -2,8 +2,7 @@ import factory
 from factory.django import DjangoModelFactory
 
 import django_workflow_system.models as models
-from .data_group import WorkflowStepDataGroupFactory
-from .json_schema import JSONSchemaFactory
+from .metadata import WorkflowMetadataFactory
 
 
 class WorkflowStepUITemplateFactory(DjangoModelFactory):
@@ -46,23 +45,30 @@ class WorkflowStepFactory(DjangoModelFactory):
             _WorkflowStepAudioFactory.create(workflow_step=self, **audio)
 
     @factory.post_generation
-    def workflowstepinput_set(self, create, extracted, **kwargs):
+    def workflowstepuserinput_set(self, create, extracted, **kwargs):
         if not create or not extracted:
             return
         for input in extracted:
-            _WorkflowStepInputFactory.create(workflow_step=self, **input)
+            _WorkflowStepUserInputFactory.create(workflow_step=self, **input)
 
     @factory.post_generation
-    def data_groups(self, create, extracted, **kwargs):
+    def workflowstepexternallink_set(self, create, extracted, **kwargs):
         if not create or not extracted:
             return
-        for data_group in extracted:
-            if isinstance(data_group, dict):
-                self.data_groups.add(WorkflowStepDataGroupFactory(**data_group))
-            elif isinstance(data_group, models.WorkflowStepDataGroup):
-                self.data_groups.add(data_group)
+        for input in extracted:
+            _WorkflowStepExternalLinkFactory.create(workflow_step=self, **input)
+
+    @factory.post_generation
+    def metadata(self, create, extracted, **kwargs):
+        if not create or not extracted:
+            return
+        for metadata in extracted:
+            if isinstance(metadata, dict):
+                self.metadata.add(WorkflowMetadataFactory(**metadata))
+            elif isinstance(metadata, models.WorkflowMetadata):
+                self.metadata.add(metadata)
             else:
-                raise TypeError("data_group must be a dict or WorkflowStepDataGroup")
+                raise TypeError("metadata must be a dict or WorkflowMetadata")
 
 
 class _WorkflowStepTextFactory(DjangoModelFactory):
@@ -72,8 +78,17 @@ class _WorkflowStepTextFactory(DjangoModelFactory):
 
     workflow_step = None  # required in kwargs
     ui_identifier = factory.sequence(lambda n: f"text_{n}")
-    content = factory.Faker("paragraph")
-    storage_value = factory.Sequence(lambda n: int(n + 1))
+    text = factory.Faker("paragraph")
+
+
+class _WorkflowStepExternalLinkFactory(DjangoModelFactory):
+    class Meta:
+        model = models.WorkflowStepExternalLink
+        django_get_or_create = ['workflow_step', "ui_identifier"]
+
+    workflow_step = None
+    ui_identifier = factory.sequence(lambda n: f"external_link_{n}")
+    link = factory.Faker('https://www.google.com')
 
 
 class _WorkflowStepImageFactory(DjangoModelFactory):
@@ -106,16 +121,25 @@ class _WorkflowStepAudioFactory(DjangoModelFactory):
     url = factory.Faker("file_name", extension="mp3")
 
 
-class _WorkflowStepInputFactory(DjangoModelFactory):
+class _WorkflowStepUserInputType(DjangoModelFactory):
     class Meta:
-        model = models.WorkflowStepInput
-        django_get_or_create = ["workflow_step", "ui_identifier"]
+        model = models.WorkflowStepUserInputType
+
+    name = factory.sequence(lambda n: "Question Type {}".format(n))
+    json_schema = {}
+    example_specification = {}
+
+
+class _WorkflowStepUserInputFactory(DjangoModelFactory):
+    class Meta:
+        model = models.WorkflowStepUserInput
+        django_get_or_create = ["workflow_step", "ui_identifier", "type"]
 
     workflow_step = None  # required in kwargs
     ui_identifier = factory.sequence(lambda n: f"input_{n}")
-    content = factory.Faker("sentence")
     required = False
-    response_schema = factory.SubFactory(JSONSchemaFactory)
+    type = factory.SubFactory(_WorkflowStepUserInputType)
+    specification = {}
 
 
 __all__ = ["WorkflowStepUITemplateFactory", "WorkflowStepFactory"]

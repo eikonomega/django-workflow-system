@@ -114,11 +114,10 @@ class WorkflowView(APIView):
                         "code": "Workflow_1_Step_1",
                         "order": 1,
                         "ui_template": "Workflow_1_Step_1_Template",
-                        "workflowstepinput_set": [
+                        "workflowstepuserinput_set": [
                             {
                                 "id": "846173f7-6faf-4d12-9261-4f390bf03600",
                                 "workflow_step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
-                                "content": "This is the input for step 1",
                                 "ui_identifier": "Step 1 Input",
                                 "required": true,
                                 "response_schema": "655c8526-3bfa-402f-bf7c-48bf8b24f84b"
