@@ -1,14 +1,15 @@
 """Django model definition."""
 import uuid
 
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
 
 
-class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
+class WorkflowMetadata(CreatedModifiedAbstractModel):
     """
-    WorkflowStepDataGroup allows clients to group together user-provided data.
+    WorkflowMetadata allows clients to group together user-provided data.
 
     This is especially useful for clients who are conducting surveys as
     it allows them to group together data from steps that work together
@@ -28,8 +29,9 @@ class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
     description = models.TextField(help_text="The description of the data group.")
 
     class Meta:
-        db_table = "workflow_system_data_group"
-        verbose_name_plural = "Workflow Step Data Groups"
+        db_table = "workflow_system_metadata"
+        verbose_name_plural = "Workflow Step Metadata"
+        unique_together = ['name', 'parent_group']
 
     def __str__(self):
         return self.full_path
@@ -39,7 +41,7 @@ class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
         """
         This will return the hierarchy of this data group in a string format.
         """
-        return "<".join(reversed(self.group_hierarchy))
+        return " -> ".join(self.group_hierarchy)
 
     @property
     def group_hierarchy(self):
@@ -50,8 +52,22 @@ class WorkflowStepDataGroup(CreatedModifiedAbstractModel):
         We then reverse this list so it is returned in the proper hierarchical form.
         """
         label_list = [self.name]
-        iter_group: WorkflowStepDataGroup = self.parent_group
+        iter_group: WorkflowMetadata = self.parent_group
         while iter_group is not None:
             label_list.append(iter_group.name)
             iter_group = iter_group.parent_group
         return tuple(reversed(label_list))
+
+    def clean(self, *args, **kwargs):
+        """
+        Ensure that the metadata name doesn't already exist at this level.
+        """
+        # Get all metadata objects
+        for obj in WorkflowMetadata.objects.all():
+            if obj.name.lower() == self.name.lower() and obj.parent_group == self.parent_group:
+                raise ValidationError(
+                    {"name": f"Name '{self.name}' with this same parent group already exists."})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super(WorkflowMetadata, self).save(*args, **kwargs)

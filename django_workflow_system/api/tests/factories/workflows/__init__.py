@@ -1,6 +1,6 @@
 from .assignment import *
 from .authors import *
-from .data_group import *
+from .metadata import *
 from .engagement import *
 from .json_schema import *
 from .step import *

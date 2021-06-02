@@ -3,8 +3,6 @@ from django_workflow_system.models.author import WorkflowAuthor
 from django_workflow_system.models.assignment import WorkflowCollectionAssignment
 from django_workflow_system.models.collection_image import WorkflowCollectionImage
 from django_workflow_system.models.collection_image_type import WorkflowCollectionImageType
-from django_workflow_system.models.collection_tag_type import WorkflowCollectionTagType
-from django_workflow_system.models.collection_tag_assignment import WorkflowCollectionTagAssignment
 from django_workflow_system.models.engagement import (
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
@@ -13,8 +11,7 @@ from django_workflow_system.models.engagement_detail import WorkflowCollectionEn
 from django_workflow_system.models.engagement import WorkflowCollectionEngagement
 
 from django_workflow_system.models.collection import (
-    WorkflowCollection,
-    WorkflowCollectionTagOption,
+    WorkflowCollection
 )
 
 from django_workflow_system.models.collection_member import WorkflowCollectionMember
@@ -27,7 +24,8 @@ from django_workflow_system.models.step_dependency_detail import WorkflowStepDep
 from django_workflow_system.models.step_dependency_group import WorkflowStepDependencyGroup
 from django_workflow_system.models.step_external_link import WorkflowStepExternalLink
 from django_workflow_system.models.step_image import WorkflowStepImage
-from django_workflow_system.models.step_input import WorkflowStepInput
+from django_workflow_system.models.step_user_input import WorkflowStepUserInput
+from django_workflow_system.models.step_user_input_type import WorkflowStepUserInputType
 from django_workflow_system.models.step_text import WorkflowStepText
 from django_workflow_system.models.step_ui_template import WorkflowStepUITemplate
 from django_workflow_system.models.step_video import WorkflowStepVideo
@@ -36,7 +34,7 @@ from django_workflow_system.models.subscription_schedule import (
     WorkflowCollectionSubscriptionSchedule,
 )
 from django_workflow_system.models.workflow import Workflow
-from django_workflow_system.models.data_group import WorkflowStepDataGroup
+from django_workflow_system.models.metadata import WorkflowMetadata
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
 from django_workflow_system.models.workflow_image import WorkflowImage
 from django_workflow_system.models.workflow_image_type import WorkflowImageType
@@ -48,8 +46,6 @@ __all__ = [
     "WorkflowCollectionEngagementDetail",
     "WorkflowCollection",
     "WorkflowCollectionMember",
-    "WorkflowCollectionTagOption",
-    "WorkflowCollectionTagType",
     "WorkflowCollectionImageType",
     "WorkflowCollectionImage",
     "WorkflowCollectionRecommendation",
@@ -59,7 +55,8 @@ __all__ = [
     "WorkflowStepExternalLink",
     "WorkflowStepImage",
     "WorkflowStepText",
-    "WorkflowStepInput",
+    "WorkflowStepUserInput",
+    "WorkflowStepUserInputType",
     "WorkflowStepUITemplate",
     "WorkflowStepVideo",
     "WorkflowStepDependencyDetail",
@@ -69,7 +66,6 @@ __all__ = [
     "Workflow",
     "WorkflowImage",
     "WorkflowImageType",
-    "WorkflowStepDataGroup",
-    "CreatedModifiedAbstractModel",
-    "WorkflowCollectionTagAssignment",
+    "WorkflowMetadata",
+    "CreatedModifiedAbstractModel"
 ]

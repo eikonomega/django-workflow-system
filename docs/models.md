@@ -90,7 +90,7 @@ Conceptually, this model exists to provide the ability to group/collect a set of
 | assignment_only | BooleanField | If True, the Workflow should only be accessible via assignment.                                     |
 | active          | BooleanField | Indication of whether or not the Workflow Collection is <br>currently available for use.            |
 | category        | CharType     | The "type" of Workflow.                                                                             |
-| tags            | ManyToMany   | A 'list' of tags associated to the Collection.                                                      |
+| metadata        | ManyToMany   | A 'list' of metadata associated to the Collection.                                                  |
 
 ### Example: Creating a WorkflowCollection
 
@@ -140,64 +140,6 @@ This model is what allows you to tie Workflows to WorkflowCollections.
         workflow_collection=worklow_collection,
         order=1)
 
-## WorkflowCollectionTagOption
-
-This table defines what options are available to use as tags. In simple terms, this table defines the set of available tags which are then referred to via foreign keys in WorkflowCollectionTagAssignment objects.
-
-### Attributes
-
-| Key  | Type      | Description                                  |
-|------|-----------|----------------------------------------------|
-| id   | UUIDField | The UUID of the WorkflowCollectionTagOption. |
-| text | CharField | The unique tag of the text.                  |
-
-### Example: Creating a WorkflowCollectionTagOption
-
-    from django_workflow_system.models import WorkflowCollectionTagOption
-
-    workflow_tag_option_1 = WorkflowCollectionTagOption.objects.create(
-        text="cool")
-    workflow_tag_option_2 = WorkflowCollectionTagOption.objects.create(
-        text="rad")
-
-## WorkflowCollectionTagAssignment
-
-This table is what ties tags to a workflow collection.
-
-### Attributes
-
-| Key                     | Type       | Description                                       |
-|-------------------------|------------|---------------------------------------------------|
-| id                      | UUIDField  | The UUID of the WorkflowCollectionTagAssignment.  |
-| workflow_collection     | ForeignKey | The workflow collection this tag is in.           |
-| workflow_collection_tag | ForeignKey | The tag associated with this object.              |
-
-### Example: Creating a WorkflowCollectionTagAssignment
-
-    from django_workflow_system.models import (
-        WorkflowCollection,
-        WorkflowCollectionTagAssignment, 
-        WorkflowCollectionTagOption)
-    
-    workflow_tag_option_1 = WorkflowCollectionTagOption.objects.get(
-        text="cool")
-    workflow_tag_option_2 = WorkflowCollectionTagOption.objects.get(
-        text="rad")
-    
-    workflow_collection = WorkflowCollection.objects.get(code="workflow_collection_1")
-
-    # The following will associate two tags with the WorkflowCollection
-    workflow_collection_tag_1 = WorkflowCollectionTagAssignment.objects.create(
-        workflow_collection=workflow_collection,
-        workflow_tag=workflow_tag_option_1)
-    
-    workflow_collection_tag_2 = WorkflowCollectionTagAssignment.objects.create(
-        workflow_collection=workflow_collection,
-        workflow_tag=workflow_tag_option_1)
-    
-    # Now our "Answer to the Ultimate Question of Life, the Universe, and 
-    # Everything.....the collection" Collection will have "rad" and "cool"
-    # in its "tags" property.
 
 ## WorkflowCollectionEngagement
 

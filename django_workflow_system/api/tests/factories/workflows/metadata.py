@@ -4,13 +4,13 @@ from factory.django import DjangoModelFactory
 import django_workflow_system.models as models
 
 
-class WorkflowStepDataGroupFactory(DjangoModelFactory):
+class WorkflowMetadataFactory(DjangoModelFactory):
     class Meta:
-        model = models.WorkflowStepDataGroup
+        model = models.WorkflowMetadata
         django_get_or_create = ("name",)
 
     name = factory.sequence(lambda n: "datagroup_{}".format(n))
     description = factory.Faker("paragraph")
 
 
-__all__ = ["WorkflowStepDataGroupFactory"]
+__all__ = ["WorkflowMetadataFactory"]

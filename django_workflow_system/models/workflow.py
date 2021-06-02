@@ -6,6 +6,7 @@ from django.db import models
 
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
 from django_workflow_system.models.author import WorkflowAuthor
+from django_workflow_system.models.metadata import WorkflowMetadata
 from django_workflow_system.utils.validators import validate_code
 from django_workflow_system.utils.version_validator import version_validator
 
@@ -40,6 +41,11 @@ class Workflow(CreatedModifiedAbstractModel):
         on_delete=models.PROTECT,
         limit_choices_to={"is_staff": True},
         help_text="Administrative user who created the Workflow in the database",
+    )
+    metadata = models.ManyToManyField(
+        WorkflowMetadata,
+        blank=True,
+        help_text="A list of metadata that this workflow is associated with.",
     )
     on_completion = models.CharField(max_length=200, null=True, blank=True)
 
