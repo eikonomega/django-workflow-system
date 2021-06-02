@@ -13,18 +13,14 @@ from django_workflow_system.models.step import WorkflowStep
 class WorkflowStepUserInputType(CreatedModifiedAbstractModel):
     """
     Question Type objects assigned to a WorkflowStep.
-
-    Attributes:
-        id (UUIDField): The unique UUID for the database record.
-        name (CharField): The name of the question type.
-        json_schema (JSONField): The schema that the specification must follow.
-        placeholder_spec (JSONField): An example of properly formatted json that follows
-                                      the json_schema.
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=150)
-    json_schema = models.JSONField(help_text="Used to specify input, label, options, and correct answers.", verbose_name='JSON Schema')
-    placeholder_specification = models.JSONField(help_text="Placeholder specification.")
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
+                          help_text="The unique UUID for the database record.")
+    name = models.CharField(max_length=150, help_text="The name of the question type.")
+    json_schema = models.JSONField(
+        help_text="Used to specify input, label, options, and correct answers.", verbose_name='JSON Schema')
+    example_specification = models.JSONField(
+        help_text="An example of properly formatted json that follows the json_schema.")
 
     class Meta:
         db_table = "workflow_system_step_user_input_type"
@@ -50,12 +46,12 @@ class WorkflowStepUserInputType(CreatedModifiedAbstractModel):
             )
 
         try:
-            jsonschema.validate(instance=self.placeholder_specification, schema=self.json_schema)
+            jsonschema.validate(instance=self.example_specification, schema=self.json_schema)
         except jsonschema.ValidationError as error:
             raise ValidationError(
                 {
-                    "placeholder_specification": (
-                        "There is something wrong in your placeholder_spec definition. "
+                    "example_specification": (
+                        "There is something wrong in your example_specification definition. "
                         "Details {}".format(error)
                     )
                 }
@@ -68,23 +64,18 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
 
     A WorkFlow author is allowed to specify an arbitrary number
     of question elements to a given WorkflowStep.
-
-    Attributes:
-        id (UUIDField): The unique UUID for the database record.
-        workflow_step (ForeignKey): The WorkflowStep object that will own this object.
-        ui_identifier (CharField): A simple string which is used to indicate
-                                   to a user interface where to display this object
-                                   within a template.
-        required (BooleanField): True if a value is required for this input in the response JSON
-        specification (JSONField): The specification of the WorkflowStepUserInput
-        type (ForeignKey): The WorkflowStepUserInputType.
     """
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow_step = models.ForeignKey(WorkflowStep, on_delete=models.CASCADE)
-    ui_identifier = models.CharField(max_length=200)
-    required = models.BooleanField()
-    specification = models.JSONField(help_text="Used to specify input, label, options, and correct answers.")
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
+                          help_text="The unique UUID for the database record.")
+    workflow_step = models.ForeignKey(
+        WorkflowStep, on_delete=models.CASCADE, help_text="The WorkflowStep object that will own this object.")
+    ui_identifier = models.CharField(
+        max_length=200, help_text="A simple string which is used to indicate to a user interface where to display this object within a template.")
+    required = models.BooleanField(
+        help_text="True if a value is required for this input in the response JSON")
+    specification = models.JSONField(
+        help_text="Used to specify input, label, options, and correct answers.")
     type = models.ForeignKey(WorkflowStepUserInputType, on_delete=models.PROTECT)
 
     class Meta:

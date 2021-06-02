@@ -127,7 +127,7 @@ class _WorkflowStepUserInputType(DjangoModelFactory):
 
     name = factory.sequence(lambda n: "Question Type {}".format(n))
     json_schema = {}
-    placeholder_specification = {}
+    example_specification = {}
 
 
 class _WorkflowStepUserInputFactory(DjangoModelFactory):
