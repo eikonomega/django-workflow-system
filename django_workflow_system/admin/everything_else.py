@@ -231,6 +231,18 @@ class StepInLine(EditLinkToInlineObject, admin.StackedInline):
     model = WorkflowStep
     extra = 1
     readonly_fields = ("edit_link",)
+    filter_horizontal = ['metadata']
+    # I don't know why this works
+    # https://github.com/django/django/blob/1b4d1675b230cd6d47c2ffce41893d1881bf447b/django/contrib/auth/admin.py#L25
+    # Line 31
+
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        if db_field.name == 'metadata':
+            qs = kwargs.get('queryset', db_field.remote_field.model.objects)
+            # Avoid a major performance hit resolving permission names which
+            # triggers a content_type load:
+            kwargs['queryset'] = qs.select_related('parent_group')
+        return super().formfield_for_manytomany(db_field, request=request, **kwargs)
 
 
 class WorkflowImageInline(admin.StackedInline):
@@ -247,6 +259,19 @@ class WorkflowAdmin(admin.ModelAdmin):
         "workflowcollectionmember__workflow_collection",
         "workflowcollectionmember__workflow_collection__category",
     ]
+    filter_horizontal = ['metadata']
+    # I don't know why this works
+    # https://github.com/django/django/blob/1b4d1675b230cd6d47c2ffce41893d1881bf447b/django/contrib/auth/admin.py#L25
+    # Line 31
+
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        if db_field.name == 'metadata':
+            qs = kwargs.get('queryset', db_field.remote_field.model.objects)
+            # Avoid a major performance hit resolving permission names which
+            # triggers a content_type load:
+            kwargs['queryset'] = qs.select_related('parent_group')
+        return super().formfield_for_manytomany(db_field, request=request, **kwargs)
+
     fields = [
         "code",
         "name",
