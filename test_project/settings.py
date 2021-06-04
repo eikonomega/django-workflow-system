@@ -136,3 +136,5 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
 }
+
+RESPONSE_SCHEMA_HANDLERS = []
