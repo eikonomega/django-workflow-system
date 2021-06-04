@@ -25,16 +25,28 @@ def get_response_schema(instance):
     elif instance.specification['meta']['inputRequired'] and not instance.specification['meta']['correctInputRequired']:
         # They don't need to respond with the correct answer.
         response_schema['properties']['userInput']['type'] = instance.type.json_schema['properties']['correctInput']['type']
-        # We need to enumerate our options here.....
-        da_enum = []
-        for number in range(instance.specification['inputOptions']['minimumValue'], instance.specification['inputOptions']['maximumValue'] + instance.specification['inputOptions']['step'], instance.specification['inputOptions']['step']):
-            da_enum.append(number)
-        response_schema['properties']['userInput']['enum'] = da_enum
+        response_schema['properties']['userInput']['enum'] = fetch_numbers(instance)
 
     elif not instance.specification['meta']['inputRequired'] and instance.specification['meta']['correctInputRequired']:
         # They need to respond with the correct answer.
         response_schema['properties']['userInput']['type'] = instance.type.json_schema['properties']['correctInput']['type']
         response_schema['properties']['userInput']['enum'] = [instance.specification['correctInput']]
 
-    # If it doesn't need a response and doesn't need to be correct then I believe we can just leave userInput as an empty dict
+    else:
+        # Answer is not required and correct is not required, so null should be an option in potential responses
+        response_schema['properties']['userInput']['anyOf'] = [{"type": instance.type.json_schema['properties']['correctInput']['type']}, {"type": 'null'}]
+        new_enum = fetch_numbers(instance)
+        new_enum.append(None)
+        response_schema['properties']['userInput']['enum'] = new_enum
+
     return response_schema
+
+
+def fetch_numbers(instance):
+    """
+    Loop through and create a list of all possible numbers.
+    """
+    number_list = []
+    for number in range(instance.specification['inputOptions']['minimumValue'], instance.specification['inputOptions']['maximumValue'] + instance.specification['inputOptions']['step'], instance.specification['inputOptions']['step']):
+        number_list.append(number)
+    return number_list
