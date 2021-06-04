@@ -104,8 +104,8 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
                             #  Get the actual function
                             real_func = getattr(module, "get_response_schema")
                             # Add it to our dictionary of functions
-                            notification_system = file.partition(".py")[0]
-                            cls.__function_table[notification_system] = real_func
+                            schema_handler = file.partition(".py")[0]
+                            cls.__function_table[schema_handler] = real_func
                         except (ModuleNotFoundError, AttributeError):
                             pass
                 except FileNotFoundError:
