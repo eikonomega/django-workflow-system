@@ -665,8 +665,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(json_schema={"properties": {"correctAnswer": {"type": "number", "enum": [0, 1, 2]}, "options": {"type": "array", "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
-                                        "specification": {"options": [1, 2, 3, 4, 5], "correctAnswer": 1}
+                                        "type": _WorkflowStepUserInputType(json_schema={"type": "object", "title": "User Input: Single Choice Question", "description": "A schema representing a single choice question user input.", "required": ["label", "inputOptions"], "properties": {"id": {"type": "string", "title": "A string-based user input identifier.", "description": "This value may be managed outside of the object specification and so is optional.", "examples": ["4125-1351-1251-asfd"]}, "label": {"type": "string", "title": "UI Label for Input", "description": "Label that should be displayed by user interfaces for this input.", "examples": ["The label to display for the input/question."]}, "inputOptions": {"$id": "#/properties/options", "type": "array", "title": "Question Options", "description": "The options to be displayed to the user for this question.", "minItems": 2, "uniqueItems": True, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}, "correctInput": {"description": "Indicates which answer is the correct one.", "anyOf": [{"type": "string"}, {"type": "number"}]}, "meta": {"type": "object", "properties": {"inputRequired": {"type": "boolean", "description": "Whether or not an answer should be required from the user."}, "correctInputRequired": {"type": "boolean", "description": "Whether or not the correct answer should be required from the user."}}}}}),
+                                        "specification": {"label": "What is your favorite color?", "inputOptions": ["Red", "Blue"], "correctInput": "Red", "meta": {"inputRequired": True, "correctInputRequired": True}}
                                     }
                                 ]
                             }
@@ -679,6 +679,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
         my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
+        my_step_input.type.name = 'single_choice_question'
+        my_step_input.type.save()
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
@@ -701,7 +703,10 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                         {
                             "stepInputID": str(my_step_input.id),
                             "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                            "response": 1,
+                            "response": {
+                                "stepUserID": str(my_step_input.id),
+                                "userInput": "Red"
+                            },
                         }
                     ]
                 },
@@ -728,8 +733,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(json_schema={"properties": {"correctAnswer": {"type": "number", "enum": [0, 1, 2]}, "options": {"type": "array", "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
-                                        "specification": {"options": [1, 2, 3, 4, 5], "correctAnswer": 1}
+                                        "type": _WorkflowStepUserInputType(json_schema={"type": "object", "description": "A schema representing a single choice question user input.", "required": ["label", "inputOptions"], "properties": {"id": {"type": "string", "title": "A string-based user input identifier.", "description": "This value may be managed outside of the object specification and so is optional.", "examples": ["4125-1351-1251-asfd"]}, "label": {"type": "string", "title": "UI Label for Input", "description": "Label that should be displayed by user interfaces for this input.", "examples": ["The label to display for the input/question."]}, "inputOptions": {"$id": "#/properties/options", "type": "array", "title": "Question Options", "description": "The options to be displayed to the user for this question.", "minItems": 2, "uniqueItems": True, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}, "correctInput": {"description": "Indicates which answer is the correct one.", "anyOf": [{"type": "string"}, {"type": "number"}]}, "meta": {"type": "object", "properties": {"inputRequired": {"type": "boolean", "description": "Whether or not an answer should be required from the user."}, "correctInputRequired": {"type": "boolean", "description": "Whether or not the correct answer should be required from the user."}}}}}),
+                                        "specification": {"label": "What is your favorite number?", "inputOptions": [1, 2, 3, 4, 5], "correctInput": 1, "meta": {"inputRequired": True, "correctInputRequired": False}}
                                     }
                                 ]
                             }
@@ -742,6 +747,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
         my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
+        my_step_input.type.name = 'single_choice_question'
+        my_step_input.save()
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
@@ -757,7 +764,10 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                     {
                         "stepInputID": str(my_step_input.id),
                         "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                        "response": 1,
+                        "response": {
+                                "stepUserID": str(my_step_input.id),
+                                "userInput": 1
+                        },
                     }
                 ]
             },
@@ -800,8 +810,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(json_schema={"properties": {"correctAnswer": {"anyOf": [{"type": "string"}, {"type": "number"}]}, "options": {"type": "array", "minItems": 2, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
-                                        "specification": {"options": ["Red", "Blue"], "correctAnswer": "Blue"}
+                                        "type": _WorkflowStepUserInputType(json_schema={"$id": "http://github.com/crcresearch/", "type": "object", "title": "User Input: Single Choice Question", "description": "A schema representing a single choice question user input.", "required": ["label", "inputOptions"], "properties": {"id": {"type": "string", "title": "A string-based user input identifier.", "description": "This value may be managed outside of the object specification and so is optional.", "examples": ["4125-1351-1251-asfd"]}, "label": {"type": "string", "title": "UI Label for Input", "description": "Label that should be displayed by user interfaces for this input.", "examples": ["The label to display for the input/question."]}, "inputOptions": {"$id": "#/properties/options", "type": "array", "title": "Question Options", "description": "The options to be displayed to the user for this question.", "minItems": 2, "uniqueItems": True, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}, "correctInput": {"description": "Indicates which answer is the correct one.", "anyOf": [{"type": "string"}, {"type": "number"}]}, "meta": {"type": "object", "properties": {"inputRequired": {"type": "boolean", "description": "Whether or not an answer should be required from the user."}, "correctInputRequired": {"type": "boolean", "description": "Whether or not the correct answer should be required from the user."}}}}}),
+                                        "specification": {"label": "What is your favorite color?", "inputOptions": ["Red", "Blue"], "correctInput": "Red", "meta": {"inputRequired": False, "correctInputRequired": False}}
                                     }
                                 ]
                             }
@@ -815,10 +825,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         )
         my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
         my_step_input.type.name = 'single_choice_question'
-        my_step_input.type.json_schema = {"$id": "http://github.com/crcresearch/", "type": "object", "title": "User Input: Single Choice Question", "description": "A schema representing a single choice question user input.", "required": ["label", "inputOptions"], "properties": {"id": {"type": "string", "title": "A string-based user input identifier.", "description": "This value may be managed outside of the object specification and so is optional.", "examples": ["4125-1351-1251-asfd"]}, "label": {"type": "string", "title": "UI Label for Input", "description": "Label that should be displayed by user interfaces for this input.", "examples": ["The label to display for the input/question."]}, "inputOptions": {"$id": "#/properties/options", "type": "array", "title": "Question Options", "description": "The options to be displayed to the user for this question.", "minItems": 2, "uniqueItems": True, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}, "correctInput": {"description": "Indicates which answer is the correct one.", "anyOf": [{"type": "string"}, {"type": "number"}]}, "meta": {"type": "object", "properties": {"inputRequired": {"type": "boolean", "description": "Whether or not an answer should be required from the user."}, "correctInputRequired": {"type": "boolean", "description": "Whether or not the correct answer should be required from the user."}}}}}
         my_step_input.type.save()
-        my_step_input.specification = {"label": "What is your favorite color?", "inputOptions": ["Red", "Blue"], "correctInput": "Red", "meta": {"inputRequired": True, "correctInputRequired": True}}
-        my_step_input.save()
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
@@ -834,7 +841,10 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                     {
                         "stepInputID": str(my_step_input.id),
                         "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                        "response": 1,
+                        "response": {
+                            "stepInputID": str(my_step_input.id),
+                            "userInput": "Red"
+                        },
                     }
                 ]
             },
@@ -849,7 +859,10 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                         {
                             "stepInputID": str(my_step_input.id),
                             "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                            "response": "africa",
+                            "response": {
+                                "stepInputID": str(my_step_input.id),
+                                "userInput": "Eggs"
+                            },
                         }
                     ]
                 },
