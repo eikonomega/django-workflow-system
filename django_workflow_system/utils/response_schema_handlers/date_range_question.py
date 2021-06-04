@@ -6,7 +6,7 @@ import math
 def get_response_schema(instance):
     """
     Build and returns a response schema for a given WorkflowStepUserInput w/
-    a WorkflowStepUserInputType of 'Numeric Range Question'.
+    a WorkflowStepUserInputType of 'Date Range Question'.
     """
     response_schema = {
         "type": "object",
