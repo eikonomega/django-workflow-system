@@ -28,11 +28,6 @@ def get_response_schema(instance):
         response_schema['properties']['userInput']['anyOf'] = instance.type.json_schema['properties']['correctInput']['anyOf']
         response_schema['properties']['userInput']['enum'] = instance.specification['inputOptions']
 
-    elif not instance.specification['meta']['inputRequired'] and instance.specification['meta']['correctInputRequired']:
-        # They need to respond with the correct answer.
-        response_schema['properties']['userInput']['anyOf'] = instance.type.json_schema['properties']['correctInput']['anyOf']
-        response_schema['properties']['userInput']['enum'] = [instance.specification['correctInput']]
-
     else:
         # Answer is not required and correct is not required, so null should be an option in potential responses
         new_any_of = instance.type.json_schema['properties']['correctInput']['anyOf']

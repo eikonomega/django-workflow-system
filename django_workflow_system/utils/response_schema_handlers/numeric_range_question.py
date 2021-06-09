@@ -27,11 +27,6 @@ def get_response_schema(instance):
         response_schema['properties']['userInput']['type'] = instance.type.json_schema['properties']['correctInput']['type']
         response_schema['properties']['userInput']['enum'] = fetch_numbers(instance)
 
-    elif not instance.specification['meta']['inputRequired'] and instance.specification['meta']['correctInputRequired']:
-        # They need to respond with the correct answer.
-        response_schema['properties']['userInput']['type'] = instance.type.json_schema['properties']['correctInput']['type']
-        response_schema['properties']['userInput']['enum'] = [instance.specification['correctInput']]
-
     else:
         # Answer is not required and correct is not required, so null should be an option in potential responses
         response_schema['properties']['userInput']['anyOf'] = [{"type": instance.type.json_schema['properties']['correctInput']['type']}, {"type": 'null'}]
