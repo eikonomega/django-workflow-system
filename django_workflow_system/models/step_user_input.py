@@ -99,28 +99,29 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
         This function will get our function table populated with all available `get_response_schema`
         functions.
         """
-        if hasattr(settings, "RESPONSE_SCHEMA_HANDLERS"):
-            for directory in settings.RESPONSE_SCHEMA_HANDLERS:
-                try:
-                    for file in os.listdir(path.join(directory)):
-                        if "__init__" in file:
-                            # Ignore the init file
-                            continue
-                        try:
-                            # Create the module spec
-                            module_spec = importlib.util.spec_from_file_location(
-                                file, f"{directory}/{file}")
-                            # Create a new module  based  on the spec
-                            module = importlib.util.module_from_spec(module_spec)
-                            # An abstract method that executes the module
-                            module_spec.loader.exec_module(module)
-                            #  Get the actual function
-                            real_func = getattr(module, "get_response_schema")
-                            # Add it to our dictionary of functions
-                            schema_handler = file.partition(".py")[0]
-                            cls.__function_table[schema_handler] = real_func
-                        except (ModuleNotFoundError, AttributeError):
-                            pass
-                except FileNotFoundError:
-                    # the directory provided in the settings file does not exist
-                    pass
+        if hasattr(settings, "DJANGO_WORKFLOW_SYSTEM"):
+            if 'INPUT_TYPE_RESPONSE_SCHEMA_HANDLERS' in settings.DJANGO_WORKFLOW_SYSTEM.keys():
+                for directory in settings.DJANGO_WORKFLOW_SYSTEM['INPUT_TYPE_RESPONSE_SCHEMA_HANDLERS']:
+                    try:
+                        for file in os.listdir(path.join(directory)):
+                            if "__init__" in file:
+                                # Ignore the init file
+                                continue
+                            try:
+                                # Create the module spec
+                                module_spec = importlib.util.spec_from_file_location(
+                                    file, f"{directory}/{file}")
+                                # Create a new module  based  on the spec
+                                module = importlib.util.module_from_spec(module_spec)
+                                # An abstract method that executes the module
+                                module_spec.loader.exec_module(module)
+                                #  Get the actual function
+                                real_func = getattr(module, "get_response_schema")
+                                # Add it to our dictionary of functions
+                                schema_handler = file.partition(".py")[0]
+                                cls.__function_table[schema_handler] = real_func
+                            except (ModuleNotFoundError, AttributeError):
+                                pass
+                    except FileNotFoundError:
+                        # the directory provided in the settings file does not exist
+                        pass
