@@ -9,14 +9,12 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from jsonschema import Draft7Validator, SchemaError
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
 from django_workflow_system.models.step import WorkflowStep
 from django_workflow_system.models.step_user_input_type import WorkflowStepUserInputType
-from django_workflow_system.utils.response_schema_handlers.single_choice_question import get_response_schema as single_choice_question_schema
-from django_workflow_system.utils.response_schema_handlers.multiple_choice_question import get_response_schema as multiple_choice_question_schema
-from django_workflow_system.utils.response_schema_handlers.numeric_range_question import get_response_schema as numeric_range_question_schema
-from django_workflow_system.utils.response_schema_handlers.date_range_question import get_response_schema as date_range_question_schema
+from django_workflow_system.utils.response_schema_handlers import (
+    date_range_question_schema, multiple_choice_question_schema, numeric_range_question_schema,
+    single_choice_question_schema)
 
 
 class WorkflowStepUserInput(CreatedModifiedAbstractModel):
@@ -80,7 +78,6 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
         "date_range_question": date_range_question_schema
     }
 
-    @classmethod
     def _load_function_table(cls):
         """
         This function will get our function table populated with all available `get_response_schema`
