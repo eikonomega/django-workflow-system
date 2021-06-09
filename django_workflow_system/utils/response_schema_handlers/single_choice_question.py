@@ -1,40 +1,34 @@
 """Response Schema Generator Module for a Single Choice Question"""
+import copy
+
+from django_workflow_system.utils import RESPONSE_SCHEMA
 
 
-def get_response_schema(instance):
+def get_response_schema(workflow_step_user_input):
     """
     Build and returns a response schema for a given WorkflowStepUserInput w/
     a WorkflowStepUserInputType of 'Single Choice Question'.
     """
-    response_schema = {
-        "type": "object",
-        "properties": {
-            "stepInputID": {
-                "type": "string",
-                "format": "uuid"
-            },
-            "userInput": {}
-        }
-    }
+    response_schema = copy.deepcopy(RESPONSE_SCHEMA)
 
     # Now we need to check some things.....
-    if instance.specification['meta']['inputRequired'] and instance.specification['meta']['correctInputRequired']:
+    if workflow_step_user_input.specification['meta']['inputRequired'] and workflow_step_user_input.specification['meta']['correctInputRequired']:
         # They need to respond with the correct answer.
-        response_schema['properties']['userInput']['anyOf'] = instance.type.json_schema['properties']['correctInput']['anyOf']
+        response_schema['properties']['userInput']['anyOf'] = workflow_step_user_input.type.json_schema['properties']['correctInput']['anyOf']
         response_schema['properties']['userInput']['enum'] = [
-            instance.specification['correctInput']]
+            workflow_step_user_input.specification['correctInput']]
 
-    elif instance.specification['meta']['inputRequired'] and not instance.specification['meta']['correctInputRequired']:
+    elif workflow_step_user_input.specification['meta']['inputRequired'] and not workflow_step_user_input.specification['meta']['correctInputRequired']:
         # They don't need to respond with the correct answer.
-        response_schema['properties']['userInput']['anyOf'] = instance.type.json_schema['properties']['correctInput']['anyOf']
-        response_schema['properties']['userInput']['enum'] = instance.specification['inputOptions']
+        response_schema['properties']['userInput']['anyOf'] = workflow_step_user_input.type.json_schema['properties']['correctInput']['anyOf']
+        response_schema['properties']['userInput']['enum'] = workflow_step_user_input.specification['inputOptions']
 
     else:
         # Answer is not required and correct is not required, so null should be an option in potential responses
-        new_any_of = instance.type.json_schema['properties']['correctInput']['anyOf']
+        new_any_of = workflow_step_user_input.type.json_schema['properties']['correctInput']['anyOf']
         new_any_of.append({"type": 'null'})
         response_schema['properties']['userInput']['anyOf'] = new_any_of
-        new_enum = instance.specification['inputOptions']
+        new_enum = workflow_step_user_input.specification['inputOptions']
         new_enum.append(None)
         response_schema['properties']['userInput']['enum'] = new_enum
 
