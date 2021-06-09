@@ -93,7 +93,7 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
         "date_range_question": date_range_question_schema
     }
 
-    def _load_function_table(cls):
+    def _load_function_table(self):
         """
         This function will get our function table populated with all available `get_response_schema`
         functions.
@@ -118,7 +118,7 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
                                 real_func = getattr(module, "get_response_schema")
                                 # Add it to our dictionary of functions
                                 schema_handler = file.partition(".py")[0]
-                                cls.__function_table[schema_handler] = real_func
+                                self.__function_table[schema_handler] = real_func
                             except (ModuleNotFoundError, AttributeError):
                                 pass
                     except FileNotFoundError:
