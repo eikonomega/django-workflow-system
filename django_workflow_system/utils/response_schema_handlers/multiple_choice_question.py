@@ -9,6 +9,12 @@ def get_response_schema(workflow_step_user_input):
     """
     Build and returns a response schema for a given WorkflowStepUserInput w/
     a WorkflowStepUserInputType of 'Multiple Choice Question'.
+
+    Args:
+        workflow_step_user_input (WorkflowStepUserInput): The WorkflowStepUserInput Object.
+
+    Returns:
+        dict: The response schema to be validated against.
     """
     response_schema = copy.deepcopy(RESPONSE_SCHEMA)
 
@@ -39,6 +45,12 @@ def get_response_schema(workflow_step_user_input):
 def fetch_all_combinations(workflow_step_user_input):
     """
     Fetch all possible combinations of a multi choice question.
+
+    Args:
+        workflow_step_user_input (WorkflowStepUserInput): The WorkflowStepUserInput Object.
+
+    Returns:
+        list: All possible combinations of available answers.
     """
     # We need to get the range of input options, loop through and create a monster
     all_combos = []

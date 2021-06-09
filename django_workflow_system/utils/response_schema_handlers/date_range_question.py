@@ -11,6 +11,12 @@ def get_response_schema(workflow_step_user_input):
     """
     Build and returns a response schema for a given WorkflowStepUserInput w/
     a WorkflowStepUserInputType of 'Date Range Question'.
+
+    Args:
+        workflow_step_user_input (WorkflowStepUserInput): The WorkflowStepUserInput Object.
+
+    Returns:
+        dict: The response schema to be validated against.
     """
     response_schema = copy.deepcopy(RESPONSE_SCHEMA)
 
@@ -39,22 +45,35 @@ def get_response_schema(workflow_step_user_input):
     return response_schema
 
 
-def add_years(d, years):
-    """Return a date that's `years` years after the date (or datetime)
-    object `d`. Return the same calendar date (month and day) in the
+def add_years(date_to_change, years):
+    """
+    Return a date that's `years` years after the date (or datetime)
+    object `date_to_change`. Return the same calendar date (month and day) in the
     destination year, if it exists, otherwise use the following day
     (thus changing February 29 to March 1).
 
+    Args:
+        date_to_change (date): The date that we're adding years to.
+        years ([type]): The number of years to add.
+
+    Returns:
+        [date]: The provided date + one year.
     """
     try:
-        return d.replace(year=d.year + years)
+        return date_to_change.replace(year=date_to_change.year + years)
     except ValueError:
-        return d + (datetime.date(d.year + years, 1, 1) - datetime.date(d.year, 1, 1))
+        return date_to_change + (datetime.date(date_to_change.year + years, 1, 1) - datetime.date(date_to_change.year, 1, 1))
 
 
 def fetch_all_possible_dates(workflow_step_user_input):
     """
     Fetch all possible dates that can be answered.
+
+    Args:
+        workflow_step_user_input (WorkflowStepUserInput): The WorkflowStepUserInput Object.
+
+    Returns:
+        list: The list of dates to include in the response_schema's enum.
     """
     step = workflow_step_user_input.specification['inputOptions']['step']
     # We need to enumerate our options here....

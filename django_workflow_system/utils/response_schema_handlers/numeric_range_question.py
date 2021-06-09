@@ -8,6 +8,12 @@ def get_response_schema(workflow_step_user_input):
     """
     Build and returns a response schema for a given WorkflowStepUserInput w/
     a WorkflowStepUserInputType of 'Numeric Range Question'.
+
+    Args:
+        workflow_step_user_input (WorkflowStepUserInput): The WorkflowStepUserInput Object.
+
+    Returns:
+        dict: The response schema to be validated against.
     """
     response_schema = copy.deepcopy(RESPONSE_SCHEMA)
 
@@ -37,6 +43,12 @@ def get_response_schema(workflow_step_user_input):
 def fetch_numbers(workflow_step_user_input):
     """
     Loop through and create a list of all possible numbers.
+
+    Args:
+        workflow_step_user_input (WorkflowStepUserInput): The WorkflowStepUserInput Object.
+
+    Returns:
+        list: A listt of all possible answer numbers in the given range.
     """
     number_list = []
     for number in range(workflow_step_user_input.specification['inputOptions']['minimumValue'], workflow_step_user_input.specification['inputOptions']['maximumValue'] + workflow_step_user_input.specification['inputOptions']['step'], workflow_step_user_input.specification['inputOptions']['step']):

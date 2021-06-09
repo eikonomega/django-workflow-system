@@ -8,6 +8,12 @@ def get_response_schema(workflow_step_user_input):
     """
     Build and returns a response schema for a given WorkflowStepUserInput w/
     a WorkflowStepUserInputType of 'Single Choice Question'.
+
+    Args:
+        workflow_step_user_input (WorkflowStepUserInput): The WorkflowStepUserInput Object.
+
+    Returns:
+        dict: The response schema to be validated against.
     """
     response_schema = copy.deepcopy(RESPONSE_SCHEMA)
 
