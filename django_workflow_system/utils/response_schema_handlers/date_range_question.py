@@ -1,3 +1,5 @@
+"""Response Schema Generator Module for a Date Range Question"""
+
 import datetime
 from dateutil.relativedelta import relativedelta
 import math

@@ -1,3 +1,5 @@
+"""Response Schema Generator Module for a Multiple Choice Question"""
+
 import itertools
 
 

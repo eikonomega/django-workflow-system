@@ -1,3 +1,5 @@
+"""Response Schema Generator Module for a Numeric Range Question"""
+
 
 
 def get_response_schema(instance):

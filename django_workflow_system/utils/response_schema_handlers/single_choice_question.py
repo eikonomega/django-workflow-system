@@ -1,3 +1,4 @@
+"""Response Schema Generator Module for a Single Choice Question"""
 
 
 def get_response_schema(instance):
