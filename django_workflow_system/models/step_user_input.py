@@ -65,13 +65,13 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
         # for what we know currently exists
         if 'meta' in self.specification.keys():
             if 'correctInputRequired' in self.specification['meta'].keys() and 'inputRequired' in self.specification['meta'].keys():
-                # Make sure that they're both the same.
-                if self.specification['meta']['correctInputRequired'] != self.specification['meta']['inputRequired']:
+                # Make sure that if input isn't required that it doesn't have to be correct
+                if not self.specification['meta']['inputRequired'] and self.specification['meta']['correctInputRequired']:
                     raise ValidationError(
                     {
                         "specification": (
                             "There is something wrong in your specification definition. "
-                            "Details: Inside `meta`, correctInputRequired and inputRequired must be set to the same boolean"
+                            "Details: Inside `meta`, correctInputRequired can't be true if inputRequired is false"
                         )
                     }
                 )
