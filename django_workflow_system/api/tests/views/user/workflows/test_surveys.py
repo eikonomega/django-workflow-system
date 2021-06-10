@@ -11,7 +11,7 @@ from django_workflow_system.api.tests.factories.workflows import (
     WorkflowCollectionEngagementFactory,
     WorkflowCollectionEngagementDetailFactory,
 )
-from django_workflow_system.api.tests.factories.workflows.step import _WorkflowStepUserInputType
+from django_workflow_system.api.tests.factories.workflows.step import _WorkflowStepUserInputTypeFactory
 from django_workflow_system.api.views.user.workflows import (
     WorkflowCollectionEngagementsView,
     WorkflowCollectionEngagementDetailsView,
@@ -44,7 +44,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(),
+                                        "type": _WorkflowStepUserInputTypeFactory(),
                                         "specification": {}
                                     }
                                 ],
@@ -54,7 +54,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(),
+                                        "type": _WorkflowStepUserInputTypeFactory(),
                                         "specification": {}
                                     }
                                 ],
@@ -87,7 +87,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {
                                         "ui_identifier": "question_1",
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(),
+                                        "type": _WorkflowStepUserInputTypeFactory(),
                                         "specification": {}
                                     }
                                 ],
@@ -97,7 +97,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(),
+                                        "type": _WorkflowStepUserInputTypeFactory(),
                                         "specification": {}  # accept anything
                                     }
                                 ],
@@ -107,7 +107,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(),
+                                        "type": _WorkflowStepUserInputTypeFactory(),
                                         "specification": {}  # accept anything
                                     }
                                 ],
@@ -217,7 +217,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {
                                         "ui_identifier": "question_1",
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(json_schema={"properties": {"correctAnswer": {"type": "number", "enum": [0, 1, 2]}, "options": {"type": "array", "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
+                                        "type": _WorkflowStepUserInputTypeFactory(json_schema={"properties": {"correctAnswer": {"type": "number", "enum": [0, 1, 2]}, "options": {"type": "array", "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
                                         "specification": {"options": [0, 1, 2], "correctAnswer": 0}
                                     }
                                 ],
@@ -684,7 +684,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                             "code": "step1",
                             "workflowstepuserinput_set": [{
                                 "ui_identifier": "question_1",
-                                "type": _WorkflowStepUserInputType(),
+                                "type": _WorkflowStepUserInputTypeFactory(),
                                 "specification": {}
                             }],
                         }
@@ -1157,7 +1157,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {
                                         "ui_identifier": "question_1",
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(),
+                                        "type": _WorkflowStepUserInputTypeFactory(),
                                         "specification": {}
                                     }
                                 ],
@@ -1172,7 +1172,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {
                                         "ui_identifier": "question_1",
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(),
+                                        "type": _WorkflowStepUserInputTypeFactory(),
                                         "specification": {}
                                     }
                                 ],

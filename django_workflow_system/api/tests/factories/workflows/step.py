@@ -121,7 +121,7 @@ class _WorkflowStepAudioFactory(DjangoModelFactory):
     url = factory.Faker("file_name", extension="mp3")
 
 
-class _WorkflowStepUserInputType(DjangoModelFactory):
+class _WorkflowStepUserInputTypeFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepUserInputType
 
@@ -138,7 +138,7 @@ class _WorkflowStepUserInputFactory(DjangoModelFactory):
     workflow_step = None  # required in kwargs
     ui_identifier = factory.sequence(lambda n: f"input_{n}")
     required = False
-    type = factory.SubFactory(_WorkflowStepUserInputType)
+    type = factory.SubFactory(_WorkflowStepUserInputTypeFactory)
     specification = {}
 
 

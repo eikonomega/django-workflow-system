@@ -31,10 +31,10 @@ def get_response_schema(workflow_step_user_input):
 
     else:
         # Answer is not required and correct is not required, so null should be an option in potential responses
-        new_any_of = workflow_step_user_input.type.json_schema['properties']['correctInput']['anyOf']
+        new_any_of = copy.deepcopy(workflow_step_user_input.type.json_schema['properties']['correctInput']['anyOf'])
         new_any_of.append({"type": 'null'})
         response_schema['properties']['userInput']['anyOf'] = new_any_of
-        new_enum = workflow_step_user_input.specification['inputOptions']
+        new_enum = copy.deepcopy(workflow_step_user_input.specification['inputOptions'])
         new_enum.append(None)
         response_schema['properties']['userInput']['enum'] = new_enum
 
