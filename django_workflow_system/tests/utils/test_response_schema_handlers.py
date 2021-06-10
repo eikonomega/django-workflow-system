@@ -209,7 +209,6 @@ class TestWorkflowCollection(TestCase):
         my_step_input.save()
 
         # Ensure that if neither are required, we have all options in the enum + None
-        # Ensure that if neither are required, we have all options in the enum + None
         self.assertEqual(my_step_input.response_schema['properties']['userInput']['anyOf'], [
                          {"type": "string"}, {"type": "null"}])
         self.assertEqual(
