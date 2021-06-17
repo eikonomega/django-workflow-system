@@ -295,6 +295,11 @@ class WorkflowCollectionEngagementDetailView(APIView):
             id=id,
             workflow_collection_engagement__user=request.user,
         )
+        # We need to add the new dict to what is already existing in user_responses
+        if 'user_responses' in request.data.keys():
+            if engagement_detail.user_responses:
+                request.data['user_responses'] = engagement_detail.user_responses + \
+                    request.data['user_responses']
 
         serializer = WorkflowCollectionEngagementDetailSummarySerializer(
             engagement_detail,
@@ -331,4 +336,8 @@ class WorkflowCollectionEngagementDetailView(APIView):
             )
             data = serializer.data
             data["state"] = engagement_serializer.data["state"]
+            # Check if we are able to proceed to the next step
+            checker = [entry['is_valid']
+                       for entry in engagement_detail.user_responses[-1]['inputs']]
+            data['proceed'] = False if False in checker else True
             return Response(data=data, status=status.HTTP_200_OK)

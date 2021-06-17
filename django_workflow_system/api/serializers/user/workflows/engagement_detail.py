@@ -162,7 +162,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
             try:
                 step_input_id = answer["stepInputID"]
                 step_input_UI_identifier = answer["stepInputUIIdentifier"]
-                response = answer["input"]
+                response = answer["userInput"]
             except KeyError as e:
                 raise serializers.ValidationError(
                     "Missing key in questions entry {}".format(e.args[0])
@@ -173,7 +173,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                 raise serializers.ValidationError(
                     "No step with given stepInputID and stepInputUIIdentifier exists"
                 )
-            answer_dict[step_input_id] = response
+            answer_dict[step_input_id] = answer
 
         for step_input in WorkflowStepUserInput.objects.filter(workflow_step=step):
             step_input_id = str(step_input.id)
@@ -189,13 +189,15 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                         instance=response, schema=step_input.response_schema
                     )
                 except jsonschema.ValidationError as e:
-                    for response in user_responses[-1]['inputs']:
-                        if step_input_id == response['step_input_id']:
-                            response['is_valid'] = False
+                    # This answer is not valid
+                    for entry in user_responses[-1]['inputs']:
+                        if step_input_id == entry['stepInputID']:
+                            entry['is_valid'] = False
                             break
                 else:
-                    for response in user_responses[-1]['inputs']:
-                        if step_input_id == response['step_input_id']:
-                            response['is_valid'] = True
+                    # This is!
+                    for entry in user_responses[-1]['inputs']:
+                        if step_input_id == entry['stepInputID']:
+                            entry['is_valid'] = True
                             break
         return data
