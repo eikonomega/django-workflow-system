@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from rest_framework import status
 from rest_framework.exceptions import ValidationError as DRFValidationError
@@ -121,6 +122,9 @@ class WorkflowCollectionEngagementDetailsView(APIView):
         # The workflow_collection_engagement attribute needed by the serializer
         # is captured in the URL route. Injecting it into the payload here.
         request.data["workflow_collection_engagement"] = id
+        # We need to set a submitted time on the input
+        if "user_responses" in request.data.keys() and request.data['user_responses']:
+            request.data['user_responses'][-1]['submittedTime'] = str(timezone.now())
 
         serializer = WorkflowCollectionEngagementDetailSummarySerializer(
             data=request.data, context={"request": request}
@@ -167,6 +171,13 @@ class WorkflowCollectionEngagementDetailsView(APIView):
             )
             data = serializer.data
             data["state"] = engagement_serializer.data["state"]
+            # Check if we are able to proceed to the next step
+            if data['user_responses'] and "inputs" in data['user_responses'][-1].keys():
+                checker = [entry['is_valid']
+                           for entry in data['user_responses'][-1]['inputs']]
+                data['proceed'] = False if False in checker else True
+            else:
+                data['proceed'] = False
             return Response(data=data, status=status.HTTP_201_CREATED)
 
 
@@ -296,6 +307,10 @@ class WorkflowCollectionEngagementDetailView(APIView):
             workflow_collection_engagement__user=request.user,
         )
 
+        # We need to set a submitted time on the input
+        if "user_responses" in request.data.keys() and request.data['user_responses']:
+            request.data['user_responses'][-1]['submittedTime'] = str(timezone.now())
+
         serializer = WorkflowCollectionEngagementDetailSummarySerializer(
             engagement_detail,
             data=request.data,
@@ -332,10 +347,10 @@ class WorkflowCollectionEngagementDetailView(APIView):
             data = serializer.data
             data["state"] = engagement_serializer.data["state"]
             # Check if we are able to proceed to the next step
-            if engagement_detail.user_responses:
+            if data['user_responses'] and "inputs" in data['user_responses'][-1].keys():
                 checker = [entry['is_valid']
-                           for entry in engagement_detail.user_responses[-1]['inputs']]
+                           for entry in serializer.data['user_responses'][-1]['inputs']]
                 data['proceed'] = False if False in checker else True
             else:
-                data['proceed'] = True
+                data['proceed'] = False
             return Response(data=data, status=status.HTTP_200_OK)
