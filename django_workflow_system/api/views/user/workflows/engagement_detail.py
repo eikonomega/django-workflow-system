@@ -47,7 +47,7 @@ class WorkflowCollectionEngagementDetailsView(APIView):
                 {
                     "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
                     "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
-                    "user_response": {
+                    "user_responses": {
                         "example_response": "this is the response"
                     },
                     "started": "2021-03-09T21:06:57Z",
@@ -79,7 +79,7 @@ class WorkflowCollectionEngagementDetailsView(APIView):
             workflow_collection_engagement (foreign key): The WorkflowCollectionEngagement object
                                                           associated with the engagement detail.
             step (foreign key): The WorkflowStep associated with the engagement detail.
-            user_response (dict): Internal representation of JSON response from user.
+            user_responses (dict): Internal representation of JSON response from user.
             started (datetime): The start date of the engagement detail.
             finished (datetime): The finish date of the engagement detail.
 
@@ -91,7 +91,7 @@ class WorkflowCollectionEngagementDetailsView(APIView):
             {
                 'detail': 'http://testserver/api_v3/users/self/workflows/engagements/3e26ae35-046c-45c7-bf1c-7245e96f0942/details/e608aaee-4d44-434e-b20d-7446b3ec7be6/',
                 'step': UUID('9acd8aac-b535-4a78-b332-1c30a2f75b8d'),
-                'user_response': None,
+                'user_responses': None,
                 'started': '2019-09-13T10:20:00.081316-04:00',
                 'finished': None,
                 'state': {
@@ -206,7 +206,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             {
                 "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
                 "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
-                "user_response": {
+                "user_responses": {
                     "example_response": "this is the response"
                 },
                 "started": "2021-03-09T21:06:57Z",
@@ -246,7 +246,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             workflow_collection_engagement (foreign key): The WorkflowEngagement object associated
                                                           with the engagement detail.
             step (foreign key): The WorkflowStep associated with the engagement detail.
-            user_response (dict): Internal representation of JSON response from user.
+            user_responses (dict): Internal representation of JSON response from user.
             started (datetime): The start date of the engagement detail.
             finished (datetime): The finish date of the engagement detail.
 
@@ -256,7 +256,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             {
                 "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
                 "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
-                "user_response": {
+                "user_responses": {
                     "example_response": "this is the response patched"
                 },
                 "started": "2021-03-09T21:06:57Z",

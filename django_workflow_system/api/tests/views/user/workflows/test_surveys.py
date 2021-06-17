@@ -373,7 +373,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now(),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=1),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(step_input.id),
@@ -415,7 +415,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[1].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=2),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=3),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(step_input.id),
@@ -555,7 +555,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now(),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=1),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(step_input.id),
@@ -601,7 +601,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[2].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=2),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=3),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(step_input_2.id),
@@ -755,7 +755,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now(),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=1),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(step_input.id),
@@ -848,7 +848,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
@@ -900,7 +900,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
@@ -952,7 +952,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
@@ -1004,7 +1004,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             # "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
@@ -1042,7 +1042,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
@@ -1079,7 +1079,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": "hotdog",
@@ -1117,7 +1117,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
@@ -1283,7 +1283,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
@@ -1330,21 +1330,21 @@ class TestWorkflowCollectionSurveys(TestCase):
         detail0 = WorkflowCollectionEngagementDetailFactory(
             workflow_collection_engagement=engagement,
             step=steps[0],
-            user_response=0,
+            user_responses=0,
             started=timezone.now(),
             finished=timezone.now(),
         )
         detail1 = WorkflowCollectionEngagementDetailFactory(
             workflow_collection_engagement=engagement,
             step=steps[1],
-            user_response="Garfield",
+            user_responses="Garfield",
             started=timezone.now(),
             finished=timezone.now(),
         )
         detail2 = WorkflowCollectionEngagementDetailFactory(
             workflow_collection_engagement=engagement,
             step=steps[2],
-            user_response="Corgi",
+            user_responses="Corgi",
             started=timezone.now(),
             finished=None,
         )

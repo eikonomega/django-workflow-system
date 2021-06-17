@@ -33,7 +33,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
             "detail",
             "workflow_collection_engagement",
             "step",
-            "user_response",
+            "user_responses",
             "started",
             "finished",
         ]
@@ -57,15 +57,15 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
         a step if it is the previous step or the next step, or it is the first step
         submitted in an activity-type collection engagement and it is the first step of a workflow
 
-        Check that user_response has a valid entry for each WorkflowStepUserInput
+        Check that user_responses has a valid entry for each WorkflowStepUserInput
         according to that WorkflowStepUserInput's JSON Schema validator.
 
         If a user is not finished:
-            then we don't care about the state of user_response
+            then we don't care about the state of user_responses
 
         Regarding finished workflow_collection_engagements:
             If the workflow_step has required inputs:
-                then user_response must contain something to be valid
+                then user_responses must contain something to be valid
             Else the workflow_step does not have required inputs,
                 then having no answers is automatically valid,
 
@@ -91,7 +91,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
 
         step = getattr_patched("step")
         finished = getattr_patched("finished")
-        user_response = getattr_patched("user_response")
+        user_responses = getattr_patched("user_responses")
         has_required_inputs = bool(
             WorkflowStepUserInput.objects.filter(workflow_step=step, required=True)
         )
@@ -140,29 +140,29 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
             return data
 
         if has_required_inputs:  # then having no answers is bad
-            if not user_response:
+            if not user_responses:
                 raise serializers.ValidationError(
                     "workflow_step has required step_input(s) but "
-                    "workflow_collection_engagement has no user_response"
+                    "workflow_collection_engagement has no user_responses"
                 )
-            if "questions" not in user_response:
+            if "inputs" not in user_responses[-1]:
                 raise serializers.ValidationError(
                     "workflow_step has required step_input(s) but "
-                    'user_response does not contain key "questions"'
+                    'user_responses does not contain key "questions"'
                 )
         else:  # having no answers is ok
-            if not user_response:
+            if not user_responses:
                 return data
-            if "questions" not in user_response:
+            if "inputs" not in user_responses[-1]:
                 return data
 
         # Ensure all required attributes are present for each question in the payload.
         answer_dict = {}
-        for answer in user_response["questions"]:
+        for answer in user_responses[-1]["inputs"]:
             try:
                 step_input_id = answer["stepInputID"]
                 step_input_UI_identifier = answer["stepInputUIIdentifier"]
-                response = answer["response"]
+                response = answer["input"]
             except KeyError as e:
                 raise serializers.ValidationError(
                     "Missing key in questions entry {}".format(e.args[0])
@@ -189,9 +189,13 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                         instance=response, schema=step_input.response_schema
                     )
                 except jsonschema.ValidationError as e:
-                    raise serializers.ValidationError(
-                        "Response did not match workflow step input response schema {}".format(
-                            e.message
-                        )
-                    )
+                    for response in user_responses[-1]['inputs']:
+                        if step_input_id == response['step_input_id']:
+                            response['is_valid'] = False
+                            break
+                else:
+                    for response in user_responses[-1]['inputs']:
+                        if step_input_id == response['step_input_id']:
+                            response['is_valid'] = True
+                            break
         return data

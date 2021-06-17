@@ -239,7 +239,7 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
                         self.workflowcollectionengagementdetail_set.get(
                             step=required_step,
                             finished__isnull=False,
-                        ).user_response
+                        ).user_responses
                     )
                 except WorkflowCollectionEngagementDetail.DoesNotExist as e:
                     dependency_group_satisfied = False

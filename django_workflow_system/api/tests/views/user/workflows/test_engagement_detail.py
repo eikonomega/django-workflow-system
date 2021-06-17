@@ -130,7 +130,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         for result in response.data:
             self.assertCountEqual(
                 list(result.keys()),
-                ["detail", "step", "user_response", "started", "finished"],
+                ["detail", "step", "user_responsess", "started", "finished"],
             )
             self.assertEqual(
                 result["detail"],
@@ -265,8 +265,8 @@ class TestWorkflowEngagementDetailsView(TestCase):
             f"http://testserver/api/workflow_system/workflows/{self.single_activity_collection__workflow.id}/",
         )
 
-    def test_post__required_inputs_no_user_response(self):
-        """Step has required inputs but no user_response in request, returns a 400."""
+    def test_post__required_inputs_no_user_responses(self):
+        """Step has required inputs but no user_responsess in request, returns a 400."""
 
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
@@ -280,7 +280,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 "step": self.single_survey_collection__step.id,
                 "started": timezone.now(),
                 "finished": timezone.now() + timezone.timedelta(minutes=5),
-                "user_response": None,
+                "user_responsess": None,
             },
             format="json",
         )
@@ -290,7 +290,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_post_no_required_inputs_questions_not_in_parsed(self):
-        """No required questions, but "questions" is not in user_response json structure"""
+        """No required questions, but "inputs" is not in user_responsess json structure"""
 
         my_collection = WorkflowCollectionFactory(
             **{
@@ -326,7 +326,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 "step": my_step.id,
                 "started": timezone.now(),
                 "finished": timezone.now() + timezone.timedelta(minutes=5),
-                "user_response": {"ignored_key": "ignored value"},
+                "user_responsess": {"ignored_key": "ignored value"},
             },
             format="json",
         )
@@ -698,7 +698,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                "user_response": {
+                "user_responsess": {
                     "questions": [
                         {
                             "stepInputID": str(my_step_input.id),
@@ -759,7 +759,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             step=my_step,
             started=timezone.now(),
             finished=timezone.now(),
-            user_response={
+            user_responses={
                 "questions": [
                     {
                         "stepInputID": str(my_step_input.id),
@@ -778,7 +778,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(my_step_input.id),
@@ -836,7 +836,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             step=my_step,
             started=timezone.now(),
             finished=timezone.now(),
-            user_response={
+            user_responses={
                 "questions": [
                     {
                         "stepInputID": str(my_step_input.id),
@@ -854,7 +854,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                "user_response": {
+                "user_responses": {
                     "questions": [
                         {
                             "stepInputID": str(my_step_input.id),
@@ -915,7 +915,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                "user_response": {"questions": []},
+                "user_responses": {"questions": []},
             },
             format="json",
         )
@@ -969,7 +969,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                "user_response": {"questions": []},
+                "user_responses": {"questions": []},
             },
             format="json",
         )
@@ -980,7 +980,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
 
         self.assertEqual(response.status_code, 400)
 
-    def test_patch__questions_not_in_user_response(self):
+    def test_patch__questions_not_in_user_responses(self):
         my_collection = WorkflowCollectionFactory(
             **{
                 "category": "SURVEY",
@@ -1024,7 +1024,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                "user_response": {"la": "mao"},
+                "user_responses": {"la": "mao"},
             },
             format="json",
         )

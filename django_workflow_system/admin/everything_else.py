@@ -117,14 +117,14 @@ class WorkflowCollectionEngagementDetailInline(
         "step",
         "started",
         "finished",
-        "user_response",
+        "user_responses",
         "edit_link",
     )
     readonly_fields = (
         "step",
         "started",
         "finished",
-        "user_response",
+        "user_responses",
         "edit_link",
     )
 

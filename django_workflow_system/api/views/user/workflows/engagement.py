@@ -147,7 +147,7 @@ class WorkflowCollectionEngagementsView(APIView):
                     {
                         "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
                         "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
-                        "user_response": {
+                        "user_responses": {
                             "example_response": "this is the response"
                         },
                         "started": "2021-03-09T21:06:57Z",
@@ -260,7 +260,7 @@ class WorkflowCollectionEngagementView(APIView):
                     {
                         "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
                         "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
-                        "user_response": {
+                        "user_responses": {
                             "example_response": "this is the response"
                         },
                         "started": "2021-03-09T21:06:57Z",
@@ -326,7 +326,7 @@ class WorkflowCollectionEngagementView(APIView):
                     {
                         "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
                         "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
-                        "user_response": {
+                        "user_responses": {
                             "example_response": "this is the response"
                         },
                         "started": "2021-03-09T21:06:57Z",
