@@ -244,7 +244,7 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
                 except WorkflowCollectionEngagementDetail.DoesNotExist as e:
                     dependency_group_satisfied = False
                     break
-                questions_list = required_step_response["questions"]
+                questions_list = required_step_response[-1]["inputs"]
                 try:
                     jsonschema.validate(
                         instance=questions_list, schema=required_response_schema
