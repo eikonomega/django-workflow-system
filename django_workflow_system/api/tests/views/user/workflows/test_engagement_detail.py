@@ -718,7 +718,6 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(dateutil.parser.parse(response.data["finished"]), time_stamp)
         self.assertEqual(response.data['proceed'], True)
-        print(response.data['user_responses'])
 
     def test_patch__valid_payload_with_schema_existing_response(self):
         """Patch current engagement to the one specified."""
