@@ -1038,3 +1038,83 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
+
+    def test_patch__valid_payload_with_schema_existing_response_fails(self):
+        """Patch current engagement to the one specified. If an old response fails schema validation, return error."""
+        my_collection = WorkflowCollectionFactory(
+            **{
+                "category": "SURVEY",
+                "workflow_set": [
+                    {
+                        "workflowstep_set": [
+                            {
+                                "workflowstepuserinput_set": [
+                                    {
+                                        "required": True,
+                                        "type": _WorkflowStepUserInputTypeFactory(json_schema={"type": "object", "description": "A schema representing a single choice question user input.", "required": ["label", "inputOptions"], "properties": {"id": {"type": "string", "title": "A string-based user input identifier.", "description": "This value may be managed outside of the object specification and so is optional.", "examples": ["4125-1351-1251-asfd"]}, "label": {"type": "string", "title": "UI Label for Input", "description": "Label that should be displayed by user interfaces for this input.", "examples": ["The label to display for the input/question."]}, "inputOptions": {"$id": "#/properties/options", "type": "array", "title": "Question Options", "description": "The options to be displayed to the user for this question.", "minItems": 2, "uniqueItems": True, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}, "correctInput": {"description": "Indicates which answer is the correct one.", "anyOf": [{"type": "string"}, {"type": "number"}]}, "meta": {"type": "object", "properties": {"inputRequired": {"type": "boolean", "description": "Whether or not an answer should be required from the user."}, "correctInputRequired": {"type": "boolean", "description": "Whether or not the correct answer should be required from the user."}}}}}),
+                                        "specification": {"label": "What is your favorite number?", "inputOptions": [1, 2, 3, 4, 5], "correctInput": 1, "meta": {"inputRequired": True, "correctInputRequired": False}}
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+            }
+        )
+        my_step = WorkflowStep.objects.get(
+            workflow__workflowcollectionmember__workflow_collection=my_collection
+        )
+        my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
+        my_step_input.type.name = 'single_choice_question'
+        my_step_input.save()
+        my_user = UserFactory()
+        my_workflow_engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=my_collection,
+            user=my_user,
+        )
+        my_workflow_engagement_detail = WorkflowCollectionEngagementDetailFactory(
+            workflow_collection_engagement=my_workflow_engagement,
+            step=my_step,
+            started=timezone.now(),
+            finished=timezone.now(),
+            user_responses=[{
+                "inputs": [
+                    {
+                            "stepInputID": str(my_step_input.id),
+                            "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                            "userInput": 1,
+                            }
+                ]
+            }]
+        )
+
+        time_stamp = timezone.now()
+        request = self.factory.patch(
+            f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
+            data={
+                "finished": time_stamp,
+                "user_responses": [{
+                    "inputs": [
+                        {
+                            "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                            "userInput": 7,
+                        }],
+                    "submittedTime": time_stamp
+                },
+                    {
+                    "inputs": [
+                        {
+                            "stepInputID": str(my_step_input.id),
+                            "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                            "userInput": 2,
+                        }
+                    ]
+                }],
+            },
+            format="json",
+        )
+        request.user = my_user
+        response = self.view(
+            request, my_workflow_engagement.id, my_workflow_engagement_detail.id
+        )
+        self.assertEqual(response.status_code, 400)

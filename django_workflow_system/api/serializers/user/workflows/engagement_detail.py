@@ -158,22 +158,25 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
 
         # Ensure all required attributes are present for each question in the payload.
         answer_dict = {}
-        for answer in user_responses[-1]["inputs"]:
-            try:
-                step_input_id = answer["stepInputID"]
-                step_input_UI_identifier = answer["stepInputUIIdentifier"]
-                response = answer["userInput"]
-            except KeyError as e:
-                raise serializers.ValidationError(
-                    "Missing key in questions entry {}".format(e.args[0])
-                )
-            if not WorkflowStepUserInput.objects.filter(
-                id=step_input_id, ui_identifier=step_input_UI_identifier
-            ):
-                raise serializers.ValidationError(
-                    "No step with given stepInputID and stepInputUIIdentifier exists"
-                )
-            answer_dict[step_input_id] = answer
+        for index, user_response in enumerate(user_responses):
+            for answer in user_response['inputs']:
+                try:
+                    step_input_id = answer["stepInputID"]
+                    step_input_UI_identifier = answer["stepInputUIIdentifier"]
+                    response = answer["userInput"]
+                except KeyError as e:
+                    raise serializers.ValidationError(
+                        "Missing key in questions entry {}".format(e.args[0])
+                    )
+                if not WorkflowStepUserInput.objects.filter(
+                    id=step_input_id, ui_identifier=step_input_UI_identifier
+                ):
+                    raise serializers.ValidationError(
+                        "No step with given stepInputID and stepInputUIIdentifier exists"
+                    )
+                if index == len(user_responses) - 1:
+                    # This is the most recent user_response
+                    answer_dict[step_input_id] = answer
 
         for step_input in WorkflowStepUserInput.objects.filter(workflow_step=step):
             step_input_id = str(step_input.id)

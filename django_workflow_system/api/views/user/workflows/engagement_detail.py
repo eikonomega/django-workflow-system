@@ -282,7 +282,8 @@ class WorkflowCollectionEngagementDetailView(APIView):
                     "previously_completed_workflows": [],
                     "next_workflow": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/",
                     "prev_workflow": null
-                }
+                },
+                "proceed": true
             }
 
         Raises:
