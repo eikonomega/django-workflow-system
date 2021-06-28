@@ -29,7 +29,7 @@ from django_workflow_system.api.tests.factories import (
     WorkflowCollectionEngagementDetailFactory,
 )
 from django_workflow_system.api.tests.factories.workflows import json_schema
-from django_workflow_system.api.tests.factories.workflows.step import _WorkflowStepUserInputType
+from django_workflow_system.api.tests.factories.workflows.step import _WorkflowStepUserInputTypeFactory
 from django_workflow_system.api.views.user.workflows import (
     WorkflowCollectionEngagementDetailsView,
     WorkflowCollectionEngagementDetailView,
@@ -72,7 +72,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(),
+                                        "type": _WorkflowStepUserInputTypeFactory(),
                                         "specification": {}
                                     }
                                 ]
@@ -130,7 +130,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         for result in response.data:
             self.assertCountEqual(
                 list(result.keys()),
-                ["detail", "step", "user_response", "started", "finished"],
+                ["detail", "step", "user_responses", "started", "finished"],
             )
             self.assertEqual(
                 result["detail"],
@@ -265,8 +265,8 @@ class TestWorkflowEngagementDetailsView(TestCase):
             f"http://testserver/api/workflow_system/workflows/{self.single_activity_collection__workflow.id}/",
         )
 
-    def test_post__required_inputs_no_user_response(self):
-        """Step has required inputs but no user_response in request, returns a 400."""
+    def test_post__required_inputs_no_user_responses(self):
+        """Step has required inputs but no user_responses in request, returns a 400."""
 
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
@@ -280,7 +280,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 "step": self.single_survey_collection__step.id,
                 "started": timezone.now(),
                 "finished": timezone.now() + timezone.timedelta(minutes=5),
-                "user_response": None,
+                "user_responses": None,
             },
             format="json",
         )
@@ -290,7 +290,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_post_no_required_inputs_questions_not_in_parsed(self):
-        """No required questions, but "questions" is not in user_response json structure"""
+        """No required questions, but "inputs" is not in user_responses json structure"""
 
         my_collection = WorkflowCollectionFactory(
             **{
@@ -326,7 +326,7 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 "step": my_step.id,
                 "started": timezone.now(),
                 "finished": timezone.now() + timezone.timedelta(minutes=5),
-                "user_response": {"ignored_key": "ignored value"},
+                "user_responses": [{"ignored_key": "ignored value"}],
             },
             format="json",
         )
@@ -665,8 +665,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(json_schema={"properties": {"correctAnswer": {"type": "number", "enum": [0, 1, 2]}, "options": {"type": "array", "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
-                                        "specification": {"options": [1, 2, 3, 4, 5], "correctAnswer": 1}
+                                        "type": _WorkflowStepUserInputTypeFactory(json_schema={"type": "object", "title": "User Input: Single Choice Question", "description": "A schema representing a single choice question user input.", "required": ["label", "inputOptions"], "properties": {"id": {"type": "string", "title": "A string-based user input identifier.", "description": "This value may be managed outside of the object specification and so is optional.", "examples": ["4125-1351-1251-asfd"]}, "label": {"type": "string", "title": "UI Label for Input", "description": "Label that should be displayed by user interfaces for this input.", "examples": ["The label to display for the input/question."]}, "inputOptions": {"$id": "#/properties/options", "type": "array", "title": "Question Options", "description": "The options to be displayed to the user for this question.", "minItems": 2, "uniqueItems": True, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}, "correctInput": {"description": "Indicates which answer is the correct one.", "anyOf": [{"type": "string"}, {"type": "number"}]}, "meta": {"type": "object", "properties": {"inputRequired": {"type": "boolean", "description": "Whether or not an answer should be required from the user."}, "correctInputRequired": {"type": "boolean", "description": "Whether or not the correct answer should be required from the user."}}}}}),
+                                        "specification": {"label": "What is your favorite color?", "inputOptions": ["Red", "Blue"], "correctInput": "Red", "meta": {"inputRequired": True, "correctInputRequired": True}}
                                     }
                                 ]
                             }
@@ -679,6 +679,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
         my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
+        my_step_input.type.name = 'single_choice_question'
+        my_step_input.type.save()
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
@@ -696,15 +698,15 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                "user_response": {
-                    "questions": [
+                "user_responses": [{
+                    "inputs": [
                         {
                             "stepInputID": str(my_step_input.id),
                             "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                            "response": 1,
+                            "userInput": "Red"
                         }
                     ]
-                },
+                }],
             },
             format="json",
         )
@@ -715,6 +717,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(dateutil.parser.parse(response.data["finished"]), time_stamp)
+        self.assertEqual(response.data['proceed'], True)
 
     def test_patch__valid_payload_with_schema_existing_response(self):
         """Patch current engagement to the one specified."""
@@ -728,8 +731,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(json_schema={"properties": {"correctAnswer": {"type": "number", "enum": [0, 1, 2]}, "options": {"type": "array", "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
-                                        "specification": {"options": [1, 2, 3, 4, 5], "correctAnswer": 1}
+                                        "type": _WorkflowStepUserInputTypeFactory(json_schema={"type": "object", "description": "A schema representing a single choice question user input.", "required": ["label", "inputOptions"], "properties": {"id": {"type": "string", "title": "A string-based user input identifier.", "description": "This value may be managed outside of the object specification and so is optional.", "examples": ["4125-1351-1251-asfd"]}, "label": {"type": "string", "title": "UI Label for Input", "description": "Label that should be displayed by user interfaces for this input.", "examples": ["The label to display for the input/question."]}, "inputOptions": {"$id": "#/properties/options", "type": "array", "title": "Question Options", "description": "The options to be displayed to the user for this question.", "minItems": 2, "uniqueItems": True, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}, "correctInput": {"description": "Indicates which answer is the correct one.", "anyOf": [{"type": "string"}, {"type": "number"}]}, "meta": {"type": "object", "properties": {"inputRequired": {"type": "boolean", "description": "Whether or not an answer should be required from the user."}, "correctInputRequired": {"type": "boolean", "description": "Whether or not the correct answer should be required from the user."}}}}}),
+                                        "specification": {"label": "What is your favorite number?", "inputOptions": [1, 2, 3, 4, 5], "correctInput": 1, "meta": {"inputRequired": True, "correctInputRequired": False}}
                                     }
                                 ]
                             }
@@ -742,6 +745,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
         my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
+        my_step_input.type.name = 'single_choice_question'
+        my_step_input.save()
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
@@ -752,15 +757,15 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             step=my_step,
             started=timezone.now(),
             finished=timezone.now(),
-            user_response={
-                "questions": [
+            user_responses=[{
+                "inputs": [
                     {
-                        "stepInputID": str(my_step_input.id),
-                        "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                        "response": 1,
-                    }
+                            "stepInputID": str(my_step_input.id),
+                            "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                            "userInput": 1,
+                            }
                 ]
-            },
+            }]
         )
 
         time_stamp = timezone.now()
@@ -768,15 +773,24 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                "user_response": {
-                    "questions": [
+                "user_responses": [{
+                    "inputs": [
                         {
                             "stepInputID": str(my_step_input.id),
                             "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                            "response": 2,
+                            "userInput": 1,
+                        }],
+                    "submittedTime": time_stamp
+                },
+                    {
+                    "inputs": [
+                        {
+                            "stepInputID": str(my_step_input.id),
+                            "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                            "userInput": 2,
                         }
                     ]
-                },
+                }],
             },
             format="json",
         )
@@ -787,6 +801,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(dateutil.parser.parse(response.data["finished"]), time_stamp)
+        self.assertEqual(len(response.data['user_responses']), 2)
+        self.assertEqual(response.data['proceed'], True)
 
     def test_patch__schema_fails(self):
         """Patch current engagement to the one specified."""
@@ -800,8 +816,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(json_schema={"properties": {"correctAnswer": {"anyOf": [{"type": "string"}, {"type": "number"}]}, "options": {"type": "array", "minItems": 2, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
-                                        "specification": {"options": ["Red", "Blue"], "correctAnswer": "Blue"}
+                                        "type": _WorkflowStepUserInputTypeFactory(json_schema={"$id": "http://github.com/crcresearch/", "type": "object", "title": "User Input: Single Choice Question", "description": "A schema representing a single choice question user input.", "required": ["label", "inputOptions"], "properties": {"id": {"type": "string", "title": "A string-based user input identifier.", "description": "This value may be managed outside of the object specification and so is optional.", "examples": ["4125-1351-1251-asfd"]}, "label": {"type": "string", "title": "UI Label for Input", "description": "Label that should be displayed by user interfaces for this input.", "examples": ["The label to display for the input/question."]}, "inputOptions": {"$id": "#/properties/options", "type": "array", "title": "Question Options", "description": "The options to be displayed to the user for this question.", "minItems": 2, "uniqueItems": True, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}, "correctInput": {"description": "Indicates which answer is the correct one.", "anyOf": [{"type": "string"}, {"type": "number"}]}, "meta": {"type": "object", "properties": {"inputRequired": {"type": "boolean", "description": "Whether or not an answer should be required from the user."}, "correctInputRequired": {"type": "boolean", "description": "Whether or not the correct answer should be required from the user."}}}}}),
+                                        "specification": {"label": "What is your favorite color?", "inputOptions": ["Red", "Blue"], "correctInput": "Red", "meta": {"inputRequired": False, "correctInputRequired": False}}
                                     }
                                 ]
                             }
@@ -814,10 +830,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             workflow__workflowcollectionmember__workflow_collection=my_collection
         )
         my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
-        my_step_input.type.json_schema = {"properties": {"correctAnswer": {"anyOf": [{"type": "string"}, {"type": "number"}]}, "options": {"type": "array", "minItems": 2, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}
+        my_step_input.type.name = 'single_choice_question'
         my_step_input.type.save()
-        my_step_input.specification = {"options": [1, 2, 3, 4, 5], "correctAnswer": 1, "requireCorrectAnswer": True}
-        my_step_input.save()
         my_user = UserFactory()
         my_workflow_engagement = WorkflowCollectionEngagementFactory(
             workflow_collection=my_collection,
@@ -828,30 +842,32 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             step=my_step,
             started=timezone.now(),
             finished=timezone.now(),
-            user_response={
-                "questions": [
+            user_responses=[{
+                "inputs": [
                     {
                         "stepInputID": str(my_step_input.id),
                         "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                        "response": 1,
-                    }
+                        "userInput": "Red"
+                    },
                 ]
-            },
+            }]
         )
         time_stamp = timezone.now()
         request = self.factory.patch(
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                "user_response": {
-                    "questions": [
-                        {
-                            "stepInputID": str(my_step_input.id),
-                            "stepInputUIIdentifier": str(my_step_input.ui_identifier),
-                            "response": "africa",
-                        }
-                    ]
-                },
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": str(my_step_input.id),
+                                "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                                "userInput": "Eggs"
+                            }
+                        ]
+                    }
+                ]
             },
             format="json",
         )
@@ -860,7 +876,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             request, my_workflow_engagement.id, my_workflow_engagement_detail.id
         )
 
-        self.assertEqual(response.status_code, 400)
+        # This no longer raises an error, the user just can't proceed to the next step
+        self.assertEqual(response.data['proceed'], False)
 
     def test_post__answer_NOT_required_NOT_given(self):
         my_collection = WorkflowCollectionFactory(
@@ -901,7 +918,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                "user_response": {"questions": []},
+                "user_responses": [{"inputs": []}],
             },
             format="json",
         )
@@ -911,6 +928,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['proceed'], True)
 
     def test_patch__answer_required_not_given(self):
         my_collection = WorkflowCollectionFactory(
@@ -923,7 +941,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(),
+                                        "type": _WorkflowStepUserInputTypeFactory(),
                                         "specification": {}
                                     }
                                 ]
@@ -955,7 +973,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                "user_response": {"questions": []},
+                "user_responses": [{"inputs": []}],
             },
             format="json",
         )
@@ -966,7 +984,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
 
         self.assertEqual(response.status_code, 400)
 
-    def test_patch__questions_not_in_user_response(self):
+    def test_patch__inputs_not_in_user_responses(self):
         my_collection = WorkflowCollectionFactory(
             **{
                 "category": "SURVEY",
@@ -977,7 +995,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
                                 "workflowstepuserinput_set": [
                                     {
                                         "required": True,
-                                        "type": _WorkflowStepUserInputType(),
+                                        "type": _WorkflowStepUserInputTypeFactory(),
                                         "specification": {}
                                     }
                                 ]
@@ -1010,7 +1028,7 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
             data={
                 "finished": time_stamp,
-                "user_response": {"la": "mao"},
+                "user_responses": [{"la": "mao"}],
             },
             format="json",
         )
@@ -1019,4 +1037,84 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             request, my_workflow_engagement.id, my_workflow_engagement_detail.id
         )
 
+        self.assertEqual(response.status_code, 400)
+
+    def test_patch__valid_payload_with_schema_existing_response_fails(self):
+        """Patch current engagement to the one specified. If an old response fails schema validation, return error."""
+        my_collection = WorkflowCollectionFactory(
+            **{
+                "category": "SURVEY",
+                "workflow_set": [
+                    {
+                        "workflowstep_set": [
+                            {
+                                "workflowstepuserinput_set": [
+                                    {
+                                        "required": True,
+                                        "type": _WorkflowStepUserInputTypeFactory(json_schema={"type": "object", "description": "A schema representing a single choice question user input.", "required": ["label", "inputOptions"], "properties": {"id": {"type": "string", "title": "A string-based user input identifier.", "description": "This value may be managed outside of the object specification and so is optional.", "examples": ["4125-1351-1251-asfd"]}, "label": {"type": "string", "title": "UI Label for Input", "description": "Label that should be displayed by user interfaces for this input.", "examples": ["The label to display for the input/question."]}, "inputOptions": {"$id": "#/properties/options", "type": "array", "title": "Question Options", "description": "The options to be displayed to the user for this question.", "minItems": 2, "uniqueItems": True, "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}, "correctInput": {"description": "Indicates which answer is the correct one.", "anyOf": [{"type": "string"}, {"type": "number"}]}, "meta": {"type": "object", "properties": {"inputRequired": {"type": "boolean", "description": "Whether or not an answer should be required from the user."}, "correctInputRequired": {"type": "boolean", "description": "Whether or not the correct answer should be required from the user."}}}}}),
+                                        "specification": {"label": "What is your favorite number?", "inputOptions": [1, 2, 3, 4, 5], "correctInput": 1, "meta": {"inputRequired": True, "correctInputRequired": False}}
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+            }
+        )
+        my_step = WorkflowStep.objects.get(
+            workflow__workflowcollectionmember__workflow_collection=my_collection
+        )
+        my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
+        my_step_input.type.name = 'single_choice_question'
+        my_step_input.save()
+        my_user = UserFactory()
+        my_workflow_engagement = WorkflowCollectionEngagementFactory(
+            workflow_collection=my_collection,
+            user=my_user,
+        )
+        my_workflow_engagement_detail = WorkflowCollectionEngagementDetailFactory(
+            workflow_collection_engagement=my_workflow_engagement,
+            step=my_step,
+            started=timezone.now(),
+            finished=timezone.now(),
+            user_responses=[{
+                "inputs": [
+                    {
+                            "stepInputID": str(my_step_input.id),
+                            "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                            "userInput": 1,
+                            }
+                ]
+            }]
+        )
+
+        time_stamp = timezone.now()
+        request = self.factory.patch(
+            f"/users/self/workflows/engagements/{my_workflow_engagement.id}/details/{my_workflow_engagement_detail.id}/",
+            data={
+                "finished": time_stamp,
+                "user_responses": [{
+                    "inputs": [
+                        {
+                            "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                            "userInput": 7,
+                        }],
+                    "submittedTime": time_stamp
+                },
+                    {
+                    "inputs": [
+                        {
+                            "stepInputID": str(my_step_input.id),
+                            "stepInputUIIdentifier": str(my_step_input.ui_identifier),
+                            "userInput": 2,
+                        }
+                    ]
+                }],
+            },
+            format="json",
+        )
+        request.user = my_user
+        response = self.view(
+            request, my_workflow_engagement.id, my_workflow_engagement_detail.id
+        )
         self.assertEqual(response.status_code, 400)

@@ -136,3 +136,7 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
 }
+
+DJANGO_WORKFLOW_SYSTEM = {
+    "INPUT_TYPE_RESPONSE_SCHEMA_HANDLERS": []
+}

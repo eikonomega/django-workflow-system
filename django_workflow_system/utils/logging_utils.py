@@ -5,7 +5,7 @@ def strip_sensitive_data(data: dict):
     """
     Function that strips request data before it is sent to our graylog server.
     """
-    sensitive_keys = ("password", "response", "user_response")
+    sensitive_keys = ("password", "response", "user_responses")
 
     # don't overwrite request!
     data = dict(data)

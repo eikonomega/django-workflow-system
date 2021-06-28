@@ -34,7 +34,7 @@ class WorkflowCollectionEngagementDetailFactory(DjangoModelFactory):
 
     workflow_collection_engagement = None  # must be supplied by kwargs
     step = None  # must be supplied by kwargs
-    user_response = None
+    user_responses = None
     started = timezone.now()
     finished = None
 
