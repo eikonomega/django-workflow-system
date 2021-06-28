@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from rest_framework import status
 from rest_framework.exceptions import ValidationError as DRFValidationError
@@ -47,7 +48,7 @@ class WorkflowCollectionEngagementDetailsView(APIView):
                 {
                     "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
                     "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
-                    "user_response": {
+                    "user_responses": {
                         "example_response": "this is the response"
                     },
                     "started": "2021-03-09T21:06:57Z",
@@ -79,7 +80,7 @@ class WorkflowCollectionEngagementDetailsView(APIView):
             workflow_collection_engagement (foreign key): The WorkflowCollectionEngagement object
                                                           associated with the engagement detail.
             step (foreign key): The WorkflowStep associated with the engagement detail.
-            user_response (dict): Internal representation of JSON response from user.
+            user_responses (dict): Internal representation of JSON response from user.
             started (datetime): The start date of the engagement detail.
             finished (datetime): The finish date of the engagement detail.
 
@@ -91,7 +92,7 @@ class WorkflowCollectionEngagementDetailsView(APIView):
             {
                 'detail': 'http://testserver/api_v3/users/self/workflows/engagements/3e26ae35-046c-45c7-bf1c-7245e96f0942/details/e608aaee-4d44-434e-b20d-7446b3ec7be6/',
                 'step': UUID('9acd8aac-b535-4a78-b332-1c30a2f75b8d'),
-                'user_response': None,
+                'user_responses': None,
                 'started': '2019-09-13T10:20:00.081316-04:00',
                 'finished': None,
                 'state': {
@@ -121,6 +122,9 @@ class WorkflowCollectionEngagementDetailsView(APIView):
         # The workflow_collection_engagement attribute needed by the serializer
         # is captured in the URL route. Injecting it into the payload here.
         request.data["workflow_collection_engagement"] = id
+        # We need to set a submitted time on the input
+        if "user_responses" in request.data.keys() and request.data['user_responses']:
+            request.data['user_responses'][-1]['submittedTime'] = str(timezone.now())
 
         serializer = WorkflowCollectionEngagementDetailSummarySerializer(
             data=request.data, context={"request": request}
@@ -167,6 +171,13 @@ class WorkflowCollectionEngagementDetailsView(APIView):
             )
             data = serializer.data
             data["state"] = engagement_serializer.data["state"]
+            # Check if we are able to proceed to the next step
+            if data['user_responses'] and "inputs" in data['user_responses'][-1].keys():
+                checker = [entry['is_valid']
+                           for entry in data['user_responses'][-1]['inputs']]
+                data['proceed'] = False if False in checker else True
+            else:
+                data['proceed'] = False
             return Response(data=data, status=status.HTTP_201_CREATED)
 
 
@@ -206,7 +217,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             {
                 "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
                 "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
-                "user_response": {
+                "user_responses": {
                     "example_response": "this is the response"
                 },
                 "started": "2021-03-09T21:06:57Z",
@@ -246,7 +257,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             workflow_collection_engagement (foreign key): The WorkflowEngagement object associated
                                                           with the engagement detail.
             step (foreign key): The WorkflowStep associated with the engagement detail.
-            user_response (dict): Internal representation of JSON response from user.
+            user_responses (dict): Internal representation of JSON response from user.
             started (datetime): The start date of the engagement detail.
             finished (datetime): The finish date of the engagement detail.
 
@@ -256,7 +267,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             {
                 "detail": "http://127.0.0.1:8000/workflow_system/users/self/workflows/engagements/9b264dd6-0e53-4c39-9473-2d0888405532/details/e41fe4ec-5a12-4c6f-aef9-d4848dd1ee62/",
                 "step": "cf33e6d9-6fd7-4a09-b59e-368ceb7ab675",
-                "user_response": {
+                "user_responses": {
                     "example_response": "this is the response patched"
                 },
                 "started": "2021-03-09T21:06:57Z",
@@ -271,7 +282,8 @@ class WorkflowCollectionEngagementDetailView(APIView):
                     "previously_completed_workflows": [],
                     "next_workflow": "http://127.0.0.1:8000/workflow_system/workflows/71689475-c779-4620-9623-dc5cbc0ec612/",
                     "prev_workflow": null
-                }
+                },
+                "proceed": true
             }
 
         Raises:
@@ -295,6 +307,10 @@ class WorkflowCollectionEngagementDetailView(APIView):
             id=id,
             workflow_collection_engagement__user=request.user,
         )
+
+        # We need to set a submitted time on the input
+        if "user_responses" in request.data.keys() and request.data['user_responses']:
+            request.data['user_responses'][-1]['submittedTime'] = str(timezone.now())
 
         serializer = WorkflowCollectionEngagementDetailSummarySerializer(
             engagement_detail,
@@ -331,4 +347,11 @@ class WorkflowCollectionEngagementDetailView(APIView):
             )
             data = serializer.data
             data["state"] = engagement_serializer.data["state"]
+            # Check if we are able to proceed to the next step
+            if data['user_responses'] and "inputs" in data['user_responses'][-1].keys():
+                checker = [entry['is_valid']
+                           for entry in serializer.data['user_responses'][-1]['inputs']]
+                data['proceed'] = False if False in checker else True
+            else:
+                data['proceed'] = False
             return Response(data=data, status=status.HTTP_200_OK)

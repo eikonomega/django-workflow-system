@@ -36,7 +36,7 @@ class WorkflowCollectionEngagementDetail(CreatedModifiedAbstractModel):
         on_delete=models.PROTECT,
         help_text="The WorkflowStep associated with the engagement detail.",
     )
-    user_response = models.JSONField(
+    user_responses = models.JSONField(
         null=True,
         blank=True,
         help_text="Internal representation of JSON response from user.",
