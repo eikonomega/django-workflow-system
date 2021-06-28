@@ -174,9 +174,11 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                     raise serializers.ValidationError(
                         "No step with given stepInputID and stepInputUIIdentifier exists"
                     )
-                if index == len(user_responses) - 1:
-                    # This is the most recent user_response
-                    answer_dict[step_input_id] = answer
+                
+                # This is the most recent user_response
+                if step_input_id not in answer_dict.keys():
+                    answer_dict[step_input_id] = {}
+                answer_dict[step_input_id][index] = answer
 
         for step_input in WorkflowStepUserInput.objects.filter(workflow_step=step):
             step_input_id = str(step_input.id)
@@ -186,21 +188,23 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                         "Missing response to step_input id {}".format(step_input_id)
                     )
             else:  # user gave an answer, and we should validate it
-                response = answer_dict[step_input_id]
-                try:
-                    jsonschema.validate(
-                        instance=response, schema=step_input.response_schema
-                    )
-                except jsonschema.ValidationError as e:
-                    # This answer is not valid
-                    for entry in user_responses[-1]['inputs']:
-                        if step_input_id == entry['stepInputID']:
-                            entry['is_valid'] = False
-                            break
-                else:
-                    # This is!
-                    for entry in user_responses[-1]['inputs']:
-                        if step_input_id == entry['stepInputID']:
-                            entry['is_valid'] = True
-                            break
+                responses = answer_dict[step_input_id]
+                for index, response in responses.items():
+                    try:
+                        jsonschema.validate(
+                            instance=response, schema=step_input.response_schema
+                        )
+                    except jsonschema.ValidationError:
+                        # This answer is not valid
+                        for entry in user_responses[index]['inputs']:
+                            if step_input_id == entry['stepInputID']:
+                                entry['is_valid'] = False
+                                break
+                    else:
+                        # This is!
+                        for entry in user_responses[index]['inputs']:
+                            if step_input_id == entry['stepInputID']:
+                                entry['is_valid'] = True
+                                break
+
         return data
