@@ -174,7 +174,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                     raise serializers.ValidationError(
                         "No step with given stepInputID and stepInputUIIdentifier exists"
                     )
-                
+
                 # This is the most recent user_response
                 if step_input_id not in answer_dict.keys():
                     answer_dict[step_input_id] = {}
