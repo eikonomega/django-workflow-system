@@ -177,7 +177,7 @@ class WorkflowCollectionEngagementDetailsView(APIView):
                            for entry in data['user_responses'][-1]['inputs']]
                 data['proceed'] = False if False in checker else True
             else:
-                data['proceed'] = False
+                data['proceed'] = True
             return Response(data=data, status=status.HTTP_201_CREATED)
 
 
@@ -353,5 +353,5 @@ class WorkflowCollectionEngagementDetailView(APIView):
                            for entry in serializer.data['user_responses'][-1]['inputs']]
                 data['proceed'] = False if False in checker else True
             else:
-                data['proceed'] = False
+                data['proceed'] = True
             return Response(data=data, status=status.HTTP_200_OK)
