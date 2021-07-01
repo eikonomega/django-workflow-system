@@ -63,17 +63,18 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
         # Need to ensure that if correctInput is true, that inputRequired is also true.
         # No guarantee that all schemas will have these, so this is just a basic check
         # for what we know currently exists
-        if set(['correctInputRequired', 'inputRequired']).issubset(self.specification['meta'].keys()):
-            # Make sure that if input isn't required that it doesn't have to be correct
-            if not self.specification['meta']['inputRequired'] and self.specification['meta']['correctInputRequired']:
-                raise ValidationError(
-                    {
-                        "specification": (
-                            "There is something wrong in your specification definition. "
-                            "Details: Inside `meta`, correctInputRequired can't be true if inputRequired is false"
-                        )
-                    }
-                )
+        if 'meta' in self.specification.keys():
+            if set(['correctInputRequired', 'inputRequired']).issubset(self.specification['meta'].keys()):
+                # Make sure that if input isn't required that it doesn't have to be correct
+                if not self.specification['meta']['inputRequired'] and self.specification['meta']['correctInputRequired']:
+                    raise ValidationError(
+                        {
+                            "specification": (
+                                "There is something wrong in your specification definition. "
+                                "Details: Inside `meta`, correctInputRequired can't be true if inputRequired is false"
+                            )
+                        }
+                    )
 
     @property
     def response_schema(self):
