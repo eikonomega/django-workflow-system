@@ -15,7 +15,7 @@ setup(
     author_email="prometheus-team@nd.edu",
     license="MIT",
     packages=find_packages(include=["django_workflow_system", 'django_workflow_system.*']),
-    package_data={"django_workflow_system": ["templates/admin/django_workflow_system/workflowstep/change_form.html"]}
+    package_data={"django_workflow_system": ["templates/admin/django_workflow_system/workflowstep/change_form.html"]},
     include_package_data=True,
     python_requires=">3.8",
     install_requires=[
