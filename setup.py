@@ -7,7 +7,7 @@ def read(f):
 
 setup(
     name="django-workflow-system",
-    version="0.8.6",
+    version="0.8.7",
     description="A highly customizable workflow system for Django. Create surveys, activities, etc.",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
