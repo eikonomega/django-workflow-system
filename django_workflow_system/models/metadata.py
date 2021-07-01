@@ -30,7 +30,7 @@ class WorkflowMetadata(CreatedModifiedAbstractModel):
 
     class Meta:
         db_table = "workflow_system_metadata"
-        verbose_name_plural = "Workflow Step Metadata"
+        verbose_name_plural = "Workflow Metadata"
         unique_together = ['name', 'parent_group']
 
     def __str__(self):

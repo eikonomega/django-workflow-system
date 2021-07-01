@@ -47,6 +47,7 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
         "open_subscriptions",
     )
     filter_horizontal = ['metadata']
+    search_fields = ['name', 'category']
 
     # I don't know why this works
     # https://github.com/django/django/blob/1b4d1675b230cd6d47c2ffce41893d1881bf447b/django/contrib/auth/admin.py#L25

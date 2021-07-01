@@ -90,6 +90,7 @@ class WorkflowStepAdmin(admin.ModelAdmin):
     actions = ["copy"]
     list_filter = ["workflow", StepInCollectionFilter]
     filter_horizontal = ['metadata']
+    search_fields = ["code", "workflow__name", "workflow__code", "ui_template__name"]
     # I don't know why this works
     # https://github.com/django/django/blob/1b4d1675b230cd6d47c2ffce41893d1881bf447b/django/contrib/auth/admin.py#L25
     # Line 31
@@ -246,3 +247,4 @@ class WorkflowStepDependencyDetailAdmin(admin.ModelAdmin):
 @admin.register(WorkflowStepUserInputType)
 class WorkflowStepUserInputType(admin.ModelAdmin):
     list_display = ["name"]
+    search_fields = ["name"]
