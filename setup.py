@@ -7,7 +7,7 @@ def read(f):
 
 setup(
     name="django-workflow-system",
-    version="0.8.2",
+    version="0.8.5",
     description="A highly customizable workflow system for Django. Create surveys, activities, etc.",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
@@ -15,6 +15,7 @@ setup(
     author_email="prometheus-team@nd.edu",
     license="MIT",
     packages=find_packages(include=["django_workflow_system", 'django_workflow_system.*']),
+    include_package_data=True,
     python_requires=">3.8",
     install_requires=[
         "Pillow>=6.2.0",
