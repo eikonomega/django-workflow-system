@@ -103,6 +103,7 @@ class WorkflowMetadataAdmin(admin.ModelAdmin):
     list_display = ["name", "full_path"]
     readonly_fields = ["full_path"]
     ordering = make_ordering()
+    search_fields = ['name', 'parent_group__name']
 
 
 # engagement.py
@@ -260,6 +261,9 @@ class WorkflowAdmin(admin.ModelAdmin):
         "workflowcollectionmember__workflow_collection__category",
     ]
     filter_horizontal = ['metadata']
+    search_fields = ['name', 'code'] + [
+        "author__" + field for field in USER_SEARCH_FIELDS
+    ]
     # I don't know why this works
     # https://github.com/django/django/blob/1b4d1675b230cd6d47c2ffce41893d1881bf447b/django/contrib/auth/admin.py#L25
     # Line 31
