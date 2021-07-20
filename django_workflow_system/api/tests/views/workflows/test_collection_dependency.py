@@ -59,14 +59,12 @@ class TestWorkflowCollectionsDependencyView(TestCase):
         request = self.factory.get("/workflows/collections/")
         request.user = self.user
         response = self.view(request)
-     
         self.assertEqual(response.data[0]["dependencies_completed"], True)
    
     def test_unmet_dependencies(self):
         """Test a collection with unmet dependencies returns false for "status". 
             workflow_collection_3 has dependencies workflow_collection_1(finished) and workflow_collection_2(not finished).
         """
-
         request = self.factory.get("/workflows/collections/")
         request.user = self.user
         response = self.view(request)
