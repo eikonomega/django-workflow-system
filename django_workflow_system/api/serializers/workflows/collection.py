@@ -4,7 +4,7 @@ from rest_framework.reverse import reverse
 from .author import WorkflowAuthorSummarySerializer
 from .workflow import WorkflowTerseSerializer, ChildWorkflowDetailedSerializer
 from ..utils import get_images_helper
-from ....models import WorkflowCollectionMember, WorkflowCollection
+from ....models import WorkflowCollectionMember, WorkflowCollection,  WorkflowCollectionEngagement
 
 
 class WorkflowCollectionMemberSummarySerializer(serializers.ModelSerializer):
@@ -46,7 +46,7 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
     metadata = serializers.SerializerMethodField()
     newer_version = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
-
+    dependencies_completed = serializers.SerializerMethodField()
 
     def get_authors(self, instance):
         """
@@ -99,6 +99,21 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
         else:
             return None
 
+    def get_dependencies_completed(self, instance):
+        """
+        Method to retrieve the users collecton dependency requirements
+        """
+        request = self.context.get('request', None)
+        status = None
+
+        # if empty query set, set status to true
+        if not instance.collection_dependencies.all():
+            status = True
+        #Iterate through dependencies cheking if the user has completed them. 
+        for dependency in instance.collection_dependencies.all():
+            if WorkflowCollectionEngagement.objects.filter(user= request.user, workflow_collection= dependency, finished__isnull=False):
+                status = True
+        return status
 
 class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
     """
@@ -129,6 +144,7 @@ class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
             "category",
             "metadata",
             "newer_version",
+            "dependencies_completed",
         )
 
 
@@ -163,6 +179,7 @@ class WorkflowCollectionDetailedSerializer(WorkflowCollectionBaseSerializer):
             "category",
             "metadata",
             "newer_version",
+            "dependencies_completed",
         )
 
 

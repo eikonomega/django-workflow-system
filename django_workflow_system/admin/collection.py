@@ -21,6 +21,7 @@ from ..models import (
     WorkflowCollectionImage,
     WorkflowMetadata
 )
+from .collection_dependency import WorkflowCollectionDependencyInline
 
 
 class WorkflowCollectionMemberInline(admin.StackedInline):
@@ -70,7 +71,8 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                     ("assignment_only", "recommendable", "active", "ordered"),
                     "description",
                     "category",
-                    "metadata"
+                    "metadata",
+                   
                 ]
             },
         ),
@@ -84,6 +86,7 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
     inlines = [
         WorkflowCollectionMemberInline,
         WorkflowCollectionImageInline,
+        WorkflowCollectionDependencyInline
     ]
 
     actions = ["copy", "deep_copy", "kill_stragglers"]

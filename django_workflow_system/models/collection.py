@@ -8,7 +8,9 @@ from django_workflow_system.models.abstract_models import CreatedModifiedAbstrac
 from django_workflow_system.models.metadata import WorkflowMetadata
 from django_workflow_system.utils.validators import validate_code
 from django_workflow_system.utils.version_validator import version_validator
+from .collection_dependency import WorkflowCollectionDependency
 
+from django.core.exceptions import ValidationError
 
 class WorkflowCollection(CreatedModifiedAbstractModel):
     """
@@ -85,6 +87,15 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
         blank=True,
         help_text="A list of metadata that this collection is associated with.",
     )
+   
+    collection_dependencies = models.ManyToManyField(
+        "self",
+        through=WorkflowCollectionDependency,
+        through_fields=('source', 'target'),
+        symmetrical=False,
+        blank=True,
+        help_text='Specify which collections a user must complete before accessing this Collection.'
+    )
 
     class Meta:
         db_table = "workflow_system_collection"
@@ -107,5 +118,5 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
     def source_identifier(self):
         return f"{self.code}_v{self.version}"
 
-    def clean(self):
+    def clean(self):        
         version_validator(self, WorkflowCollection)
