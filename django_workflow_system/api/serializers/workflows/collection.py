@@ -104,15 +104,25 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
         Method to retrieve the users collecton dependency requirements
         """
         request = self.context.get('request', None)
-        status = None
+        status = False
 
         # if empty query set, set status to true
         if not instance.collection_dependencies.all():
             status = True
-        #Iterate through dependencies cheking if the user has completed them. 
-        for dependency in instance.collection_dependencies.all():
-            if WorkflowCollectionEngagement.objects.filter(user= request.user, workflow_collection= dependency, finished__isnull=False):
-                status = True
+        
+        else: 
+            # Determine if there are complete engagement for each of the dependencies.
+            dependency_engagement_records = [
+                WorkflowCollectionEngagement.objects.filter(
+                    user=request.user,
+                    workflow_collection=dependency,
+                    finished__isnull=False,
+                )
+                for dependency in instance.collection_dependencies.all()
+            ]
+
+            status = all(dependency_engagement_records)
+
         return status
 
 class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
