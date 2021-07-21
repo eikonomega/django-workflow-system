@@ -1,4 +1,4 @@
-from django.conf import settings
+"""Unit test for collection dependency."""
 from django.test import TestCase
 
 from rest_framework.test import APIRequestFactory
@@ -22,6 +22,7 @@ class TestWorkflowCollectionsDependencyView(TestCase):
     """Test WorkflowCollectionsDependencyView class."""
 
     def setUp(self):
+        """Unit test set up."""
         self.factory = APIRequestFactory()
         self.view = WorkflowCollectionsView.as_view()
 
@@ -39,9 +40,6 @@ class TestWorkflowCollectionsDependencyView(TestCase):
             source=self.workflow_collection_2, target=self.workflow_collection_1
         )
         # dependency for collection 3
-        self.dependency_1_from_3 = WorkflowCollectionDependency.objects.create(
-            source=self.workflow_collection_3, target=self.workflow_collection_1
-        )
         self.dependency_2_from_3 = WorkflowCollectionDependency.objects.create(
             source=self.workflow_collection_3, target=self.workflow_collection_2
         )
@@ -91,7 +89,7 @@ class TestWorkflowCollectionsDependencyView(TestCase):
         )
 
     def test_no_dependencies(self):
-        """Test a collection with no dependencies returns true for "status". """
+        """Test a collection with no dependencies returns true for "status"."""
         request = self.factory.get("/workflows/collections/")
         request.user = self.user
         response = self.view(request)
@@ -99,6 +97,7 @@ class TestWorkflowCollectionsDependencyView(TestCase):
 
     def test_unmet_dependencies(self):
         """Test a collection with unmet dependencies returns false for "status".
+
         workflow_collection_3 has dependencies workflow_collection_1(finished) and workflow_collection_2(not finished).
         """
         request = self.factory.get("/workflows/collections/")
@@ -108,6 +107,7 @@ class TestWorkflowCollectionsDependencyView(TestCase):
 
     def test_met_dependencies(self):
         """Test a collection with multiple met dependencies returns true for "status".
+
         workflow_collection_4 has dependencies workflow_collection_1(finished) and workflow_collection_3(finished).
         """
         request = self.factory.get("/workflows/collections/")
@@ -117,6 +117,7 @@ class TestWorkflowCollectionsDependencyView(TestCase):
 
     def test_met_unmet_dependencies(self):
         """Test a collection with multiple met/unmet dependencies returns false for "status".
+
         workflow_collection_5 has dependencies workflow_collection_1(finished) and workflow_collection_3(finished)
         workflow_collection_2(not finished) and workflow_collection_3(not finished).
         """

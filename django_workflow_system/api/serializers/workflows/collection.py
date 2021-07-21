@@ -42,9 +42,7 @@ class WorkflowCollectionMemberDetailedSerializer(serializers.ModelSerializer):
 
 
 class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
-    """
-    Summary level serializer for WorkflowCollection objects.
-    """
+    """Summary level serializer for WorkflowCollection objects."""
 
     authors = serializers.SerializerMethodField()
     metadata = serializers.SerializerMethodField()
@@ -54,6 +52,7 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
 
     def get_authors(self, instance):
         """
+
         Method to get data for the 'authors' field.
         Returns a list of the Authors for all Workflows linked to a
         WorkflowCollection in JSON format.
@@ -105,7 +104,7 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
 
     def get_dependencies_completed(self, instance):
         """Determine if collection dependencies are fullfilled."""
-        request = self.context.get("request", None)
+        request = self.context.get("request")
         status = False
 
         # If there are no dependencies, we just say they are completed.

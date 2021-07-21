@@ -1,9 +1,7 @@
-"""
-Admin interface implementation collection-related models
-"""
+"""Admin interface implementation collection-related models."""
 from itertools import chain, count
 
-from django import forms
+
 from django.contrib import admin
 from django.db import IntegrityError
 from django.utils import timezone
@@ -19,7 +17,6 @@ from ..models import (
     WorkflowCollectionAssignment,
     WorkflowCollectionEngagement,
     WorkflowCollectionImage,
-    WorkflowMetadata,
 )
 from .collection_dependency import WorkflowCollectionDependencyInline
 
