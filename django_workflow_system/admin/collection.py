@@ -19,7 +19,7 @@ from ..models import (
     WorkflowCollectionAssignment,
     WorkflowCollectionEngagement,
     WorkflowCollectionImage,
-    WorkflowMetadata
+    WorkflowMetadata,
 )
 from .collection_dependency import WorkflowCollectionDependencyInline
 
@@ -47,18 +47,18 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
         "open_assignments",
         "open_subscriptions",
     )
-    filter_horizontal = ['metadata']
-    search_fields = ['name', 'category']
+    filter_horizontal = ["metadata"]
+    search_fields = ["name", "category"]
 
     # I don't know why this works
     # https://github.com/django/django/blob/1b4d1675b230cd6d47c2ffce41893d1881bf447b/django/contrib/auth/admin.py#L25
     # Line 31
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
-        if db_field.name == 'metadata':
-            qs = kwargs.get('queryset', db_field.remote_field.model.objects)
+        if db_field.name == "metadata":
+            qs = kwargs.get("queryset", db_field.remote_field.model.objects)
             # Avoid a major performance hit resolving permission names which
             # triggers a content_type load:
-            kwargs['queryset'] = qs.select_related('parent_group')
+            kwargs["queryset"] = qs.select_related("parent_group")
         return super().formfield_for_manytomany(db_field, request=request, **kwargs)
 
     fieldsets = [
@@ -72,7 +72,6 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
                     "description",
                     "category",
                     "metadata",
-                   
                 ]
             },
         ),
@@ -86,7 +85,7 @@ class WorkflowCollectionAdmin(admin.ModelAdmin):
     inlines = [
         WorkflowCollectionMemberInline,
         WorkflowCollectionImageInline,
-        WorkflowCollectionDependencyInline
+        WorkflowCollectionDependencyInline,
     ]
 
     actions = ["copy", "deep_copy", "kill_stragglers"]

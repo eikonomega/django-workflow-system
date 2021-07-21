@@ -12,6 +12,7 @@ from .collection_dependency import WorkflowCollectionDependency
 
 from django.core.exceptions import ValidationError
 
+
 class WorkflowCollection(CreatedModifiedAbstractModel):
     """
     Definition of a Workflow Collection.
@@ -87,14 +88,14 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
         blank=True,
         help_text="A list of metadata that this collection is associated with.",
     )
-   
+
     collection_dependencies = models.ManyToManyField(
         "self",
         through=WorkflowCollectionDependency,
-        through_fields=('source', 'target'),
+        through_fields=("source", "target"),
         symmetrical=False,
         blank=True,
-        help_text='Specify which collections a user must complete before accessing this Collection.'
+        help_text="Specify which collections a user must complete before accessing this Collection.",
     )
 
     class Meta:
@@ -118,5 +119,5 @@ class WorkflowCollection(CreatedModifiedAbstractModel):
     def source_identifier(self):
         return f"{self.code}_v{self.version}"
 
-    def clean(self):        
+    def clean(self):
         version_validator(self, WorkflowCollection)

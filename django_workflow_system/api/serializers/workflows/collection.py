@@ -4,7 +4,11 @@ from rest_framework.reverse import reverse
 from .author import WorkflowAuthorSummarySerializer
 from .workflow import WorkflowTerseSerializer, ChildWorkflowDetailedSerializer
 from ..utils import get_images_helper
-from ....models import WorkflowCollectionMember, WorkflowCollection,  WorkflowCollectionEngagement
+from ....models import (
+    WorkflowCollectionMember,
+    WorkflowCollection,
+    WorkflowCollectionEngagement,
+)
 
 
 class WorkflowCollectionMemberSummarySerializer(serializers.ModelSerializer):
@@ -76,7 +80,7 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
         return get_images_helper(
             self.context.get("request"), instance.workflowcollectionimage_set.all()
         )
-    
+
     def get_metadata(self, instance):
         """
         Method to build metadata hierarchy.
@@ -100,18 +104,17 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
             return None
 
     def get_dependencies_completed(self, instance):
-        """
-        Method to retrieve the users collecton dependency requirements
-        """
-        request = self.context.get('request', None)
+        """Determine if collection dependencies are fullfilled."""
+        request = self.context.get("request", None)
         status = False
 
-        # if empty query set, set status to true
+        # If there are no dependencies, we just say they are completed.
         if not instance.collection_dependencies.all():
             status = True
-        
-        else: 
-            # Determine if there are complete engagement for each of the dependencies.
+
+        else:
+            # Determine if there is at least one complete engagement
+            # for each of the dependencies.
             dependency_engagement_records = [
                 WorkflowCollectionEngagement.objects.filter(
                     user=request.user,
@@ -124,6 +127,7 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
             status = all(dependency_engagement_records)
 
         return status
+
 
 class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
     """

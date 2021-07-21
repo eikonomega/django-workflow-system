@@ -8,10 +8,10 @@ class WorkflowCollectionDependencyAdmin(admin.ModelAdmin):
     list_display = [
         "source",
         "target",
-
     ]
+
 
 class WorkflowCollectionDependencyInline(admin.StackedInline):
     model = WorkflowCollectionDependency
     extra = 1
-    fk_name = 'source'
+    fk_name = "source"
