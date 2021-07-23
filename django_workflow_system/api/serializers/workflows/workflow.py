@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from .author import WorkflowAuthorSummarySerializer
-from .step import WorkflowStepSummarySerializer
+from .step import WorkflowStepSerializer
 from ..utils import get_images_helper
 from ....models import Workflow
 
@@ -75,7 +75,7 @@ class WorkflowDetailedSerializer(serializers.ModelSerializer):
     """
 
     author = WorkflowAuthorSummarySerializer()
-    workflowstep_set = WorkflowStepSummarySerializer(many=True)
+    workflowstep_set = WorkflowStepSerializer(many=True)
     self_detail = serializers.HyperlinkedIdentityField(
         view_name="workflow", lookup_field="id"
     )
@@ -133,7 +133,7 @@ class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
     """
 
     author = WorkflowAuthorSummarySerializer()
-    workflowstep_set = WorkflowStepSummarySerializer(many=True)
+    workflowstep_set = WorkflowStepSerializer(many=True)
     detail = serializers.HyperlinkedIdentityField(
         view_name="workflow", lookup_field="id"
     )

@@ -7,11 +7,11 @@ You can customize them to mold the output of resource representations.
 
 from .author import WorkflowAuthorSummarySerializer, WorkflowAuthorDetailedSerializer
 from .step import (
-    WorkflowStepAudioSummarySerializer,
-    WorkflowStepSummarySerializer,
-    WorkflowStepImageSummarySerializer,
-    WorkflowStepTextSummarySerializer,
-    WorkflowStepVideoSummarySerializer,
+    WorkflowStepAudioSerializer,
+    WorkflowStepSerializer,
+    WorkflowStepImageSerializer,
+    WorkflowStepTextSerializer,
+    WorkflowStepVideoSerializer,
 )
 from .workflow import WorkflowSummarySerializer, WorkflowDetailedSerializer
 
