@@ -119,6 +119,7 @@ class TestWorkflowCollectionsView(TestCase):
                     "category",
                     "metadata",
                     "newer_version",
+                    "dependencies_completed",
                 ],
             )
 
@@ -238,6 +239,7 @@ class TestWorkflowCollectionView(TestCase):
                 "category",
                 "metadata",
                 "newer_version",
+                "dependencies_completed",
             ],
         )
 

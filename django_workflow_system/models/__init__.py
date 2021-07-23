@@ -1,6 +1,7 @@
 """Convenience imports."""
 from django_workflow_system.models.author import WorkflowAuthor
 from django_workflow_system.models.assignment import WorkflowCollectionAssignment
+from django_workflow_system.models.collection_dependency import WorkflowCollectionDependency
 from django_workflow_system.models.collection_image import WorkflowCollectionImage
 from django_workflow_system.models.collection_image_type import WorkflowCollectionImageType
 from django_workflow_system.models.engagement import (
@@ -42,6 +43,7 @@ from django_workflow_system.models.workflow_image_type import WorkflowImageType
 __all__ = [
     "WorkflowAuthor",
     "WorkflowCollectionAssignment",
+    "WorkflowCollectionDependency",
     "WorkflowCollectionEngagement",
     "WorkflowCollectionEngagementDetail",
     "WorkflowCollection",
