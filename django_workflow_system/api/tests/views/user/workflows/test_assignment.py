@@ -140,10 +140,7 @@ class TestWorkflowAssignmentView(TestCase):
             response.data["workflow_collection"],
             f"http://testserver/api/workflow_system/collections/{self.workflow_assignment.workflow_collection.id}/",
         )
-        self.assertEqual(
-            response.data["start"][0:10], self.start.strftime("%Y-%m-%d")
-
-        )
+        self.assertEqual(response.data["start"][0:10], self.start.strftime("%Y-%m-%d"))
         self.assertEqual(response.data["status"], self.workflow_assignment.status)
         self.assertEqual(
             response.data["engagement"],

@@ -7,7 +7,9 @@ from jsonschema import Draft7Validator, SchemaError
 
 from django_workflow_system.models.collection_member import WorkflowCollectionMember
 from django_workflow_system.models.step import WorkflowStep
-from django_workflow_system.models.step_dependency_group import WorkflowStepDependencyGroup
+from django_workflow_system.models.step_dependency_group import (
+    WorkflowStepDependencyGroup,
+)
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
 
 

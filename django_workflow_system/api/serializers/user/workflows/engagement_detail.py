@@ -159,7 +159,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
         # Ensure all required attributes are present for each question in the payload.
         answer_dict = {}
         for index, user_response in enumerate(user_responses):
-            for answer in user_response['inputs']:
+            for answer in user_response["inputs"]:
                 try:
                     step_input_id = answer["stepInputID"]
                     step_input_UI_identifier = answer["stepInputUIIdentifier"]
@@ -196,15 +196,15 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                         )
                     except jsonschema.ValidationError:
                         # This answer is not valid
-                        for entry in user_responses[index]['inputs']:
-                            if step_input_id == entry['stepInputID']:
-                                entry['is_valid'] = False
+                        for entry in user_responses[index]["inputs"]:
+                            if step_input_id == entry["stepInputID"]:
+                                entry["is_valid"] = False
                                 break
                     else:
                         # This is!
-                        for entry in user_responses[index]['inputs']:
-                            if step_input_id == entry['stepInputID']:
-                                entry['is_valid'] = True
+                        for entry in user_responses[index]["inputs"]:
+                            if step_input_id == entry["stepInputID"]:
+                                entry["is_valid"] = True
                                 break
 
         return data

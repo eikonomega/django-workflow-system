@@ -20,7 +20,11 @@ from ..views import workflow_api_root
 from django_workflow_system.views import get_user_input_type_helper
 
 urlpatterns = [
-    path("step_user_input_type_helper/", get_user_input_type_helper, name="step_user_input_type_helper"),
+    path(
+        "step_user_input_type_helper/",
+        get_user_input_type_helper,
+        name="step_user_input_type_helper",
+    ),
     path("workflow_system/users/", include(user_endpoints)),
     path("workflow_system/", include(workflow_endpoints)),
     path("", workflow_api_root),

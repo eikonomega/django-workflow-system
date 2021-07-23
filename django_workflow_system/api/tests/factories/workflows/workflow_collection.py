@@ -74,7 +74,9 @@ class WorkflowCollectionFactory(DjangoModelFactory):
             if isinstance(metadata, models.WorkflowMetadata):
                 self.metadata.add(metadata)
             elif isinstance(metadata, str):
-                self.metadata.add(WorkflowMetadataFactory(name=metadata, description="Eh, Whatever"))
+                self.metadata.add(
+                    WorkflowMetadataFactory(name=metadata, description="Eh, Whatever")
+                )
 
 
 class _WorkflowCollectionMemberFactory(DjangoModelFactory):
@@ -126,7 +128,4 @@ class _WorkflowStepDependencyDetailFactory(DjangoModelFactory):
     required_response = None  # Must be supplied in kwargs
 
 
-
-__all__ = [
-    "WorkflowCollectionFactory"
-]
+__all__ = ["WorkflowCollectionFactory"]

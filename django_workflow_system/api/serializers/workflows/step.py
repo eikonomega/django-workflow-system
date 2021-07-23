@@ -7,11 +7,11 @@ from ....models import (
     WorkflowStepText,
     WorkflowStepUserInput,
     WorkflowStepVideo,
-    WorkflowStepExternalLink
+    WorkflowStepExternalLink,
 )
 
 
-class WorkflowStepTextSummarySerializer(serializers.ModelSerializer):
+class WorkflowStepTextSerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowStepText objects.
     """
@@ -21,19 +21,20 @@ class WorkflowStepTextSummarySerializer(serializers.ModelSerializer):
         fields = ("id", "workflow_step", "text", "ui_identifier")
 
 
-class WorkflowStepExternalLinkSummarySerializer(serializers.ModelSerializer):
+class WorkflowStepExternalLinkSerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowStepExternalLink objects.
     """
+
     class Meta:
         model = WorkflowStepExternalLink
         fields = ("id", "workflow_step", "link", "ui_identifier")
 
 
-class WorkflowStepUserInputSummarySerializer(serializers.ModelSerializer):
-    """
-    Summary level serializer for WorkflowStepUserInput objects.
-    """
+class WorkflowStepUserInputSerializer(serializers.ModelSerializer):
+    """Summary level serializer for WorkflowStepUserInput objects."""
+
+    type = serializers.SlugRelatedField(slug_field="name", read_only=True)
 
     class Meta:
         model = WorkflowStepUserInput
@@ -43,11 +44,11 @@ class WorkflowStepUserInputSummarySerializer(serializers.ModelSerializer):
             "ui_identifier",
             "required",
             "type",
-            "specification"
+            "specification",
         )
 
 
-class WorkflowStepAudioSummarySerializer(serializers.ModelSerializer):
+class WorkflowStepAudioSerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowStepAudio  objects.
     """
@@ -57,7 +58,7 @@ class WorkflowStepAudioSummarySerializer(serializers.ModelSerializer):
         fields = ("id", "workflow_step", "ui_identifier", "url")
 
 
-class WorkflowStepImageSummarySerializer(serializers.ModelSerializer):
+class WorkflowStepImageSerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowStepImage objects.
     """
@@ -67,7 +68,7 @@ class WorkflowStepImageSummarySerializer(serializers.ModelSerializer):
         fields = ("id", "workflow_step", "ui_identifier", "url")
 
 
-class WorkflowStepVideoSummarySerializer(serializers.ModelSerializer):
+class WorkflowStepVideoSerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowStepVideo objects.
     """
@@ -77,18 +78,18 @@ class WorkflowStepVideoSummarySerializer(serializers.ModelSerializer):
         fields = ("id", "workflow_step", "ui_identifier", "url")
 
 
-class WorkflowStepSummarySerializer(serializers.ModelSerializer):
+class WorkflowStepSerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowStep objects.
     """
 
     ui_template = serializers.SlugRelatedField(slug_field="name", read_only=True)
-    workflowstepuserinput_set = WorkflowStepUserInputSummarySerializer(many=True)
-    workflowsteptext_set = WorkflowStepTextSummarySerializer(many=True)
-    workflowstepaudio_set = WorkflowStepAudioSummarySerializer(many=True)
-    workflowstepimage_set = WorkflowStepImageSummarySerializer(many=True)
-    workflowstepvideo_set = WorkflowStepVideoSummarySerializer(many=True)
-    workflowstepexternallink_set = WorkflowStepExternalLinkSummarySerializer(many=True)
+    workflowstepuserinput_set = WorkflowStepUserInputSerializer(many=True)
+    workflowsteptext_set = WorkflowStepTextSerializer(many=True)
+    workflowstepaudio_set = WorkflowStepAudioSerializer(many=True)
+    workflowstepimage_set = WorkflowStepImageSerializer(many=True)
+    workflowstepvideo_set = WorkflowStepVideoSerializer(many=True)
+    workflowstepexternallink_set = WorkflowStepExternalLinkSerializer(many=True)
 
     class Meta:
         model = WorkflowStep
@@ -102,5 +103,5 @@ class WorkflowStepSummarySerializer(serializers.ModelSerializer):
             "workflowstepaudio_set",
             "workflowstepimage_set",
             "workflowstepvideo_set",
-            "workflowstepexternallink_set"
+            "workflowstepexternallink_set",
         )

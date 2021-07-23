@@ -38,7 +38,7 @@ class WorkflowCollectionRecommendation(CreatedModifiedAbstractModel):
     end = models.DateTimeField(null=True, blank=True, default=None)
 
     class Meta:
-        db_table = "workflow_collection_recommendation"
+        db_table = "workflow_system_collection_recommendation"
         verbose_name_plural = "Workflow Collection Recommendations"
 
     def __str__(self):

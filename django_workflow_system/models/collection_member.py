@@ -26,6 +26,7 @@ class WorkflowCollectionMember(CreatedModifiedAbstractModel):
             ["workflow_collection", "order"],
         ]
         verbose_name_plural = "Workflow Collection Members"
+        ordering = ["order"]
 
     def __str__(self):
         return "{} - {}".format(self.workflow.name, self.workflow_collection.name)

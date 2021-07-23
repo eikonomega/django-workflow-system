@@ -12,9 +12,14 @@ from django_workflow_system.api.views.user.workflows.recommendation import (
     WorkflowCollectionRecommendationsView,
     WorkflowCollectionRecommendationView,
 )
-from django_workflow_system.api.views.workflows.collection import WorkflowCollectionsView
+from django_workflow_system.api.views.workflows.collection import (
+    WorkflowCollectionsView,
+)
 from django_workflow_system.models import WorkflowCollectionRecommendation
-from django_workflow_system.api.tests.factories import UserFactory, WorkflowCollectionFactory
+from django_workflow_system.api.tests.factories import (
+    UserFactory,
+    WorkflowCollectionFactory,
+)
 
 
 class TestWorkflowCollectionRecommendationsView(TestCase):

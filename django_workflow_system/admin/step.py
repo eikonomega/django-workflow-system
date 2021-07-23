@@ -47,7 +47,7 @@ class StepUserInputForm(forms.ModelForm):
         fields = ["ui_identifier", "required", "type", "specification"]
 
     class Media:
-        js = ('admin/js/jquery.init.js',)
+        js = ("admin/js/jquery.init.js",)
 
 
 class StepUserInputInLine(admin.TabularInline):
@@ -85,31 +85,25 @@ class WorkflowStepAdmin(admin.ModelAdmin):
         StepImageInline,
         StepAudioInline,
         StepVideoInline,
-        StepExternalLinkInline
+        StepExternalLinkInline,
     ]
     actions = ["copy"]
     list_filter = ["workflow", StepInCollectionFilter]
-    filter_horizontal = ['metadata']
+    filter_horizontal = ["metadata"]
     search_fields = ["code", "workflow__name", "workflow__code", "ui_template__name"]
     # I don't know why this works
     # https://github.com/django/django/blob/1b4d1675b230cd6d47c2ffce41893d1881bf447b/django/contrib/auth/admin.py#L25
     # Line 31
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
-        if db_field.name == 'metadata':
-            qs = kwargs.get('queryset', db_field.remote_field.model.objects)
+        if db_field.name == "metadata":
+            qs = kwargs.get("queryset", db_field.remote_field.model.objects)
             # Avoid a major performance hit resolving permission names which
             # triggers a content_type load:
-            kwargs['queryset'] = qs.select_related('parent_group')
+            kwargs["queryset"] = qs.select_related("parent_group")
         return super().formfield_for_manytomany(db_field, request=request, **kwargs)
 
-    fields = [
-        "workflow",
-        "code",
-        "order",
-        "ui_template",
-        "metadata"
-    ]
+    fields = ["workflow", "code", "order", "ui_template", "metadata"]
 
     def copy(self, request, queryset):
         step: WorkflowStep
@@ -139,7 +133,7 @@ class WorkflowStepAdmin(admin.ModelAdmin):
                 old_step.workflowstepimage_set.all(),
                 old_step.workflowstepuserinput_set.all(),
                 old_step.workflowsteptext_set.all(),
-                old_step.workflowstepexternallink_set.all()
+                old_step.workflowstepexternallink_set.all(),
             )
             for step_media in step_media_iterator:
                 step_media.pk = None  # creates a new instance when saved
