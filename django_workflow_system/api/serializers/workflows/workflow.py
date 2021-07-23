@@ -92,7 +92,7 @@ class WorkflowDetailedSerializer(serializers.ModelSerializer):
             "author",
             "images",
             "workflowstep_set",
-            "metadata"
+            "metadata",
         )
 
     def get_images(self, instance):
@@ -150,7 +150,7 @@ class ChildWorkflowDetailedSerializer(serializers.ModelSerializer):
             "author",
             "images",
             "workflowstep_set",
-            "metadata"
+            "metadata",
         )
 
     def get_images(self, instance):

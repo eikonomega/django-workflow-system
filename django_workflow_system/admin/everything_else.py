@@ -29,7 +29,7 @@ from ..models import (
     WorkflowCollectionImageType,
     WorkflowImageType,
     WorkflowImage,
-    WorkflowCollectionRecommendation
+    WorkflowCollectionRecommendation,
 )
 
 # assignment.py
@@ -103,7 +103,7 @@ class WorkflowMetadataAdmin(admin.ModelAdmin):
     list_display = ["name", "full_path"]
     readonly_fields = ["full_path"]
     ordering = make_ordering()
-    search_fields = ['name', 'parent_group__name']
+    search_fields = ["name", "parent_group__name"]
 
 
 # engagement.py
@@ -232,17 +232,17 @@ class StepInLine(EditLinkToInlineObject, admin.StackedInline):
     model = WorkflowStep
     extra = 1
     readonly_fields = ("edit_link",)
-    filter_horizontal = ['metadata']
+    filter_horizontal = ["metadata"]
     # I don't know why this works
     # https://github.com/django/django/blob/1b4d1675b230cd6d47c2ffce41893d1881bf447b/django/contrib/auth/admin.py#L25
     # Line 31
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
-        if db_field.name == 'metadata':
-            qs = kwargs.get('queryset', db_field.remote_field.model.objects)
+        if db_field.name == "metadata":
+            qs = kwargs.get("queryset", db_field.remote_field.model.objects)
             # Avoid a major performance hit resolving permission names which
             # triggers a content_type load:
-            kwargs['queryset'] = qs.select_related('parent_group')
+            kwargs["queryset"] = qs.select_related("parent_group")
         return super().formfield_for_manytomany(db_field, request=request, **kwargs)
 
 
@@ -260,8 +260,8 @@ class WorkflowAdmin(admin.ModelAdmin):
         "workflowcollectionmember__workflow_collection",
         "workflowcollectionmember__workflow_collection__category",
     ]
-    filter_horizontal = ['metadata']
-    search_fields = ['name', 'code'] + [
+    filter_horizontal = ["metadata"]
+    search_fields = ["name", "code"] + [
         "author__" + field for field in USER_SEARCH_FIELDS
     ]
     # I don't know why this works
@@ -269,11 +269,11 @@ class WorkflowAdmin(admin.ModelAdmin):
     # Line 31
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
-        if db_field.name == 'metadata':
-            qs = kwargs.get('queryset', db_field.remote_field.model.objects)
+        if db_field.name == "metadata":
+            qs = kwargs.get("queryset", db_field.remote_field.model.objects)
             # Avoid a major performance hit resolving permission names which
             # triggers a content_type load:
-            kwargs['queryset'] = qs.select_related('parent_group')
+            kwargs["queryset"] = qs.select_related("parent_group")
         return super().formfield_for_manytomany(db_field, request=request, **kwargs)
 
     fields = [
@@ -283,7 +283,7 @@ class WorkflowAdmin(admin.ModelAdmin):
         "image_preview",
         "author",
         "created_by",
-        "metadata"
+        "metadata",
     ]
     readonly_fields = ["image_preview"]
 

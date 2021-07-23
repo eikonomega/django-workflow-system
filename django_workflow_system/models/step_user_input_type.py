@@ -13,13 +13,21 @@ class WorkflowStepUserInputType(CreatedModifiedAbstractModel):
     """
     Question Type objects assigned to a WorkflowStep.
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
-                          help_text="The unique UUID for the database record.")
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        help_text="The unique UUID for the database record.",
+    )
     name = models.CharField(max_length=150, help_text="The name of the question type.")
     json_schema = models.JSONField(
-        help_text="Used to specify input, label, options, and correct answers.", verbose_name='JSON Schema')
+        help_text="Used to specify input, label, options, and correct answers.",
+        verbose_name="JSON Schema",
+    )
     example_specification = models.JSONField(
-        help_text="An example of properly formatted json that follows the json_schema.")
+        help_text="An example of properly formatted json that follows the json_schema."
+    )
 
     class Meta:
         db_table = "workflow_system_step_user_input_type"
@@ -45,7 +53,9 @@ class WorkflowStepUserInputType(CreatedModifiedAbstractModel):
             )
 
         try:
-            jsonschema.validate(instance=self.example_specification, schema=self.json_schema)
+            jsonschema.validate(
+                instance=self.example_specification, schema=self.json_schema
+            )
         except jsonschema.ValidationError as error:
             raise ValidationError(
                 {

@@ -30,7 +30,10 @@ from django_workflow_system.api.tests.factories import (
     UserFactory,
     WorkflowCollectionEngagementFactory,
 )
-from django_workflow_system.models import WorkflowCollectionEngagement, WorkflowCollectionAssignment
+from django_workflow_system.models import (
+    WorkflowCollectionEngagement,
+    WorkflowCollectionAssignment,
+)
 
 
 class TestCommand(TestCase):

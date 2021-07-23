@@ -13,10 +13,7 @@ from .media_files import (
 RESPONSE_SCHEMA = {
     "type": "object",
     "properties": {
-            "stepInputID": {
-                "type": "string",
-                "format": "uuid"
-            },
-        "userInput": {}
-    }
+        "stepInputID": {"type": "string", "format": "uuid"},
+        "userInput": {},
+    },
 }

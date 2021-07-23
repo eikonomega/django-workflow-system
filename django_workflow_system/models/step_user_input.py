@@ -13,8 +13,11 @@ from django_workflow_system.models.abstract_models import CreatedModifiedAbstrac
 from django_workflow_system.models.step import WorkflowStep
 from django_workflow_system.models.step_user_input_type import WorkflowStepUserInputType
 from django_workflow_system.utils.response_schema_handlers import (
-    date_range_question_schema, multiple_choice_question_schema, numeric_range_question_schema,
-    single_choice_question_schema)
+    date_range_question_schema,
+    multiple_choice_question_schema,
+    numeric_range_question_schema,
+    single_choice_question_schema,
+)
 
 
 class WorkflowStepUserInput(CreatedModifiedAbstractModel):
@@ -25,16 +28,27 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
     of question elements to a given WorkflowStep.
     """
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False,
-                          help_text="The unique UUID for the database record.")
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        help_text="The unique UUID for the database record.",
+    )
     workflow_step = models.ForeignKey(
-        WorkflowStep, on_delete=models.CASCADE, help_text="The WorkflowStep object that will own this object.")
+        WorkflowStep,
+        on_delete=models.CASCADE,
+        help_text="The WorkflowStep object that will own this object.",
+    )
     ui_identifier = models.CharField(
-        max_length=200, help_text="A simple string which is used to indicate to a user interface where to display this object within a template.")
+        max_length=200,
+        help_text="A simple string which is used to indicate to a user interface where to display this object within a template.",
+    )
     required = models.BooleanField(
-        help_text="True if a value is required for this input in the response JSON")
+        help_text="True if a value is required for this input in the response JSON"
+    )
     specification = models.JSONField(
-        help_text="Used to specify input, label, options, and correct answers.")
+        help_text="Used to specify input, label, options, and correct answers."
+    )
     type = models.ForeignKey(WorkflowStepUserInputType, on_delete=models.PROTECT)
 
     class Meta:
@@ -49,7 +63,9 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
         super(WorkflowStepUserInput, self).clean_fields(exclude=exclude)
 
         try:
-            jsonschema.validate(instance=self.specification, schema=self.type.json_schema)
+            jsonschema.validate(
+                instance=self.specification, schema=self.type.json_schema
+            )
         except jsonschema.ValidationError as error:
             raise ValidationError(
                 {
@@ -63,10 +79,15 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
         # Need to ensure that if correctInput is true, that inputRequired is also true.
         # No guarantee that all schemas will have these, so this is just a basic check
         # for what we know currently exists
-        if 'meta' in self.specification.keys():
-            if set(['correctInputRequired', 'inputRequired']).issubset(self.specification['meta'].keys()):
+        if "meta" in self.specification.keys():
+            if set(["correctInputRequired", "inputRequired"]).issubset(
+                self.specification["meta"].keys()
+            ):
                 # Make sure that if input isn't required that it doesn't have to be correct
-                if not self.specification['meta']['inputRequired'] and self.specification['meta']['correctInputRequired']:
+                if (
+                    not self.specification["meta"]["inputRequired"]
+                    and self.specification["meta"]["correctInputRequired"]
+                ):
                     raise ValidationError(
                         {
                             "specification": (
@@ -91,7 +112,7 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
         "single_choice_question": single_choice_question_schema,
         "multiple_choice_question": multiple_choice_question_schema,
         "numeric_range_question": numeric_range_question_schema,
-        "date_range_question": date_range_question_schema
+        "date_range_question": date_range_question_schema,
     }
 
     def _load_function_table(self):
@@ -100,8 +121,13 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
         functions.
         """
         if hasattr(settings, "DJANGO_WORKFLOW_SYSTEM"):
-            if 'INPUT_TYPE_RESPONSE_SCHEMA_HANDLERS' in settings.DJANGO_WORKFLOW_SYSTEM.keys():
-                for directory in settings.DJANGO_WORKFLOW_SYSTEM['INPUT_TYPE_RESPONSE_SCHEMA_HANDLERS']:
+            if (
+                "INPUT_TYPE_RESPONSE_SCHEMA_HANDLERS"
+                in settings.DJANGO_WORKFLOW_SYSTEM.keys()
+            ):
+                for directory in settings.DJANGO_WORKFLOW_SYSTEM[
+                    "INPUT_TYPE_RESPONSE_SCHEMA_HANDLERS"
+                ]:
                     try:
                         for file in os.listdir(path.join(directory)):
                             if "__init__" in file:
@@ -110,7 +136,8 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
                             try:
                                 # Create the module spec
                                 module_spec = importlib.util.spec_from_file_location(
-                                    file, f"{directory}/{file}")
+                                    file, f"{directory}/{file}"
+                                )
                                 # Create a new module  based  on the spec
                                 module = importlib.util.module_from_spec(module_spec)
                                 # An abstract method that executes the module
