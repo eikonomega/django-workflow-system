@@ -71,7 +71,7 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
                 {
                     "specification": (
                         "There is something wrong in your specification definition. "
-                        "Details {}".format(error)
+                        "Details {}".format(error.message)
                     )
                 }
             )
