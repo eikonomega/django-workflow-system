@@ -32,9 +32,9 @@ class WorkflowStepExternalLinkSummarySerializer(serializers.ModelSerializer):
 
 
 class WorkflowStepUserInputSummarySerializer(serializers.ModelSerializer):
-    """
-    Summary level serializer for WorkflowStepUserInput objects.
-    """
+    """Summary level serializer for WorkflowStepUserInput objects."""
+
+    type = serializers.SlugRelatedField(slug_field="name", read_only=True)
 
     class Meta:
         model = WorkflowStepUserInput
