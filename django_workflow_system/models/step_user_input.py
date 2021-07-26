@@ -14,9 +14,11 @@ from django_workflow_system.models.step import WorkflowStep
 from django_workflow_system.models.step_user_input_type import WorkflowStepUserInputType
 from django_workflow_system.utils.response_schema_handlers import (
     date_range_question_schema,
+    free_form_question_schema,
     multiple_choice_question_schema,
     numeric_range_question_schema,
     single_choice_question_schema,
+    true_false_question_schema,
 )
 
 
@@ -102,17 +104,16 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
             return {}
 
     __function_table = {
-        "single_choice_question": single_choice_question_schema,
-        "multiple_choice_question": multiple_choice_question_schema,
-        "numeric_range_question": numeric_range_question_schema,
         "date_range_question": date_range_question_schema,
+        "free_form_question": free_form_question_schema,
+        "numeric_range_question": numeric_range_question_schema,
+        "multiple_choice_question": multiple_choice_question_schema,
+        "single_choice_question": single_choice_question_schema,
+        "true_false_question": true_false_question_schema,
     }
 
     def _load_function_table(self):
-        """
-        This function will get our function table populated with all available `get_response_schema`
-        functions.
-        """
+        """Load all client created `get_response_schema` functions."""
         if hasattr(settings, "DJANGO_WORKFLOW_SYSTEM"):
             if (
                 "INPUT_TYPE_RESPONSE_SCHEMA_HANDLERS"
