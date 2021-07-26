@@ -25,9 +25,9 @@ def get_response_schema(workflow_step_user_input):
     ):
         # Response must be a boolean.
         response_schema["properties"]["userInput"]["type"] = "boolean"
-        response_schema["properties"]["userInput"]["const"] = [
-            workflow_step_user_input.specification["correctInput"]
-        ]
+        response_schema["properties"]["userInput"][
+            "const"
+        ] = workflow_step_user_input.specification["correctInput"]
 
     # Scenario 2: User input is required, but it doesn't have to be the correct answer, just a boolean.
     if (
@@ -47,8 +47,6 @@ def get_response_schema(workflow_step_user_input):
             workflow_step_user_input.specification["meta"]["correctInputRequired"],
         ]
     ):
-        pass
-    else:
         # Response must be a boolean or null.
         response_schema["properties"]["userInput"]["anyOf"] = [
             {"type": "string"},
