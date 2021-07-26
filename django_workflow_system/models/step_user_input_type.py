@@ -20,7 +20,9 @@ class WorkflowStepUserInputType(CreatedModifiedAbstractModel):
         editable=False,
         help_text="The unique UUID for the database record.",
     )
-    name = models.CharField(max_length=150, help_text="The name of the question type.")
+    name = models.CharField(
+        max_length=150, help_text="The name of the question type.", unique=True
+    )
     json_schema = models.JSONField(
         help_text="Used to specify input, label, options, and correct answers.",
         verbose_name="JSON Schema",
@@ -31,7 +33,6 @@ class WorkflowStepUserInputType(CreatedModifiedAbstractModel):
 
     class Meta:
         db_table = "workflow_system_step_user_input_type"
-        unique_together = ["name", "json_schema"]
         verbose_name_plural = "Workflow Step User Input Types"
 
     def __str__(self):
