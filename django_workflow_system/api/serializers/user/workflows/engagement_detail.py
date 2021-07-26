@@ -12,7 +12,7 @@ from .....models import (
 )
 
 
-class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSerializer):
+class WorkflowCollectionEngagementDetailSerializer(serializers.ModelSerializer):
     """
     Summary level serializer for WorkflowEngagementDetail objects.
 
@@ -37,7 +37,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
             "started",
             "finished",
         ]
-        extra_kwargs = {"workflow_collection_engagement": {"write_only": True}}
+        # extra_kwargs = {"workflow_collection_engagement": {"write_only": True}}
 
     def get_detail(self, instance):
         reversed_url = reverse(
@@ -51,30 +51,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
         return self.context["request"].build_absolute_uri(reversed_url)
 
     def validate(self, data):
-        """
-        First, we check if the the step being submitted is allowed in the state model.
-        In order to maintain consistent state, a user can only submit an engagement for
-        a step if it is the previous step or the next step, or it is the first step
-        submitted in an activity-type collection engagement and it is the first step of a workflow
-
-        Check that user_responses has a valid entry for each WorkflowStepUserInput
-        according to that WorkflowStepUserInput's JSON Schema validator.
-
-        If a user is not finished:
-            then we don't care about the state of user_responses
-
-        Regarding finished workflow_collection_engagements:
-            If the workflow_step has required inputs:
-                then user_responses must contain something to be valid
-            Else the workflow_step does not have required inputs,
-                then having no answers is automatically valid,
-
-            For each stepInput:
-                if the user did not give an answer
-                    then that's an error if the question was required
-                if the user gave an answer
-                    it must be valid, regardless of whether the question was required or not
-        """
+        """Perform various validation checks."""
 
         def getattr_patched(attr_name):
             """
@@ -90,20 +67,23 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
             return None
 
         step = getattr_patched("step")
-        finished = getattr_patched("finished")
         user_responses = getattr_patched("user_responses")
+
         has_required_inputs = bool(
             WorkflowStepUserInput.objects.filter(workflow_step=step, required=True)
         )
+
         workflow_collection_engagement = getattr_patched(
             "workflow_collection_engagement"
         )
+
         workflow_collection: WorkflowCollection = (
             workflow_collection_engagement.workflow_collection
         )
 
         state = workflow_collection_engagement.state
 
+        # CHECK 1: Does the specified step belong to a workflow in the specified collection?
         if not workflow_collection.workflowcollectionmember_set.filter(
             workflow__workflowstep=step
         ):
@@ -111,6 +91,7 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                 "Step must belong to a workflow in the collection"
             )
 
+        # CHECK 2
         # Usually, the step must be either state['next_step_id'] or state['prev_step_id']
         # However, in an ACTIVITY workflow collection, if the user has not submitted any
         # engagement details, the step can be any first step of a workflow
@@ -136,60 +117,121 @@ class WorkflowCollectionEngagementDetailSummarySerializer(serializers.ModelSeria
                     "Posted step must be next step or previous step."
                 )
 
-        if not finished:
-            return data
+            """EXAMPLE JSON PAYLOAD
 
-        if has_required_inputs:  # then having no answers is bad
-            if not user_responses:
-                raise serializers.ValidationError(
-                    "workflow_step has required step_input(s) but "
-                    "workflow_collection_engagement has no user_responses"
-                )
-            if "inputs" not in user_responses[-1]:
-                raise serializers.ValidationError(
-                    "workflow_step has required step_input(s) but "
-                    'user_responses does not contain key "questions"'
-                )
-        else:  # having no answers is ok
-            if not user_responses:
-                return data
-            if "inputs" not in user_responses[-1]:
-                return data
+            {
+                "detail": "http://localhost:8000/api/workflow_system/users/self/workflows/engagements/6dfe24d5-9e2d-4308-9c33-e878a3d378b4/details/ad4e2263-d468-4adb-9c0a-b96740ccacd1/",
+                "workflow_collection_engagement": "6dfe24d5-9e2d-4308-9c33-e878a3d378b4",
+                "step": "353a1aba-57fd-4183-802e-083d53863601",
+                "user_responses": [
+                        {
+                            "submittedTime": "2021-07-26 18:33:06.731050+00:00",
+                            "inputs": [
+                                {
+                                    "stepInputID": "758f482d-3eb0-4779-bf2a-bad9e452ea0e", 
+                                    "stepInputUIIdentifier": "question_1",
+                                    "userInput": "Red"
+                                },
+                                {
+                                    "stepInputID": "96e7f658-7f08-4432-b3d1-f483f01aa19b", 
+                                    "stepInputUIIdentifier": "question_2",
+                                    "userInput": false
+                                },
+                                {
+                                    "stepInputID": "2312304f-ceb3-4fea-b93f-94420060b238", 
+                                    "stepInputUIIdentifier": "question_3",
+                                    "userInput": "hi"
+                                }
+                            ]
+                        },
+                        {
+                            "submittedTime": "2021-07-26 18:33:06.731050+00:00",
+                            "inputs": [
+                                {
+                                    "stepInputID": "758f482d-3eb0-4779-bf2a-bad9e452ea0e", 
+                                    "stepInputUIIdentifier": "question_1",
+                                    "userInput": "Red"
+                                },
+                                {
+                                    "stepInputID": "96e7f658-7f08-4432-b3d1-f483f01aa19b", 
+                                    "stepInputUIIdentifier": "question_2",
+                                    "userInput": true
+                                },
+                                {
+                                    "stepInputID": "2312304f-ceb3-4fea-b93f-94420060b238", 
+                                    "stepInputUIIdentifier": "question_3",
+                                    "userInput": "hi"
+                                }
+                            ]
+                        }
+                    ],
+                "started": "2021-07-26T08:00:28-05:00",
+                "finished": null
+            }
 
-        # Ensure all required attributes are present for each question in the payload.
-        answer_dict = {}
-        for index, user_response in enumerate(user_responses):
-            for answer in user_response["inputs"]:
+            """
+
+        # CHECK 4
+        # 1: Ensure all required attributes are present for each question in the payload.
+        # 2: Ensure user input data in payload corresponds to actual, defined user inputs for the step.
+        # 3: Sorted user inputs for further validation in CHECK 5.
+        collected_user_inputs_by_step_input_id = {}
+
+        # Outer Loop: User Response Sets
+        for index, user_input_set in enumerate(user_responses):
+
+            # Inner Loop: Each Input in the Response Set
+            for user_input in user_input_set["inputs"]:
+
+                # Ensure required keys are present for each input.
                 try:
-                    step_input_id = answer["stepInputID"]
-                    step_input_UI_identifier = answer["stepInputUIIdentifier"]
-                    response = answer["userInput"]
+                    step_input_id = user_input["stepInputID"]
+                    step_input_UI_identifier = user_input["stepInputUIIdentifier"]
+                    response = user_input["userInput"]
                 except KeyError as e:
                     raise serializers.ValidationError(
                         "Missing key in questions entry {}".format(e.args[0])
                     )
+
                 if not WorkflowStepUserInput.objects.filter(
                     id=step_input_id, ui_identifier=step_input_UI_identifier
                 ):
                     raise serializers.ValidationError(
-                        "No step with given stepInputID and stepInputUIIdentifier exists"
+                        f"No step with given stepInputID {step_input_id} and stepInputUIIdentifier {step_input_UI_identifier} exists."
                     )
 
-                # This is the most recent user_response
-                if step_input_id not in answer_dict.keys():
-                    answer_dict[step_input_id] = {}
-                answer_dict[step_input_id][index] = answer
+                # Add the user input to our sorted collection for further checks.
+                if step_input_id not in collected_user_inputs_by_step_input_id.keys():
+                    collected_user_inputs_by_step_input_id[step_input_id] = {}
+                collected_user_inputs_by_step_input_id[step_input_id][
+                    index
+                ] = user_input
 
+        # CHECK 5 - Final Checks
+        # Evaluate each defined WorkflowStepUserInput object for the step
+        # and make sure that required answers are present and conform
+        # to the specification for the object.
         for step_input in WorkflowStepUserInput.objects.filter(workflow_step=step):
             step_input_id = str(step_input.id)
-            if step_input_id not in answer_dict:  # if user did not give an answer...
-                if step_input.required:  # that's a problem if it was required
+
+            # Determine if the user has one or more answers for the current WorkflowStepUserInput
+            if step_input_id not in collected_user_inputs_by_step_input_id:
+                # No answers. Now see if answers were required.
+                if step_input.required:
                     raise serializers.ValidationError(
-                        "Missing response to step_input id {}".format(step_input_id)
+                        "A response is required, but missing, for step_input id {}".format(
+                            step_input_id
+                        )
                     )
-            else:  # user gave an answer, and we should validate it
-                responses = answer_dict[step_input_id]
-                for index, response in responses.items():
+
+            else:
+                # TODO: This checking process, in general, could probably benefit
+                # from a little bit of clean-up. This is too broad in that it will
+                # handle both "incorrect" answers and radical schema violations in the same way.
+                responses_to_input = collected_user_inputs_by_step_input_id[
+                    step_input_id
+                ]
+                for index, response in responses_to_input.items():
                     try:
                         jsonschema.validate(
                             instance=response, schema=step_input.response_schema
