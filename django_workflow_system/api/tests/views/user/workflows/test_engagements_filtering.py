@@ -18,7 +18,9 @@ from django_workflow_system.api.tests.factories import (
     WorkflowCollectionFactory,
     WorkflowCollectionEngagementFactory,
 )
-from django_workflow_system.api.views.user.workflows import WorkflowCollectionEngagementsView
+from django_workflow_system.api.views.user.workflows import (
+    WorkflowCollectionEngagementsView,
+)
 from django_workflow_system.models import WorkflowCollection
 
 

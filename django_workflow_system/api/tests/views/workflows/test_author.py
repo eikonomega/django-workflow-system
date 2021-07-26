@@ -3,8 +3,15 @@ from rest_framework.exceptions import ErrorDetail
 
 from rest_framework.test import APIRequestFactory
 
-from django_workflow_system.api.tests.factories import AuthorFactory, WorkflowFactory, UserFactory
-from django_workflow_system.api.views.workflows import WorkflowAuthorsView, WorkflowAuthorView
+from django_workflow_system.api.tests.factories import (
+    AuthorFactory,
+    WorkflowFactory,
+    UserFactory,
+)
+from django_workflow_system.api.views.workflows import (
+    WorkflowAuthorsView,
+    WorkflowAuthorView,
+)
 from django_workflow_system.models import WorkflowAuthor, Workflow
 
 

@@ -13,9 +13,11 @@ from django_workflow_system.api.tests.factories.workflows import (
     WorkflowCollectionImageFactory,
 )
 from django_workflow_system.api.tests.factories.workflows.workflow_collection import (
-    _WorkflowCollectionMemberFactory
+    _WorkflowCollectionMemberFactory,
 )
-from django_workflow_system.api.tests.factories.workflows.metadata import WorkflowMetadataFactory
+from django_workflow_system.api.tests.factories.workflows.metadata import (
+    WorkflowMetadataFactory,
+)
 from django_workflow_system.api.views.workflows import (
     WorkflowCollectionsView,
     WorkflowCollectionView,
@@ -30,8 +32,12 @@ class TestWorkflowCollectionsView(TestCase):
         self.factory = APIRequestFactory()
         self.user = UserFactory()
 
-        self.workflow_metadata_1 = WorkflowMetadataFactory(name="Eggs", description="Chicken Product")
-        self.workflow_metadata_2 = WorkflowMetadataFactory(name="Bacon", description="Pork Product")
+        self.workflow_metadata_1 = WorkflowMetadataFactory(
+            name="Eggs", description="Chicken Product"
+        )
+        self.workflow_metadata_2 = WorkflowMetadataFactory(
+            name="Bacon", description="Pork Product"
+        )
 
         # WORKFLOW COLLECTION 1
         self.workflow_collection = WorkflowCollectionFactory()
@@ -119,6 +125,7 @@ class TestWorkflowCollectionsView(TestCase):
                     "category",
                     "metadata",
                     "newer_version",
+                    "dependencies_completed",
                 ],
             )
 
@@ -128,7 +135,7 @@ class TestWorkflowCollectionsView(TestCase):
         self.assertEqual(
             response.data[0]["category"], self.workflow_collection.category
         )
-        self.assertEqual(response.data[0]['metadata'][0][0], 'Eggs')
+        self.assertEqual(response.data[0]["metadata"][0][0], "Eggs")
 
         self.assertCountEqual(
             response.data[0]["images"], [self.image_1_dict, self.image_2_dict]
@@ -144,7 +151,7 @@ class TestWorkflowCollectionsView(TestCase):
         )
 
         self.assertCountEqual(response.data[1]["images"], [self.image_3_dict])
-        self.assertEqual(response.data[1]['metadata'][0][0], 'Bacon')
+        self.assertEqual(response.data[1]["metadata"][0][0], "Bacon")
 
 
 class TestWorkflowCollectionView(TestCase):
@@ -180,7 +187,9 @@ class TestWorkflowCollectionView(TestCase):
             workflow=self.workflow, workflow_collection=self.workflow_collection
         )
 
-        self.workflow_metadata_1 = WorkflowMetadataFactory(name="Eggs", description="Chicken Product")
+        self.workflow_metadata_1 = WorkflowMetadataFactory(
+            name="Eggs", description="Chicken Product"
+        )
         self.workflow_collection.metadata.add(self.workflow_metadata_1)
         # IMAGE
         self.workflow_collection_image_type = WorkflowCollectionImageTypeFactory(
@@ -238,6 +247,7 @@ class TestWorkflowCollectionView(TestCase):
                 "category",
                 "metadata",
                 "newer_version",
+                "dependencies_completed",
             ],
         )
 
@@ -328,7 +338,7 @@ class TestWorkflowCollectionView(TestCase):
                     "author",
                     "images",
                     "workflowstep_set",
-                    "metadata"
+                    "metadata",
                 ],
             )
             workflow_step_set = workflow["workflowstep_set"]
@@ -346,7 +356,7 @@ class TestWorkflowCollectionView(TestCase):
                         "workflowstepaudio_set",
                         "workflowstepimage_set",
                         "workflowstepvideo_set",
-                        "workflowstepexternallink_set"
+                        "workflowstepexternallink_set",
                     ],
                 )
 

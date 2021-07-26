@@ -84,11 +84,11 @@ class _WorkflowStepTextFactory(DjangoModelFactory):
 class _WorkflowStepExternalLinkFactory(DjangoModelFactory):
     class Meta:
         model = models.WorkflowStepExternalLink
-        django_get_or_create = ['workflow_step', "ui_identifier"]
+        django_get_or_create = ["workflow_step", "ui_identifier"]
 
     workflow_step = None
     ui_identifier = factory.sequence(lambda n: f"external_link_{n}")
-    link = factory.Faker('https://www.google.com')
+    link = factory.Faker("https://www.google.com")
 
 
 class _WorkflowStepImageFactory(DjangoModelFactory):

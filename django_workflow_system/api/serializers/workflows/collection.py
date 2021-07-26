@@ -4,7 +4,11 @@ from rest_framework.reverse import reverse
 from .author import WorkflowAuthorSummarySerializer
 from .workflow import WorkflowTerseSerializer, ChildWorkflowDetailedSerializer
 from ..utils import get_images_helper
-from ....models import WorkflowCollectionMember, WorkflowCollection
+from ....models import (
+    WorkflowCollectionMember,
+    WorkflowCollection,
+    WorkflowCollectionEngagement,
+)
 
 
 class WorkflowCollectionMemberSummarySerializer(serializers.ModelSerializer):
@@ -38,18 +42,17 @@ class WorkflowCollectionMemberDetailedSerializer(serializers.ModelSerializer):
 
 
 class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
-    """
-    Summary level serializer for WorkflowCollection objects.
-    """
+    """Summary level serializer for WorkflowCollection objects."""
 
     authors = serializers.SerializerMethodField()
     metadata = serializers.SerializerMethodField()
     newer_version = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
-
+    dependencies_completed = serializers.SerializerMethodField()
 
     def get_authors(self, instance):
         """
+
         Method to get data for the 'authors' field.
         Returns a list of the Authors for all Workflows linked to a
         WorkflowCollection in JSON format.
@@ -76,7 +79,7 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
         return get_images_helper(
             self.context.get("request"), instance.workflowcollectionimage_set.all()
         )
-    
+
     def get_metadata(self, instance):
         """
         Method to build metadata hierarchy.
@@ -98,6 +101,31 @@ class WorkflowCollectionBaseSerializer(serializers.ModelSerializer):
             return self.context["request"].build_absolute_uri(relative_url)
         else:
             return None
+
+    def get_dependencies_completed(self, instance):
+        """Determine if collection dependencies are fullfilled."""
+        request = self.context.get("request")
+        status = False
+
+        # If there are no dependencies, we just say they are completed.
+        if not instance.collection_dependencies.all():
+            status = True
+
+        else:
+            # Determine if there is at least one complete engagement
+            # for each of the dependencies.
+            dependency_engagement_records = [
+                WorkflowCollectionEngagement.objects.filter(
+                    user=request.user,
+                    workflow_collection=dependency,
+                    finished__isnull=False,
+                )
+                for dependency in instance.collection_dependencies.all()
+            ]
+
+            status = all(dependency_engagement_records)
+
+        return status
 
 
 class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
@@ -129,6 +157,7 @@ class WorkflowCollectionSummarySerializer(WorkflowCollectionBaseSerializer):
             "category",
             "metadata",
             "newer_version",
+            "dependencies_completed",
         )
 
 
@@ -163,6 +192,7 @@ class WorkflowCollectionDetailedSerializer(WorkflowCollectionBaseSerializer):
             "category",
             "metadata",
             "newer_version",
+            "dependencies_completed",
         )
 
 

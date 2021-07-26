@@ -12,10 +12,14 @@ from django.utils import timezone
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
 from django_workflow_system.models.collection_member import WorkflowCollectionMember
 from django_workflow_system.models.step import WorkflowStep
-from django_workflow_system.models.step_dependency_group import WorkflowStepDependencyGroup
+from django_workflow_system.models.step_dependency_group import (
+    WorkflowStepDependencyGroup,
+)
 
 from django_workflow_system.models.collection import WorkflowCollection
-from django_workflow_system.models.engagement_detail import WorkflowCollectionEngagementDetail
+from django_workflow_system.models.engagement_detail import (
+    WorkflowCollectionEngagementDetail,
+)
 
 
 class EngagementStateType(TypedDict):
@@ -136,7 +140,7 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
             if not prev_step:
                 next_step = step_list[0]
             else:
-                for step in step_list[idx_prev_step + 1:]:
+                for step in step_list[idx_prev_step + 1 :]:
                     # step hasn't been started, check if can begin
                     if self.all_dependencies_satisfied(step):
                         next_step = step

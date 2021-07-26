@@ -7,6 +7,7 @@ from ....models import Workflow, WorkflowAuthor
 
 User = get_user_model()
 
+
 class UserTerseSerializer(serializers.ModelSerializer):
     """
     Terse level serializer for Django User objects.

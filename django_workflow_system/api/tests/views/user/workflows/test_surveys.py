@@ -4,14 +4,19 @@ from rest_framework import status
 
 from rest_framework.test import APIRequestFactory
 
-from django_workflow_system.api.tests.factories import UserFactory, WorkflowCollectionFactory
+from django_workflow_system.api.tests.factories import (
+    UserFactory,
+    WorkflowCollectionFactory,
+)
 from django_workflow_system.api.tests.factories.workflows import (
     JSONSchemaTrueFactory,
     JSONSchemaFactory,
     WorkflowCollectionEngagementFactory,
     WorkflowCollectionEngagementDetailFactory,
 )
-from django_workflow_system.api.tests.factories.workflows.step import _WorkflowStepUserInputTypeFactory
+from django_workflow_system.api.tests.factories.workflows.step import (
+    _WorkflowStepUserInputTypeFactory,
+)
 from django_workflow_system.api.views.user.workflows import (
     WorkflowCollectionEngagementsView,
     WorkflowCollectionEngagementDetailsView,
@@ -45,7 +50,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {
                                         "required": True,
                                         "type": _WorkflowStepUserInputTypeFactory(),
-                                        "specification": {}
+                                        "specification": {},
                                     }
                                 ],
                             },
@@ -55,7 +60,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {
                                         "required": True,
                                         "type": _WorkflowStepUserInputTypeFactory(),
-                                        "specification": {}
+                                        "specification": {},
                                     }
                                 ],
                             },
@@ -88,7 +93,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                         "ui_identifier": "question_1",
                                         "required": True,
                                         "type": _WorkflowStepUserInputTypeFactory(),
-                                        "specification": {}
+                                        "specification": {},
                                     }
                                 ],
                             },
@@ -98,7 +103,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {
                                         "required": True,
                                         "type": _WorkflowStepUserInputTypeFactory(),
-                                        "specification": {}  # accept anything
+                                        "specification": {},  # accept anything
                                     }
                                 ],
                             },
@@ -108,7 +113,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {
                                         "required": True,
                                         "type": _WorkflowStepUserInputTypeFactory(),
-                                        "specification": {}  # accept anything
+                                        "specification": {},  # accept anything
                                     }
                                 ],
                             },
@@ -217,8 +222,29 @@ class TestWorkflowCollectionSurveys(TestCase):
                                     {
                                         "ui_identifier": "question_1",
                                         "required": True,
-                                        "type": _WorkflowStepUserInputTypeFactory(json_schema={"properties": {"correctAnswer": {"type": "number", "enum": [0, 1, 2]}, "options": {"type": "array", "items": {"anyOf": [{"type": "number"}, {"type": "string"}]}}}}),
-                                        "specification": {"options": [0, 1, 2], "correctAnswer": 0}
+                                        "type": _WorkflowStepUserInputTypeFactory(
+                                            json_schema={
+                                                "properties": {
+                                                    "correctAnswer": {
+                                                        "type": "number",
+                                                        "enum": [0, 1, 2],
+                                                    },
+                                                    "options": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "anyOf": [
+                                                                {"type": "number"},
+                                                                {"type": "string"},
+                                                            ]
+                                                        },
+                                                    },
+                                                }
+                                            }
+                                        ),
+                                        "specification": {
+                                            "options": [0, 1, 2],
+                                            "correctAnswer": 0,
+                                        },
                                     }
                                 ],
                             },
@@ -373,15 +399,17 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now(),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=1),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            "stepInputID": str(step_input.id),
-                            "stepInputUIIdentifier": str(step_input.ui_identifier),
-                            "userInput": "Stegosaurus",
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": str(step_input.id),
+                                "stepInputUIIdentifier": str(step_input.ui_identifier),
+                                "userInput": "Stegosaurus",
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )
@@ -415,15 +443,17 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[1].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=2),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=3),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            "stepInputID": str(step_input.id),
-                            "stepInputUIIdentifier": str(step_input.ui_identifier),
-                            "userInput": "Orange",
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": str(step_input.id),
+                                "stepInputUIIdentifier": str(step_input.ui_identifier),
+                                "userInput": "Orange",
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )
@@ -555,15 +585,17 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now(),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=1),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            "stepInputID": str(step_input.id),
-                            "stepInputUIIdentifier": str(step_input.ui_identifier),
-                            "userInput": 1,  # we like dogs
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": str(step_input.id),
+                                "stepInputUIIdentifier": str(step_input.ui_identifier),
+                                "userInput": 1,  # we like dogs
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )
@@ -601,15 +633,19 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[2].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=2),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=3),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            "stepInputID": str(step_input_2.id),
-                            "stepInputUIIdentifier": str(step_input_2.ui_identifier),
-                            "userInput": "Corgie",
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": str(step_input_2.id),
+                                "stepInputUIIdentifier": str(
+                                    step_input_2.ui_identifier
+                                ),
+                                "userInput": "Corgie",
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )
@@ -682,11 +718,13 @@ class TestWorkflowCollectionSurveys(TestCase):
                     "workflowstep_set": [
                         {
                             "code": "step1",
-                            "workflowstepuserinput_set": [{
-                                "ui_identifier": "question_1",
-                                "type": _WorkflowStepUserInputTypeFactory(),
-                                "specification": {}
-                            }],
+                            "workflowstepuserinput_set": [
+                                {
+                                    "ui_identifier": "question_1",
+                                    "type": _WorkflowStepUserInputTypeFactory(),
+                                    "specification": {},
+                                }
+                            ],
                         }
                     ],
                 },
@@ -755,15 +793,17 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now(),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=1),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            "stepInputID": str(step_input.id),
-                            "stepInputUIIdentifier": str(step_input.ui_identifier),
-                            "userInput": "wut",
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": str(step_input.id),
+                                "stepInputUIIdentifier": str(step_input.ui_identifier),
+                                "userInput": "wut",
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )
@@ -848,17 +888,23 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
-                            "stepInputUIIdentifier": str(
-                                steps[0].workflowstepuserinput_set.get().ui_identifier
-                            ),
-                            "userInput": 0,
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": str(
+                                    steps[0].workflowstepuserinput_set.get().id
+                                ),
+                                "stepInputUIIdentifier": str(
+                                    steps[0]
+                                    .workflowstepuserinput_set.get()
+                                    .ui_identifier
+                                ),
+                                "userInput": 0,
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )
@@ -900,17 +946,23 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
-                            "stepInputUIIdentifier": str(
-                                steps[0].workflowstepuserinput_set.get().ui_identifier
-                            ),
-                            "userInput": 1,
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": str(
+                                    steps[0].workflowstepuserinput_set.get().id
+                                ),
+                                "stepInputUIIdentifier": str(
+                                    steps[0]
+                                    .workflowstepuserinput_set.get()
+                                    .ui_identifier
+                                ),
+                                "userInput": 1,
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )
@@ -952,17 +1004,23 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
-                            "stepInputUIIdentifier": str(
-                                steps[0].workflowstepuserinput_set.get().ui_identifier
-                            ),
-                            "userInput": 2,
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": str(
+                                    steps[0].workflowstepuserinput_set.get().id
+                                ),
+                                "stepInputUIIdentifier": str(
+                                    steps[0]
+                                    .workflowstepuserinput_set.get()
+                                    .ui_identifier
+                                ),
+                                "userInput": 2,
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )
@@ -1004,17 +1062,21 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            # "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
-                            "stepInputUIIdentifier": str(
-                                steps[0].workflowstepuserinput_set.get().ui_identifier
-                            ),
-                            "userInput": 0,
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                # "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
+                                "stepInputUIIdentifier": str(
+                                    steps[0]
+                                    .workflowstepuserinput_set.get()
+                                    .ui_identifier
+                                ),
+                                "userInput": 0,
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )
@@ -1042,16 +1104,20 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
-                            # "stepInputUIIdentifier": str(
-                            #     steps[0].workflowstepuserinput_set.get().ui_identifier),
-                            "userInput": 0,
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": str(
+                                    steps[0].workflowstepuserinput_set.get().id
+                                ),
+                                # "stepInputUIIdentifier": str(
+                                #     steps[0].workflowstepuserinput_set.get().ui_identifier),
+                                "userInput": 0,
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )
@@ -1079,17 +1145,21 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            "stepInputID": "hotdog",
-                            "stepInputUIIdentifier": str(
-                                steps[0].workflowstepuserinput_set.get().ui_identifier
-                            ),
-                            "userInput": 0,
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": "hotdog",
+                                "stepInputUIIdentifier": str(
+                                    steps[0]
+                                    .workflowstepuserinput_set.get()
+                                    .ui_identifier
+                                ),
+                                "userInput": 0,
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )
@@ -1117,15 +1187,19 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
-                            "stepInputUIIdentifier": "burger",
-                            "userInput": 0,
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": str(
+                                    steps[0].workflowstepuserinput_set.get().id
+                                ),
+                                "stepInputUIIdentifier": "burger",
+                                "userInput": 0,
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )
@@ -1158,7 +1232,7 @@ class TestWorkflowCollectionSurveys(TestCase):
                                         "ui_identifier": "question_1",
                                         "required": True,
                                         "type": _WorkflowStepUserInputTypeFactory(),
-                                        "specification": {}
+                                        "specification": {},
                                     }
                                 ],
                             },
@@ -1173,15 +1247,13 @@ class TestWorkflowCollectionSurveys(TestCase):
                                         "ui_identifier": "question_1",
                                         "required": True,
                                         "type": _WorkflowStepUserInputTypeFactory(),
-                                        "specification": {}
+                                        "specification": {},
                                     }
                                 ],
                             },
                             {
                                 "code": "nice_rice",
-                                "workflowsteptext_set": [
-                                    {"text": "I like red rice!"}
-                                ],
+                                "workflowsteptext_set": [{"text": "I like red rice!"}],
                             },
                             {
                                 "code": "final_step",
@@ -1283,15 +1355,19 @@ class TestWorkflowCollectionSurveys(TestCase):
                 "step": steps[0].id,
                 "started": timezone.now() + timezone.timedelta(milliseconds=1),
                 "finished": timezone.now() + timezone.timedelta(milliseconds=2),
-                "user_responses": [{
-                    "inputs": [
-                        {
-                            "stepInputID": str(steps[0].workflowstepuserinput_set.get().id),
-                            "stepInputUIIdentifier": "question_1",
-                            "userInput": 0,
-                        }
-                    ]
-                }],
+                "user_responses": [
+                    {
+                        "inputs": [
+                            {
+                                "stepInputID": str(
+                                    steps[0].workflowstepuserinput_set.get().id
+                                ),
+                                "stepInputUIIdentifier": "question_1",
+                                "userInput": 0,
+                            }
+                        ]
+                    }
+                ],
             },
             format="json",
         )

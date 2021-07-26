@@ -31,7 +31,7 @@ class WorkflowMetadata(CreatedModifiedAbstractModel):
     class Meta:
         db_table = "workflow_system_metadata"
         verbose_name_plural = "Workflow Metadata"
-        unique_together = ['name', 'parent_group']
+        unique_together = ["name", "parent_group"]
 
     def __str__(self):
         return self.full_path
@@ -64,9 +64,15 @@ class WorkflowMetadata(CreatedModifiedAbstractModel):
         """
         # Get all metadata objects
         for obj in WorkflowMetadata.objects.all():
-            if obj.name.lower() == self.name.lower() and obj.parent_group == self.parent_group:
+            if (
+                obj.name.lower() == self.name.lower()
+                and obj.parent_group == self.parent_group
+            ):
                 raise ValidationError(
-                    {"name": f"Name '{self.name}' with this same parent group already exists."})
+                    {
+                        "name": f"Name '{self.name}' with this same parent group already exists."
+                    }
+                )
 
     def save(self, *args, **kwargs):
         self.full_clean()
