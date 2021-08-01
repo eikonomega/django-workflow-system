@@ -1,0 +1,9 @@
+{
+    "editor.formatOnSave": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.pydocstyleEnabled": true,
+    "python.languageServer": "Pylance",
+    "python.formatting.provider": "black",
+    "python.linting.enabled": true,
+    "python.pythonPath": "/usr/local/bin/python"
+}

@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "workflows.apps.WorkflowsConfig",
+    "django_workflow_system",
     "rest_framework",
 ]
 
@@ -136,3 +136,5 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
 }
+
+DJANGO_WORKFLOW_SYSTEM = {"INPUT_TYPE_RESPONSE_SCHEMA_HANDLERS": []}
