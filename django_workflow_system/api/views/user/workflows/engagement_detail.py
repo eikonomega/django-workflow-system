@@ -309,8 +309,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             workflow_collection_engagement__user=request.user,
         )
 
-        # If "users_responses" exists in the payload and is not a false-like value
-        # add a submittedTime attribute to it. TODO: This perhaps should be done on the front-end.
+        # We need to set a submitted time on the input
         if "user_responses" in request.data.keys() and request.data["user_responses"]:
             request.data["user_responses"][-1]["submittedTime"] = str(timezone.now())
 
@@ -352,12 +351,18 @@ class WorkflowCollectionEngagementDetailView(APIView):
 
             # Check if we are able to proceed to the next step
             if data["user_responses"] and "inputs" in data["user_responses"][-1].keys():
-                checker = [
-                    entry["is_valid"]
-                    for entry in serializer.data["user_responses"][-1]["inputs"]
-                ]
-                data["state"]["proceed"] = False if False in checker else True
+                try:
+                    checker = [
+                        entry["is_valid"]
+                        for entry in serializer.data["user_responses"][-1]["inputs"]
+                    ]
+                    data["state"]["proceed"] = False if False in checker else True
+                except KeyError as exception:
+                    print("Exception Encountered: ", exception)
+                    print("Inputs: ", serializer.data["user_responses"][-1]["inputs"])
+
+                data["state"]["proceed"] = False
             else:
-                data["state"]["proceed"] = True
+                data["proceed"] = True
 
             return Response(data=data, status=status.HTTP_200_OK)
