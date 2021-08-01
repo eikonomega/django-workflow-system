@@ -1,3 +1,4 @@
+"""DRF View Definition."""
 from dateutil import parser as datetimeparser
 import logging
 import uuid
@@ -13,7 +14,7 @@ from .....utils.logging_utils import generate_extra
 from .....models import WorkflowCollectionEngagement, WorkflowCollection
 from ....serializers.user.workflows.engagement import (
     WorkflowCollectionEngagementDetailedSerializer,
-    WorkflowCollectionEngagementSummarySerializer,
+    WorkflowCollectionEngagementSerializer,
     WorkflowCollectionEngagementAndDetailsSerializer,
 )
 
@@ -118,7 +119,7 @@ class WorkflowCollectionEngagementsView(APIView):
                 engagements, many=True, context={"request": request}
             )
         else:
-            serializer = WorkflowCollectionEngagementSummarySerializer(
+            serializer = WorkflowCollectionEngagementSerializer(
                 engagements, many=True, context={"request": request}
             )
 
@@ -298,7 +299,34 @@ class WorkflowCollectionEngagementView(APIView):
             user_engagement, context={"request": request}
         )
 
-        return Response(data=serializer.data)
+        # TODO: This is a bit of a mess. Need to ensure that workflow engagement details
+        # are presented in the correct order (matching workflow step order) for this
+        # to be consistently accurate.
+
+        data = serializer.data
+        data["state"] = serializer.data["state"]
+
+        if (
+            data["workflowcollectionengagementdetail_set"]
+            and data["workflowcollectionengagementdetail_set"][-1]["user_responses"]
+            and "inputs"
+            in data["workflowcollectionengagementdetail_set"][-1]["user_responses"][
+                -1
+            ].keys()
+        ):
+
+            user_inputs = data["workflowcollectionengagementdetail_set"][-1][
+                "user_responses"
+            ][-1]["inputs"]
+
+            print("Something to evaluate")
+
+            checker = [entry["is_valid"] for entry in user_inputs]
+            data["state"]["proceed"] = False if False in checker else True
+        else:
+            data["state"]["proceed"] = True
+
+        return Response(data=data)
 
     def patch(self, request, id):
         """

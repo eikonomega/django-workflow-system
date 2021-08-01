@@ -6,7 +6,7 @@ from django.urls.exceptions import NoReverseMatch
 from rest_framework import serializers
 
 from .....models import WorkflowCollection, WorkflowCollectionEngagement
-from .engagement_detail import WorkflowCollectionEngagementDetailSummarySerializer
+from .engagement_detail import WorkflowCollectionEngagementDetailSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -155,7 +155,7 @@ class WorkflowCollectionEngagementBaseSerializer(serializers.ModelSerializer):
         return state
 
 
-class WorkflowCollectionEngagementSummarySerializer(
+class WorkflowCollectionEngagementSerializer(
     WorkflowCollectionEngagementBaseSerializer
 ):
     """
@@ -180,14 +180,14 @@ class WorkflowCollectionEngagementSummarySerializer(
 
 
 class WorkflowCollectionEngagementAndDetailsSerializer(
-    WorkflowCollectionEngagementSummarySerializer
+    WorkflowCollectionEngagementSerializer
 ):
     """
     Summary level Serializer for WorkflowCollectionEngagementDetail objects.
     """
 
     workflowcollectionengagementdetail_set = (
-        WorkflowCollectionEngagementDetailSummarySerializer(
+        WorkflowCollectionEngagementDetailSerializer(
             many=True,
             required=False,
         )
@@ -220,7 +220,7 @@ class WorkflowCollectionEngagementDetailedSerializer(
     """
 
     workflowcollectionengagementdetail_set = (
-        WorkflowCollectionEngagementDetailSummarySerializer(
+        WorkflowCollectionEngagementDetailSerializer(
             many=True,
             required=False,
         )

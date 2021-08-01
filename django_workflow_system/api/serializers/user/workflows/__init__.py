@@ -1,8 +1,8 @@
 """Convenience imports."""
 from .assignment import WorkflowCollectionAssignmentSummarySerializer
-from .engagement_detail import WorkflowCollectionEngagementDetailSummarySerializer
+from .engagement_detail import WorkflowCollectionEngagementDetailSerializer
 from .engagement import (
-    WorkflowCollectionEngagementSummarySerializer,
+    WorkflowCollectionEngagementSerializer,
     WorkflowCollectionEngagementDetailedSerializer,
 )
 from .subscription import (

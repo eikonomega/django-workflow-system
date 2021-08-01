@@ -10,7 +10,9 @@ from django_workflow_system.api.tests.factories import (
     WorkflowCollectionEngagementFactory,
     WorkflowCollectionFactory,
 )
-from django_workflow_system.api.views.user.workflows import WorkflowCollectionEngagementView
+from django_workflow_system.api.views.user.workflows import (
+    WorkflowCollectionEngagementView,
+)
 
 
 class TestWorkflowCollectionEngagementView(TestCase):

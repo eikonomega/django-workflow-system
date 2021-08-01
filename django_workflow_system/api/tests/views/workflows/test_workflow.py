@@ -7,8 +7,12 @@ from django_workflow_system.api.tests.factories import (
     WorkflowStepFactory,
     UserFactory,
 )
-from django_workflow_system.api.tests.factories.workflows.metadata import WorkflowMetadataFactory
-from django_workflow_system.api.tests.factories.workflows.step import _WorkflowStepVideoFactory
+from django_workflow_system.api.tests.factories.workflows.metadata import (
+    WorkflowMetadataFactory,
+)
+from django_workflow_system.api.tests.factories.workflows.step import (
+    _WorkflowStepVideoFactory,
+)
 from django_workflow_system.api.tests.factories.workflows.workflow_image import (
     WorkflowImageTypeFactory,
     WorkflowImageFactory,
@@ -31,8 +35,12 @@ class TestWorkflowsView(TestCase):
         self.workflow_image_type = WorkflowImageTypeFactory(type="Detail")
         self.workflow_image_type_2 = WorkflowImageTypeFactory(type="Homepage")
 
-        self.workflow_metadata_1 = WorkflowMetadataFactory(name="Eggs", description="Chicken Product")
-        self.workflow_metadata_2 = WorkflowMetadataFactory(name="Bacon", description="Pork Product")
+        self.workflow_metadata_1 = WorkflowMetadataFactory(
+            name="Eggs", description="Chicken Product"
+        )
+        self.workflow_metadata_2 = WorkflowMetadataFactory(
+            name="Bacon", description="Pork Product"
+        )
 
         self.workflow.metadata.add(self.workflow_metadata_1)
         self.workflow_2.metadata.add(self.workflow_metadata_2)
@@ -79,7 +87,8 @@ class TestWorkflowsView(TestCase):
         for result in response.data:
             # Ensure all expected data parameters are present.
             self.assertListEqual(
-                list(result.keys()), ["id", "name", "detail", "images", "author", "metadata"]
+                list(result.keys()),
+                ["id", "name", "detail", "images", "author", "metadata"],
             )
 
             author_obj = WorkflowAuthor.objects.get(id=result["author"]["id"])
@@ -96,7 +105,7 @@ class TestWorkflowsView(TestCase):
                 self.assertCountEqual(
                     result["images"], [self.image_1_dict, self.image_2_dict]
                 )
-                self.assertEqual(result['metadata'][0][0], "Eggs")
+                self.assertEqual(result["metadata"][0][0], "Eggs")
 
             elif result["name"] == self.workflow_2.name:
                 self.assertEqual(result["author"]["title"], author_obj.title)
@@ -107,7 +116,7 @@ class TestWorkflowsView(TestCase):
                     result["author"]["user"]["last_name"], author_obj.user.last_name
                 )
                 self.assertCountEqual(result["images"], [self.image_3_dict])
-                self.assertEqual(result['metadata'][0][0], "Bacon")
+                self.assertEqual(result["metadata"][0][0], "Bacon")
 
 
 class TestWorkflowView(TestCase):
@@ -125,7 +134,9 @@ class TestWorkflowView(TestCase):
             workflow_step=self.workflow_step
         )
 
-        self.workflow_metadata_1 = WorkflowMetadataFactory(name="Eggs", description="Chicken Product")
+        self.workflow_metadata_1 = WorkflowMetadataFactory(
+            name="Eggs", description="Chicken Product"
+        )
         self.workflow.metadata.add(self.workflow_metadata_1)
 
         # IMAGES
@@ -161,7 +172,7 @@ class TestWorkflowView(TestCase):
         self.assertEqual(response.data["code"], self.workflow.code)
         self.assertEqual(response.data["name"], self.workflow.name)
         self.assertEqual(response.data["author"]["title"], self.workflow.author.title)
-        self.assertEqual(response.data['metadata'][0][0], "Eggs")
+        self.assertEqual(response.data["metadata"][0][0], "Eggs")
         self.assertEqual(
             response.data["author"]["image"],
             f"http://testserver/mediafiles/{str(self.workflow.author.image)}",

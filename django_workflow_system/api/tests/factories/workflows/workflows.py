@@ -30,7 +30,7 @@ class WorkflowFactory(DjangoModelFactory):
                 step.workflow = self
             else:
                 raise TypeError("step must be a dict or WorkflowStep")
-    
+
     @factory.post_generation
     def metadata(self, create, extracted, **kwargs):
         if not create or not extracted:
@@ -39,7 +39,9 @@ class WorkflowFactory(DjangoModelFactory):
             if isinstance(metadata, WorkflowMetadata):
                 self.metadata.add(metadata)
             elif isinstance(metadata, str):
-                self.metadata.add(WorkflowMetadataFactory(name=metadata, description="Eh, Whatever"))
+                self.metadata.add(
+                    WorkflowMetadataFactory(name=metadata, description="Eh, Whatever")
+                )
 
 
 __all__ = ["WorkflowFactory"]

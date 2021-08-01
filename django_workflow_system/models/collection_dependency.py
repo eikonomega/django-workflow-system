@@ -28,7 +28,7 @@ class WorkflowCollectionDependency(CreatedModifiedAbstractModel):
     )
 
     class Meta:
-        db_table = "workflow_collection_dependency"
+        db_table = "workflow_system_collection_dependency"
         verbose_name_plural = "Workflow Collection Dependencies"
         unique_together = [["source", "target"]]
 

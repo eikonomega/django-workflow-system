@@ -8,7 +8,7 @@ from .....models import (
 
 
 class WorkflowCollectionRecommendationSerializer(serializers.ModelSerializer):
-    """ Serializer for WorkflowCollectionRecommendation objects"""
+    """Serializer for WorkflowCollectionRecommendation objects"""
 
     detail = serializers.HyperlinkedIdentityField(
         view_name="user-workflow-recommendation", lookup_field="id"

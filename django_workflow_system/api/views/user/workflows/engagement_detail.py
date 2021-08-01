@@ -1,3 +1,4 @@
+"""DRF View Definition."""
 import logging
 
 from django.shortcuts import get_object_or_404
@@ -13,7 +14,7 @@ from ....serializers.user.workflows.engagement import (
     WorkflowCollectionEngagementBaseSerializer,
 )
 from ....serializers.user.workflows.engagement_detail import (
-    WorkflowCollectionEngagementDetailSummarySerializer,
+    WorkflowCollectionEngagementDetailSerializer,
 )
 from .....utils.logging_utils import generate_extra
 
@@ -62,7 +63,7 @@ class WorkflowCollectionEngagementDetailsView(APIView):
             workflow_collection_engagement__user=request.user,
         )
 
-        serializer = WorkflowCollectionEngagementDetailSummarySerializer(
+        serializer = WorkflowCollectionEngagementDetailSerializer(
             engagement_details, context={"request": request}, many=True
         )
 
@@ -126,7 +127,7 @@ class WorkflowCollectionEngagementDetailsView(APIView):
         if "user_responses" in request.data.keys() and request.data["user_responses"]:
             request.data["user_responses"][-1]["submittedTime"] = str(timezone.now())
 
-        serializer = WorkflowCollectionEngagementDetailSummarySerializer(
+        serializer = WorkflowCollectionEngagementDetailSerializer(
             data=request.data, context={"request": request}
         )
 
@@ -184,17 +185,18 @@ class WorkflowCollectionEngagementDetailsView(APIView):
 
 class WorkflowCollectionEngagementDetailView(APIView):
     """
+    READ/UPDATE operations for a single WorkflowCollectionEngagementDetail resource.
+
     **Supported HTTP Methods**
 
     * Get: Retrieve a detailed representation of a specific
       WorkflowCollectionEngagementDetail resource associated with a given
       WorkflowEngagement and belonging to the requesting user.
+
     * Patch: Update a specific WorkflowCollectionEngagementDetail resource
       associated with a given WorkflowEngagement and belonging
       to the requesting user.
     """
-
-    """READ/UPDATE operations for WorkflowCollectionEngagementDetail resources."""
 
     required_scopes = ["read", "write"]
 
@@ -241,7 +243,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             workflow_collection_engagement__user=request.user,
         )
 
-        serializer = WorkflowCollectionEngagementDetailSummarySerializer(
+        serializer = WorkflowCollectionEngagementDetailSerializer(
             engagement_detail, context={"request": request}
         )
 
@@ -249,14 +251,12 @@ class WorkflowCollectionEngagementDetailView(APIView):
 
     def patch(self, request, engagement_id, id):
         """
-        PATCH Workflow User Engagement Detail update for current user.
+        Update a WorkflowUserEngagementDetail resource for the current user.
 
         Path Parameters:
             id (str): The UUID of the workflow user engagement detail to modify.
 
         Body Parameters:
-            workflow_collection_engagement (foreign key): The WorkflowEngagement object associated
-                                                          with the engagement detail.
             step (foreign key): The WorkflowStep associated with the engagement detail.
             user_responses (dict): Internal representation of JSON response from user.
             started (datetime): The start date of the engagement detail.
@@ -313,7 +313,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
         if "user_responses" in request.data.keys() and request.data["user_responses"]:
             request.data["user_responses"][-1]["submittedTime"] = str(timezone.now())
 
-        serializer = WorkflowCollectionEngagementDetailSummarySerializer(
+        serializer = WorkflowCollectionEngagementDetailSerializer(
             engagement_detail,
             data=request.data,
             partial=True,
@@ -337,7 +337,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             serializer.save()
 
             # In order for UI clients to know what action to take after
-            # a user POSTs a new step completion via this endpoint, we
+            # a user has updated an EngagementDetail via this endpoint, we
             # need to return the updated `state` property of the enclosing
             # WorkflowCollectionEngagement object.
 
@@ -348,6 +348,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             )
             data = serializer.data
             data["state"] = engagement_serializer.data["state"]
+
             # Check if we are able to proceed to the next step
             if data["user_responses"] and "inputs" in data["user_responses"][-1].keys():
                 try:
@@ -363,4 +364,5 @@ class WorkflowCollectionEngagementDetailView(APIView):
                 data["state"]["proceed"] = False
             else:
                 data["proceed"] = True
+
             return Response(data=data, status=status.HTTP_200_OK)

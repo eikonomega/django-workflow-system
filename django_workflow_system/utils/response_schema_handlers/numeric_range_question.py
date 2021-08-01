@@ -18,24 +18,47 @@ def get_response_schema(workflow_step_user_input):
     response_schema = copy.deepcopy(RESPONSE_SCHEMA)
 
     # Now we need to check some things.....
-    if workflow_step_user_input.specification['meta']['inputRequired'] and workflow_step_user_input.specification['meta']['correctInputRequired']:
+    if (
+        workflow_step_user_input.specification["meta"]["inputRequired"]
+        and workflow_step_user_input.specification["meta"]["correctInputRequired"]
+    ):
         # They need to respond with the correct answer.
-        response_schema['properties']['userInput']['type'] = workflow_step_user_input.type.json_schema['properties']['correctInput']['type']
-        response_schema['properties']['userInput']['enum'] = [
-            workflow_step_user_input.specification['correctInput']]
+        response_schema["properties"]["userInput"][
+            "type"
+        ] = workflow_step_user_input.type.json_schema["properties"]["correctInput"][
+            "type"
+        ]
+        response_schema["properties"]["userInput"]["enum"] = [
+            workflow_step_user_input.specification["correctInput"]
+        ]
 
-    elif workflow_step_user_input.specification['meta']['inputRequired'] and not workflow_step_user_input.specification['meta']['correctInputRequired']:
+    elif (
+        workflow_step_user_input.specification["meta"]["inputRequired"]
+        and not workflow_step_user_input.specification["meta"]["correctInputRequired"]
+    ):
         # They don't need to respond with the correct answer.
-        response_schema['properties']['userInput']['type'] = workflow_step_user_input.type.json_schema['properties']['correctInput']['type']
-        response_schema['properties']['userInput']['enum'] = fetch_numbers(workflow_step_user_input)
+        response_schema["properties"]["userInput"][
+            "type"
+        ] = workflow_step_user_input.type.json_schema["properties"]["correctInput"][
+            "type"
+        ]
+        response_schema["properties"]["userInput"]["enum"] = fetch_numbers(
+            workflow_step_user_input
+        )
 
     else:
         # Answer is not required and correct is not required, so null should be an option in potential responses
-        response_schema['properties']['userInput']['anyOf'] = [
-            {"type": workflow_step_user_input.type.json_schema['properties']['correctInput']['type']}, {"type": 'null'}]
+        response_schema["properties"]["userInput"]["anyOf"] = [
+            {
+                "type": workflow_step_user_input.type.json_schema["properties"][
+                    "correctInput"
+                ]["type"]
+            },
+            {"type": "null"},
+        ]
         new_enum = fetch_numbers(workflow_step_user_input)
         new_enum.append(None)
-        response_schema['properties']['userInput']['enum'] = new_enum
+        response_schema["properties"]["userInput"]["enum"] = new_enum
 
     return response_schema
 
@@ -51,6 +74,11 @@ def fetch_numbers(workflow_step_user_input):
         list: A listt of all possible answer numbers in the given range.
     """
     number_list = []
-    for number in range(workflow_step_user_input.specification['inputOptions']['minimumValue'], workflow_step_user_input.specification['inputOptions']['maximumValue'] + workflow_step_user_input.specification['inputOptions']['step'], workflow_step_user_input.specification['inputOptions']['step']):
+    for number in range(
+        workflow_step_user_input.specification["inputOptions"]["minimumValue"],
+        workflow_step_user_input.specification["inputOptions"]["maximumValue"]
+        + workflow_step_user_input.specification["inputOptions"]["step"],
+        workflow_step_user_input.specification["inputOptions"]["step"],
+    ):
         number_list.append(number)
     return number_list
