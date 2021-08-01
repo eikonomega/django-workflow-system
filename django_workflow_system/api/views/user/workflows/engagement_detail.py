@@ -123,8 +123,8 @@ class WorkflowCollectionEngagementDetailsView(APIView):
         # is captured in the URL route. Injecting it into the payload here.
         request.data["workflow_collection_engagement"] = id
         # We need to set a submitted time on the input
-        if "user_responses" in request.data.keys() and request.data['user_responses']:
-            request.data['user_responses'][-1]['submittedTime'] = str(timezone.now())
+        if "user_responses" in request.data.keys() and request.data["user_responses"]:
+            request.data["user_responses"][-1]["submittedTime"] = str(timezone.now())
 
         serializer = WorkflowCollectionEngagementDetailSummarySerializer(
             data=request.data, context={"request": request}
@@ -172,12 +172,13 @@ class WorkflowCollectionEngagementDetailsView(APIView):
             data = serializer.data
             data["state"] = engagement_serializer.data["state"]
             # Check if we are able to proceed to the next step
-            if data['user_responses'] and "inputs" in data['user_responses'][-1].keys():
-                checker = [entry['is_valid']
-                           for entry in data['user_responses'][-1]['inputs']]
-                data['proceed'] = False if False in checker else True
+            if data["user_responses"] and "inputs" in data["user_responses"][-1].keys():
+                checker = [
+                    entry["is_valid"] for entry in data["user_responses"][-1]["inputs"]
+                ]
+                data["proceed"] = False if False in checker else True
             else:
-                data['proceed'] = True
+                data["proceed"] = True
             return Response(data=data, status=status.HTTP_201_CREATED)
 
 
@@ -309,8 +310,8 @@ class WorkflowCollectionEngagementDetailView(APIView):
         )
 
         # We need to set a submitted time on the input
-        if "user_responses" in request.data.keys() and request.data['user_responses']:
-            request.data['user_responses'][-1]['submittedTime'] = str(timezone.now())
+        if "user_responses" in request.data.keys() and request.data["user_responses"]:
+            request.data["user_responses"][-1]["submittedTime"] = str(timezone.now())
 
         serializer = WorkflowCollectionEngagementDetailSummarySerializer(
             engagement_detail,
@@ -348,10 +349,18 @@ class WorkflowCollectionEngagementDetailView(APIView):
             data = serializer.data
             data["state"] = engagement_serializer.data["state"]
             # Check if we are able to proceed to the next step
-            if data['user_responses'] and "inputs" in data['user_responses'][-1].keys():
-                checker = [entry['is_valid']
-                           for entry in serializer.data['user_responses'][-1]['inputs']]
-                data['proceed'] = False if False in checker else True
+            if data["user_responses"] and "inputs" in data["user_responses"][-1].keys():
+                try:
+                    checker = [
+                        entry["is_valid"]
+                        for entry in serializer.data["user_responses"][-1]["inputs"]
+                    ]
+                    data["state"]["proceed"] = False if False in checker else True
+                except KeyError as exception:
+                    print("Exception Encountered: ", exception)
+                    print("Inputs: ", serializer.data["user_responses"][-1]["inputs"])
+
+                data["state"]["proceed"] = False
             else:
-                data['proceed'] = True
+                data["proceed"] = True
             return Response(data=data, status=status.HTTP_200_OK)
