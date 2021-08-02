@@ -1,7 +1,7 @@
 """Response Schema Generator Module for a Multiple Choice Question"""
 import copy
 import itertools
-
+from itertools import permutations
 from django_workflow_system.utils import RESPONSE_SCHEMA
 
 
@@ -29,9 +29,12 @@ def get_response_schema(workflow_step_user_input):
         ] = workflow_step_user_input.type.json_schema["properties"]["correctInput"][
             "type"
         ]
-        response_schema["properties"]["userInput"]["enum"] = [
+
+        response_schema["properties"]["userInput"][
+            "enum"
+        ] = fetch_all_combinations_unordered(
             workflow_step_user_input.specification["correctInput"]
-        ]
+        )
 
     elif (
         workflow_step_user_input.specification["meta"]["inputRequired"]
@@ -85,4 +88,23 @@ def fetch_all_combinations(workflow_step_user_input):
                 workflow_step_user_input.specification["inputOptions"], number
             )
         ]
+    return all_combos
+
+
+def fetch_all_combinations_unordered(correct_answer):
+    """
+    Fetch all possible combinations of a multi choice question, where order does not matter.
+
+    Args:
+        workflow_step_user_input (WorkflowStepUserInput): The Workflow correct input.
+
+    Returns:
+        list: All possible combinations of available answers.
+    """
+
+    all_combos = []
+    combos = []
+    combos = permutations(correct_answer)
+    for i in combos:
+        all_combos += [list(i)]
     return all_combos
