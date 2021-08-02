@@ -1,7 +1,6 @@
 """Response Schema Generator Module for a Multiple Choice Question"""
 import copy
 import itertools
-from itertools import permutations
 from django_workflow_system.utils import RESPONSE_SCHEMA
 
 
@@ -104,7 +103,7 @@ def fetch_all_combinations_unordered(correct_answer):
 
     all_combos = []
     combos = []
-    combos = permutations(correct_answer)
+    combos = itertools.permutations(correct_answer)
     for i in combos:
         all_combos += [list(i)]
     return all_combos
