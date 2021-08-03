@@ -172,14 +172,23 @@ class WorkflowCollectionEngagementDetailsView(APIView):
             )
             data = serializer.data
             data["state"] = engagement_serializer.data["state"]
+
             # Check if we are able to proceed to the next step
             if data["user_responses"] and "inputs" in data["user_responses"][-1].keys():
-                checker = [
-                    entry["is_valid"] for entry in data["user_responses"][-1]["inputs"]
-                ]
-                data["proceed"] = False if False in checker else True
+
+                are_answers_valid = []
+
+                for entry in serializer.data["user_responses"][-1]["inputs"]:
+                    try:
+                        are_answers_valid.append(entry["is_valid"])
+                    except KeyError as exception:
+                        print("Exception Encountered: ", exception)
+                        print("Entry: ", entry)
+
+                data["state"]["proceed"] = False if False in are_answers_valid else True
             else:
-                data["proceed"] = True
+                data["state"]["proceed"] = True
+
             return Response(data=data, status=status.HTTP_201_CREATED)
 
 
@@ -351,18 +360,18 @@ class WorkflowCollectionEngagementDetailView(APIView):
 
             # Check if we are able to proceed to the next step
             if data["user_responses"] and "inputs" in data["user_responses"][-1].keys():
-                try:
-                    checker = [
-                        entry["is_valid"]
-                        for entry in serializer.data["user_responses"][-1]["inputs"]
-                    ]
-                    data["state"]["proceed"] = False if False in checker else True
-                except KeyError as exception:
-                    print("Exception Encountered: ", exception)
-                    print("Inputs: ", serializer.data["user_responses"][-1]["inputs"])
 
-                data["state"]["proceed"] = False
+                are_answers_valid = []
+
+                for entry in serializer.data["user_responses"][-1]["inputs"]:
+                    try:
+                        are_answers_valid.append(entry["is_valid"])
+                    except KeyError as exception:
+                        print("Exception Encountered: ", exception)
+                        print("Entry: ", entry)
+
+                data["state"]["proceed"] = False if False in are_answers_valid else True
             else:
-                data["proceed"] = True
+                data["state"]["proceed"] = True
 
             return Response(data=data, status=status.HTTP_200_OK)
