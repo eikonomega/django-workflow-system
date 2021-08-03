@@ -101,9 +101,7 @@ def fetch_all_combinations_unordered(correct_answer):
         list: All possible combinations of available answers.
     """
 
-    all_combos = []
-    combos = []
     combos = itertools.permutations(correct_answer)
-    for i in combos:
-        all_combos += [list(i)]
+    all_combos = [list(combo) for combo in combos]
+
     return all_combos
