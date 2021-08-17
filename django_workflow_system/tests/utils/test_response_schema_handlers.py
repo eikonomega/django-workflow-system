@@ -1,11 +1,9 @@
-from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from ...api.tests.factories.workflows.workflow_collection import (
     WorkflowCollectionFactory,
 )
 from ...api.tests.factories.workflows.step import (
-    _WorkflowStepUserInputFactory,
     _WorkflowStepUserInputTypeFactory,
 )
 from ...models import WorkflowStep, WorkflowStepUserInput
@@ -107,7 +105,7 @@ class TestWorkflowCollection(TestCase):
         )
         my_step_input = WorkflowStepUserInput.objects.get(workflow_step=my_step)
         my_step_input.type.name = "single_choice_question"
-        my_step_input.type.save()
+        # my_step_input.type.save()
         # Ensure if correct answer is required, that the enum is just the correct answer
         self.assertEquals(
             my_step_input.response_schema["properties"]["userInput"]["anyOf"],
@@ -211,7 +209,7 @@ class TestWorkflowCollection(TestCase):
                 },
             },
         }
-        my_step_input.type.save()
+        # my_step_input.type.save()
 
         my_step_input.specification = {
             "label": "What are your favorite Marvel movies?",
@@ -227,7 +225,7 @@ class TestWorkflowCollection(TestCase):
         )
         self.assertEqual(
             my_step_input.response_schema["properties"]["userInput"]["enum"],
-            [["Avengers", "WandaVision"]],
+            [["Avengers", "WandaVision"], ["WandaVision", "Avengers"]],
         )
 
         # Change the example so correctInput is not required
@@ -344,7 +342,7 @@ class TestWorkflowCollection(TestCase):
                 },
             },
         }
-        my_step_input.type.save()
+        # my_step_input.type.save()
 
         my_step_input.specification = {
             "label": "What is your favorite number?",
@@ -473,7 +471,7 @@ class TestWorkflowCollection(TestCase):
                 },
             },
         }
-        my_step_input.type.save()
+        # my_step_input.type.save()
 
         my_step_input.specification = {
             "label": "What is my birthday?",
