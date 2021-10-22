@@ -310,6 +310,7 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
                 raise ValidationError(
                     "The Engagement and Assignment Users are not the same"
                 )
+
         # Check if the user has an existing incomplete engagement to the same workflow collection
         existing_engagement = WorkflowCollectionEngagement.objects.filter(
             user=self.user,
