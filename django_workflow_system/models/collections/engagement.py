@@ -10,14 +10,16 @@ from django.db.models import Subquery, OuterRef, Q
 from django.utils import timezone
 
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
-from django_workflow_system.models.collection_member import WorkflowCollectionMember
+from django_workflow_system.models.collections.collection_member import (
+    WorkflowCollectionMember,
+)
 from django_workflow_system.models.step import WorkflowStep
 from django_workflow_system.models.step_dependency_group import (
     WorkflowStepDependencyGroup,
 )
 
-from django_workflow_system.models.collection import WorkflowCollection
-from django_workflow_system.models.engagement_detail import (
+from django_workflow_system.models.collections.collection import WorkflowCollection
+from django_workflow_system.models.collections.engagement_detail import (
     WorkflowCollectionEngagementDetail,
 )
 

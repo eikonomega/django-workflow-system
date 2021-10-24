@@ -4,8 +4,10 @@ import uuid
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 
-from django_workflow_system.models.collection_member import WorkflowCollectionMember
-from django_workflow_system.models.collection import WorkflowCollection
+from django_workflow_system.models.collections.collection_member import (
+    WorkflowCollectionMember,
+)
+from django_workflow_system.models.collections.collection import WorkflowCollection
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
 
 

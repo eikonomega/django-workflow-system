@@ -1,30 +1,29 @@
 """Convenience imports."""
+
+###########
+# GENERAL #
+###########
 from django_workflow_system.models.author import WorkflowAuthor
-from django_workflow_system.models.assignment import WorkflowCollectionAssignment
-from django_workflow_system.models.collection_dependency import (
+from django_workflow_system.models.json_schema import JSONSchema
+
+###############
+# COLLECTIONS #
+###############
+from .collections import (
+    WorkflowCollectionAssignment,
+    WorkflowCollection,
     WorkflowCollectionDependency,
-)
-from django_workflow_system.models.collection_image import WorkflowCollectionImage
-from django_workflow_system.models.collection_image_type import (
-    WorkflowCollectionImageType,
-)
-from django_workflow_system.models.engagement import (
     WorkflowCollectionEngagement,
     WorkflowCollectionEngagementDetail,
-)
-from django_workflow_system.models.engagement_detail import (
-    WorkflowCollectionEngagementDetail,
-)
-from django_workflow_system.models.engagement import WorkflowCollectionEngagement
-
-from django_workflow_system.models.collection import WorkflowCollection
-
-from django_workflow_system.models.collection_member import WorkflowCollectionMember
-
-from django_workflow_system.models.json_schema import JSONSchema
-from django_workflow_system.models.recommendation import (
+    WorkflowCollectionImage,
+    WorkflowCollectionImageType,
+    WorkflowCollectionMember,
     WorkflowCollectionRecommendation,
 )
+
+#############
+# WORKFLOWS #
+#############
 from django_workflow_system.models.step import WorkflowStep
 from django_workflow_system.models.step_audio import WorkflowStepAudio
 from django_workflow_system.models.step_dependency_detail import (

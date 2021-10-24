@@ -8,8 +8,10 @@ from django.db.models import Q
 from django.utils import timezone
 
 from django_workflow_system.models.abstract_models import CreatedModifiedAbstractModel
-from django_workflow_system.models.collection import WorkflowCollection
-from django_workflow_system.models.engagement import WorkflowCollectionEngagement
+from django_workflow_system.models.collections.collection import WorkflowCollection
+from django_workflow_system.models.collections.engagement import (
+    WorkflowCollectionEngagement,
+)
 
 
 class WorkflowCollectionAssignment(CreatedModifiedAbstractModel):
