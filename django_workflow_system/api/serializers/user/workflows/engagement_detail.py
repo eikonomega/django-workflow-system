@@ -3,6 +3,8 @@ from django.urls import reverse
 import jsonschema
 from rest_framework import serializers
 
+from django_workflow_system.models.collections.engagement import EngagementStateType
+
 
 from .....models import (
     WorkflowCollectionEngagementDetail,
@@ -81,7 +83,7 @@ class WorkflowCollectionEngagementDetailSerializer(serializers.ModelSerializer):
             workflow_collection_engagement.workflow_collection
         )
 
-        state = workflow_collection_engagement.state
+        state: EngagementStateType = workflow_collection_engagement.state
 
         # CHECK 1: Does the specified step belong to a workflow in the specified collection?
         if not workflow_collection.workflowcollectionmember_set.filter(
@@ -91,28 +93,40 @@ class WorkflowCollectionEngagementDetailSerializer(serializers.ModelSerializer):
                 "Step must belong to a workflow in the collection"
             )
 
-        # CHECK 2
-        # Usually, the step must be either state['next_step_id'] or state['prev_step_id']
-        # However, in an ACTIVITY workflow collection, if the user has not submitted any
-        # engagement details, the step can be any first step of a workflow
-        if workflow_collection.category == "ACTIVITY":
-            existing_engagement_details = (
-                workflow_collection_engagement.workflowcollectionengagementdetail_set.all()
-            )
-            if not existing_engagement_details:
-                if WorkflowStep.objects.filter(
-                    workflow=step.workflow, order__lt=step.order
-                ):
-                    raise serializers.ValidationError(
-                        "Posted step must be the first step in a workflow"
-                    )
-            else:
-                if step.id not in (state["next_step_id"], state["prev_step_id"]):
-                    raise serializers.ValidationError(
-                        "Posted step must be next step or previous step."
-                    )
-        elif workflow_collection.category == "SURVEY":
-            if step.id not in (state["next_step_id"], state["prev_step_id"]):
+        """
+        CHECK 2
+        Usually, the UUID of the step being submitted must be either match 
+        state['next']['step_id'] or state['previous']['step_id'] to prevent the user 
+        from getting a sort of Frankenstein engagement with messed up data.
+
+        However, there are a couple of cavaets to this if the collection is 
+        an unordered activity.
+
+        The first is that a user can start such an engagement on any workflow.
+        The second is that they can move to any other workflow after completing
+        a workflow.
+
+        In BOTH of these scenarios the state of the engagement will have a None 
+        value for both state["next"]["step_id"] and state["previous"]["step_id"] values.
+
+        We will search for that condition, and if present, allow the user to submit
+        data for any step that is the first step of a collection workflow.
+        """
+        if (
+            workflow_collection.category == "ACTIVITY"
+            and not workflow_collection.ordered
+            and state["next"]["step_id"] == None
+            and state["previous"]["step_id"] == None
+        ):
+            if WorkflowStep.objects.filter(
+                workflow=step.workflow, order__lt=step.order
+            ):
+                raise serializers.ValidationError(
+                    "Posted step must be the first step in a workflow"
+                )
+
+        else:
+            if step.id not in (state["next"]["step_id"], state["previous"]["step_id"]):
                 raise serializers.ValidationError(
                     "Posted step must be next step or previous step."
                 )

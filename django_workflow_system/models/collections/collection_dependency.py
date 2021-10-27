@@ -4,7 +4,7 @@ import uuid
 from django.db import models
 from django.core.exceptions import ValidationError
 
-from .abstract_models import CreatedModifiedAbstractModel
+from ..abstract_models import CreatedModifiedAbstractModel
 
 
 class WorkflowCollectionDependency(CreatedModifiedAbstractModel):

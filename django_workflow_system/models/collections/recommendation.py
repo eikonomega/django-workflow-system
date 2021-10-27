@@ -5,7 +5,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
-from .abstract_models import CreatedModifiedAbstractModel
+from ..abstract_models import CreatedModifiedAbstractModel
 from .collection import WorkflowCollection
 
 
