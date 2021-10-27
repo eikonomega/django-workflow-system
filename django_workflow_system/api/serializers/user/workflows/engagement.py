@@ -5,6 +5,8 @@ from django.urls import reverse
 from django.urls.exceptions import NoReverseMatch
 from rest_framework import serializers
 
+from django_workflow_system.models.collections.engagement import EngagementStateType
+
 from .....models import WorkflowCollection, WorkflowCollectionEngagement
 from .engagement_detail import WorkflowCollectionEngagementDetailSerializer
 
@@ -139,18 +141,36 @@ class WorkflowCollectionEngagementBaseSerializer(serializers.ModelSerializer):
                 return None
             return self.context["request"].build_absolute_uri(reversed_url)
 
-        state = instance.state
-        formatted_previously_completed_workflows = []
-        for previously_completed_workflow in state["previously_completed_workflows"]:
-            uri = workflow_to_uri(previously_completed_workflow["workflow_id"])
-            if uri:
-                formatted_previously_completed_workflows.append({"workflow": uri})
+        state: EngagementStateType = instance.state
 
-        state["next_workflow"] = workflow_to_uri(state.pop("next_workflow_id"))
-        state["prev_workflow"] = workflow_to_uri(state.pop("prev_workflow_id"))
-        state[
+        formatted_previously_completed_workflows = {
+            "any_engagement": [],
+            "current_engagement": [],
+        }
+
+        for workflow in state["summary"]["previously_completed_workflows"][
+            "any_engagement"
+        ]:
+            uri = workflow_to_uri(workflow)
+            if uri:
+                formatted_previously_completed_workflows["any_engagement"].append(uri)
+
+        for workflow in state["summary"]["previously_completed_workflows"][
+            "current_engagement"
+        ]:
+            uri = workflow_to_uri(workflow)
+            if uri:
+                formatted_previously_completed_workflows["current_engagement"].append(
+                    uri
+                )
+
+        state["summary"][
             "previously_completed_workflows"
         ] = formatted_previously_completed_workflows
+
+        # TODO: Not sure about these... possible deletions.
+        state["next_workflow"] = workflow_to_uri(state["next"]["workflow_id"])
+        state["prev_workflow"] = workflow_to_uri(state["previous"]["workflow_id"])
 
         return state
 

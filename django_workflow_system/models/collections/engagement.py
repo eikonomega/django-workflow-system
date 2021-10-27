@@ -1,6 +1,9 @@
 """Django model definition."""
 from typing import TypedDict, List, Union
 import uuid
+from django.db.models.expressions import F, Window
+from django.db.models.functions import RowNumber
+from django.db.models.query import QuerySet
 
 import jsonschema
 from django.conf import settings
@@ -22,20 +25,33 @@ from django_workflow_system.models.collections.collection import WorkflowCollect
 from django_workflow_system.models.collections.engagement_detail import (
     WorkflowCollectionEngagementDetail,
 )
+from django_workflow_system.models.workflow import Workflow
+
+
+class PreviousNextStepDescriptor(TypedDict):
+    step_id: Union[str, None]
+    workflow_id: Union[str, None]
+
+
+class PreviouslyCompletedWorkflows(TypedDict):
+    current_engagement: List[str]
+    any_engagement: List[str]
+
+
+class EngagementStateSummary(TypedDict):
+    steps_completed_in_collection: int
+    steps_in_collection: int
+    steps_completed_in_workflow: int
+    steps_in_workflow: int
+    previously_completed_workflows: PreviouslyCompletedWorkflows
 
 
 class EngagementStateType(TypedDict):
     """Type definition for the state of an engagement."""
 
-    next_workflow_id: Union[str, None]
-    next_step_id: Union[str, None]
-    prev_step_id: Union[str, None]
-    prev_workflow_id: Union[str, None]
-    steps_completed_in_collection: int
-    steps_in_collection: int
-    steps_completed_in_workflow: int
-    steps_in_workflow: int
-    previously_completed_workflows: List[str]
+    previous: PreviousNextStepDescriptor
+    next: PreviousNextStepDescriptor
+    summary: EngagementStateSummary
 
 
 class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
@@ -53,11 +69,21 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     workflow_collection = models.ForeignKey(
-        WorkflowCollection, on_delete=models.PROTECT
+        WorkflowCollection,
+        on_delete=models.PROTECT,
+        help_text="The collection which the engagement records data for.",
     )
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    started = models.DateTimeField(default=timezone.now)
-    finished = models.DateTimeField(blank=True, null=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        help_text="The user to whom the engagement belongs.",
+    )
+    started = models.DateTimeField(
+        default=timezone.now, help_text="When the user started the engagment."
+    )
+    finished = models.DateTimeField(
+        blank=True, null=True, help_text="When the user finished the engagement."
+    )
 
     class Meta:
         db_table = "workflow_system_collection_engagement"
@@ -72,160 +98,348 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
 
         Practically speaking, what workflows and steps have been completed thus far,
         and which ones still need to be completed.
-
-        Returns:
-            dict: Containing the Workflow UUID, WorkflowStep UUID and
-                  a list of previously_completed_workflows that
-                  are needed by client UI's to present the correct
-                  Workflow step to the user.
         """
 
-        prev_step: WorkflowStep = None
-        next_step: WorkflowStep = None
+        """
+        STEP 1
+        Get all steps associated with the collection. Annotate so that you 
+        have both the order of the step in each workflow and also the order of
+        the workflow the step is a part of in the collection.
 
-        # take every step
-        # filter by steps which belong to workflows which are members of this workflow collection
-        # annotate each step with its workflow's order in the workflow collection
-        # order by workflow order first, then order within the workflow
-
-        step_to_member = WorkflowCollectionMember.objects.filter(
-            workflow_collection=self.workflow_collection, workflow=OuterRef("workflow")
-        )
-
-        step_list = (
+        This is necessary because you need both pieces of information to really
+        order the steps correctly.
+        """
+        all_collection_steps: QuerySet[WorkflowStep] = (
             WorkflowStep.objects.filter(
                 workflow__workflowcollectionmember__workflow_collection=self.workflow_collection
             )
-            .annotate(wf_order=Subquery(step_to_member.values("order")[:1]))
-            .order_by("wf_order", "order")
+            .annotate(workflow_order=F("workflow__workflowcollectionmember__order"))
+            .order_by("workflow_order", "order")
         )
 
-        if not step_list:
+        for step in all_collection_steps:
+            print(step.__dict__)
+
+        # Special case to prevent crash when collection has no steps.
+        if not all_collection_steps:
             return {
-                "next_workflow_id": None,
-                "next_step_id": None,
-                "prev_step_id": None,
-                "prev_workflow_id": None,
-                "steps_completed_in_collection": 0,
-                "steps_in_collection": 0,
-                "steps_completed_in_workflow": 0,
-                "steps_in_workflow": 0,
-                "previously_completed_workflows": [],
+                "next": {"step_id": None, "workflow_id": None},
+                "previous": {"step_id": None, "workflow_id": None},
+                "summary": {
+                    "steps_completed_in_collection": None,
+                    "steps_in_collection": None,
+                    "steps_completed_in_workflow": None,
+                    "steps_in_workflow": None,
+                    "previously_completed_workflows": {
+                        "any_engagement": [],
+                        "current_engagement": [],
+                    },
+                },
             }
 
-        ######## Calculating Previous Step ########
-        for idx_prev_step, step in reversed(list(enumerate(step_list))):
-            if WorkflowCollectionEngagementDetail.objects.filter(
-                workflow_collection_engagement=self,
-                finished__isnull=False,  # step has been finished
-                step=step,
-            ):
-                prev_step = step
-                break
-
-        ######## Calculating Next Step ########
-        if self.workflow_collection.category == "ACTIVITY":
-            if not prev_step:
-                if self.workflowcollectionengagementdetail_set.all():
-                    # if we can figure out what workflow we're in, return the first step in that workflow
-                    workflow = self.workflowcollectionengagementdetail_set.all()[
-                        0
-                    ].step.workflow
-                    next_step = workflow.workflowstep_set.order_by("order").first()
-                else:
-                    next_step = step_list[0]
-            elif idx_prev_step + 1 >= len(step_list):
-                next_step = None
-            else:
-                next_step = step_list[idx_prev_step + 1]
-        elif self.workflow_collection.category == "SURVEY":
-            if not prev_step:
-                next_step = step_list[0]
-            else:
-                for step in step_list[idx_prev_step + 1 :]:
-                    # step hasn't been started, check if can begin
-                    if self.all_dependencies_satisfied(step):
-                        next_step = step
-                        break
-
-        ######## Calculating Percent Completion ########
-
-        if next_step:
-            wf_order = self.workflow_collection.workflowcollectionmember_set.get(
-                workflow__workflowstep=next_step
-            ).order
-            steps_completed_in_collection = step_list.filter(
-                Q(wf_order__lt=wf_order)
-                | Q(wf_order=wf_order, order__lt=next_step.order)
-            ).count()
-            steps_in_collection = step_list.count()
-
-            steps_completed_in_workflow = next_step.workflow.workflowstep_set.filter(
-                order__lt=next_step.order
-            ).count()
-            steps_in_workflow = next_step.workflow.workflowstep_set.count()
-        else:
-            steps_completed_in_collection = step_list.count()
-            steps_in_collection = step_list.count()
-
-            steps_completed_in_workflow = prev_step.workflow.workflowstep_set.count()
-            steps_in_workflow = prev_step.workflow.workflowstep_set.count()
-
-        ######## Calculating Previously Completed Workflows ########
-        collection_members = (
-            self.workflow_collection.workflowcollectionmember_set.all().order_by(
-                "order"
+        """
+        STEP 2
+        Collect data we will use at various points.
+        """
+        all_collection_workflows: QuerySet[Workflow] = (
+            Workflow.objects.filter(
+                workflowcollectionmember__workflow_collection=self.workflow_collection
             )
+            .annotate(workflow_order=F("workflowcollectionmember__order"))
+            .order_by("workflowcollectionmember__order")
         )
-        completed_workflows_list = (
-            []
-        )  # workflows a user has completed that may be taken again.
 
-        if self.workflow_collection.category == "ACTIVITY":
-            for member in collection_members:
-                # Check that the user has completed all steps for the
-                # Workflow at some point in some engagement
-                workflow_steps = member.workflow.workflowstep_set.all()
-                completed_all_steps = True  # true until we find an incomplete step
-                for step in workflow_steps:
-                    # if there is not a finished engagement detail for this step, then the step and member are incomplete
-                    if not WorkflowCollectionEngagementDetail.objects.filter(
-                        workflow_collection_engagement__user=self.user,
-                        # this part is different between the two loops
-                        step=step,
-                        finished__isnull=False,
-                    ):
-                        completed_all_steps = False
+        all_engagement_details: QuerySet[
+            WorkflowCollectionEngagementDetail
+        ] = self.workflowcollectionengagementdetail_set.all()
+        all_completed_engagement_details = all_engagement_details.filter(
+            finished__isnull=False
+        )
+
+        """
+        STEP 3: Determine if there is a previous step.
+        """
+        previousDescriptor: PreviousNextStepDescriptor
+        previous_step: WorkflowStep
+        previous_workflow: Workflow
+
+        if not all_completed_engagement_details:
+            # If there are no completed engagement details, this means that
+            # the engagement is brand new and there is no previous step.
+            previous_step = None
+            previous_workflow = None
+        else:
+            """
+            If there are engagement details, then we have 2 possibilities to
+            consider.
+
+            The first is that the user is in the middle of a workflow -
+            in which case there will a previous step.
+
+            The second is when the user has completed one of the workflows and is
+            more complicated depended on the characteristics of the collection.
+            """
+            if (
+                self.workflow_collection.category == "SURVEY"
+                or self.workflow_collection.ordered
+            ):
+                # Since these types of collections require steps to be completed in order,
+                # just find the last completed step and mark that are the previous step.
+                for step in reversed(list(all_collection_steps)):
+                    try:
+                        all_completed_engagement_details.get(step=step)
+                        previous_step = step
+                        previous_workflow = step.workflow
+                    except WorkflowCollectionEngagementDetail.DoesNotExist:
+                        continue
+                    else:
                         break
-                if completed_all_steps:
-                    completed_workflows_list.append({"workflow_id": member.workflow.id})
-        elif self.workflow_collection.category == "SURVEY":
-            if next_step is not None:
-                # if there exists a next_step, then then that step's workflow and the workflows after it are unfinished
-                unfinished_member = (
-                    self.workflow_collection.workflowcollectionmember_set.get(
-                        workflow=next_step.workflow
-                    )
-                )
-                # the finished workflows are all the workflows with order before the unfinished workflow
-                collection_members = collection_members.filter(
-                    order__lt=unfinished_member.order
-                )
-            for member in collection_members:
-                completed_workflows_list.append({"workflow_id": member.workflow.id})
 
-        return {
-            "next_workflow_id": next_step.workflow.id if next_step else None,
-            "next_step_id": next_step.id if next_step else None,
-            "prev_step_id": prev_step.id if prev_step else None,
-            "prev_workflow_id": prev_step.workflow.id if prev_step else None,
-            "steps_completed_in_collection": steps_completed_in_collection,
-            "steps_in_collection": steps_in_collection,
-            "steps_completed_in_workflow": steps_completed_in_workflow,
-            "steps_in_workflow": steps_in_workflow,
-            "previously_completed_workflows": completed_workflows_list,
+            else:
+                """
+                Here is the complicated one. When we are dealing with an unordered activity,
+                workflows do not need to be completed in order, which means there
+                is no definitive and predicatable ordering of steps.
+
+                That said, there is an enforcement at the serializer level that will prevent
+                a user from skipping between workflows until all the steps of a workflow
+                are finished. In other words, users can do workflows out of order, but
+                once they start a workflow, they have to finish it before switching
+                to another workflow.
+
+                We can take advantage of this.
+                """
+                for workflow in all_collection_workflows:
+                    # Grab any completed steps for the current loop iteration's workflow.
+                    unfinished_engagement_detail = (
+                        all_completed_engagement_details.filter(
+                            step__workflow=workflow
+                        ).order_by("step__order")
+                    )
+
+                    # Determine if the user is currently "in-progress" on this workflow.
+                    # This means there is at least one completed step in the workflow.
+                    if (
+                        unfinished_engagement_detail.count()
+                        and unfinished_engagement_detail.count()
+                        < workflow.workflowstep_set.count()
+                    ):
+                        # If so, the previous step is the last complete step.
+                        previous_step = all_collection_steps.get(
+                            id=unfinished_engagement_detail.last().step.id
+                        )
+                        previous_workflow = previous_step.workflow
+                        break
+                else:
+                    previous_step = None
+                    previous_workflow = None
+
+        previousDescriptor = {
+            "step_id": previous_step.id if previous_step else None,
+            "workflow_id": previous_workflow.id if previous_step else None,
         }
 
+        """
+        STEP 4: Determine if there is a next step.
+        """
+        nextDescriptor: PreviousNextStepDescriptor
+        next_step: WorkflowStep
+        next_workflow: Workflow
+
+        # If there are no completed steps/engagement details, the
+        # first step of the collection should be used.
+        if not all_completed_engagement_details:
+            next_step = all_collection_steps[0]
+            next_workflow = next_step.workflow
+
+        if previous_step:
+
+            # See if there are any steps remaining in the workflow.
+            next_step_in_workflow = (
+                all_collection_steps.filter(
+                    workflow=previous_step.workflow, order__gt=previous_step.order
+                )
+                .order_by("order")
+                .first()
+            )
+
+            if next_step_in_workflow:
+                next_step = next_step_in_workflow
+                next_workflow = next_step_in_workflow.workflow
+
+            elif (
+                self.workflow_collection.category == "SURVEY"
+                or self.workflow_collection.ordered
+            ):
+                """
+                If there isn't another step in the workflow AND the collection is a survey
+                or an ordered activity, we can use the first step of the next workflow in the
+                collection (if there is one) as the next step.
+
+                TODO: Need to re-introduce dependency checking here.
+                In light of that... need to account for the possibility
+                that you may need to skip over multiple workflows before you
+                find a step for which all dependencies are meet.
+
+                Go through steps in index order sort of like Rocky had previously.
+                """
+                first_step_of_next_workflow = (
+                    all_collection_steps.filter(
+                        workflow_order__gt=previous_step.workflow_order
+                    )
+                    .order_by("order")
+                    .first()
+                )
+
+                if first_step_of_next_workflow:
+                    next_step = first_step_of_next_workflow
+                    next_workflow = first_step_of_next_workflow.workflow
+                else:
+                    # The user has completed all steps in the collection.
+                    # They are done. :)
+                    next_step = None
+                    next_workflow = None
+
+        elif (
+            self.workflow_collection.category == "ACTIVITY"
+            and not self.workflow_collection.ordered
+        ):
+            """
+            If there is no previous step for an unordered activity, this can mean
+            one of two things.
+
+            The first is the engagement is brand new in which case the
+            next step should be set to the first step of the collection.
+            This case has already been handled previously.
+
+            The second is when a workflow has been started (i.e. there is
+            a single unfinished engagement detail) that is not the first
+            workflow of the collection.
+            """
+            print("UNORDERED ACTIVITY")
+
+            next_step = None
+            next_workflow = None
+
+            for workflow in all_collection_workflows:
+                # See if there is an unfinished engagement detail
+                try:
+                    unfinished_engagement_detail = all_engagement_details.get(
+                        step__workflow=workflow, finished__isnull=True
+                    )
+                except WorkflowCollectionEngagementDetail.DoesNotExist:
+                    pass
+                else:
+                    next_step = all_collection_steps.get(
+                        id=unfinished_engagement_detail.step.id
+                    )
+                    next_workflow = next_step.workflow
+                    break
+
+        nextDescriptor = {
+            "step_id": next_step.id if next_step else None,
+            "workflow_id": next_workflow.id if next_step else None,
+        }
+
+        """
+        STEP 5: Determine how much progress the user has made in the current engagement.
+        """
+
+        # How many steps are in the collection?
+        steps_in_collection_count = all_collection_steps.count()
+
+        # How many steps are completed in this engagement for the collection?
+        completed_steps_in_collection_count = 0
+
+        for step in all_collection_steps:
+            try:
+                all_completed_engagement_details.get(step=step)
+            except WorkflowCollectionEngagementDetail.DoesNotExist:
+                pass
+            else:
+                completed_steps_in_collection_count += 1
+
+        """
+        Now we will determine how many steps are left to complete in the current workflow.
+        This gets a little tricky as you have to answer the question 'what determines the current collection`?
+
+        For our purposes, we will take the workflow of `next_step` to be the current collection.
+        """
+
+        if next_step:
+            steps_in_workflow = next_step.workflow.workflowstep_set.all()
+            steps_in_workflow_count = steps_in_workflow.count()
+            completed_steps_in_workflow_count = 0
+
+            for step in steps_in_workflow:
+                try:
+                    all_completed_engagement_details.get(step=step)
+                except WorkflowCollectionEngagementDetail.DoesNotExist:
+                    pass
+                else:
+                    completed_steps_in_workflow_count += 1
+        else:
+            # There is no currently in progress workflow.
+            steps_in_workflow_count = None
+            completed_steps_in_workflow_count = None
+
+        """
+        STEP 6: Calculating Previously Completed Workflows
+
+        Determine which workflows have been completed. Either in this engagement
+        or in a previous engagement.
+        """
+        completed_workflows_in_this_engagement = []
+        completed_workflows_in_any_engagement = []
+
+        for workflow in all_collection_workflows:
+            workflow_steps = workflow.workflowstep_set.all()
+
+            # We will mark these as false as needed.
+            completed_in_this_engagement = True
+            completed_in_any_engagement = True
+
+            for step in workflow_steps:
+                previous_step_completions = (
+                    WorkflowCollectionEngagementDetail.objects.filter(
+                        workflow_collection_engagement__user=self.user,
+                        step=step,
+                        finished__isnull=False,
+                    )
+                )
+
+                if not previous_step_completions.filter(
+                    workflow_collection_engagement=self
+                ):
+                    completed_in_this_engagement = False
+
+                if not previous_step_completions:
+                    completed_in_any_engagement = False
+                    # No need to process further steps since we know this step
+                    # wasn't completed in any engagement.
+                    break
+
+            if completed_in_any_engagement:
+                completed_workflows_in_any_engagement.append(workflow.id)
+            if completed_in_this_engagement:
+                completed_workflows_in_this_engagement.append(workflow.id)
+
+        return {
+            "next": nextDescriptor,
+            "previous": previousDescriptor,
+            "summary": {
+                "steps_completed_in_collection": completed_steps_in_collection_count,
+                "steps_in_collection": steps_in_collection_count,
+                "steps_completed_in_workflow": completed_steps_in_workflow_count,
+                "steps_in_workflow": steps_in_workflow_count,
+                "previously_completed_workflows": {
+                    "any_engagement": completed_workflows_in_any_engagement,
+                    "current_engagement": completed_workflows_in_this_engagement,
+                },
+            },
+        }
+
+    # TODO: Put this back in place.
     def all_dependencies_satisfied(self, step):
         step_dependency_group_list = WorkflowStepDependencyGroup.objects.filter(
             workflow_collection=self.workflow_collection,
