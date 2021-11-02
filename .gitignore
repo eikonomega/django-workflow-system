@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+node_modules/
 .Python
 build/
 develop-eggs/
@@ -141,5 +142,4 @@ dmypy.json
 # Mediafiles Folder
 mediafiles/*
 staticfiles/*
-
 eggsellent/*
