@@ -186,9 +186,15 @@ class WorkflowCollectionEngagementDetailSerializer(serializers.ModelSerializer):
             """
 
         # CHECK 4
-        # 1: Ensure all required attributes are present for each question in the payload.
-        # 2: Ensure user input data in payload corresponds to actual, defined user inputs for the step.
-        # 3: Sorted user inputs for further validation in CHECK 5.
+        # 1: Ensure that `user_responses` in the payload is an array/list.
+        # 2: Ensure all required attributes are present for each question in the payload.
+        # 3: Ensure user input data in payload corresponds to actual, defined user inputs for the step.
+        # 4: Sorted user inputs for further validation in CHECK 5.
+        if type(user_responses) != list:
+            raise serializers.ValidationError(
+                {"user_responses": "This attribute of the payload must be an array."}
+            )
+
         collected_user_inputs_by_step_input_id = {}
 
         # Outer Loop: User Response Sets
