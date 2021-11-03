@@ -377,6 +377,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             return Response(data=data, status=status.HTTP_200_OK)
 
     def delete(self, request, engagement_id, id):
+        """Delete enagement details for current user."""
         engagement_details = WorkflowCollectionEngagementDetail.objects.filter(
             workflow_collection_engagement=engagement_id,
             workflow_collection_engagement__user=request.user,
