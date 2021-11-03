@@ -30,6 +30,8 @@ class WorkflowCollectionEngagementDetailsView(APIView):
       for a given WorkflowEngagement belonging to the requesting user.
     * Post: Create a new WorkflowCollectionEngagementDetail resource for a
       given WorkflowEngagement on behalf of the requesting user.
+    * Delete: Deletes a WorkflowCollectionEngagementDetail resource for a
+      given WorkflowEngagement on behalf of the requesting user.
     """
 
     required_scopes = ["read", "write"]
