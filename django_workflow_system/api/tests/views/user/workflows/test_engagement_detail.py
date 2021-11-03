@@ -1393,3 +1393,35 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             request, my_workflow_engagement.id, my_workflow_engagement_detail.id
         )
         self.assertEqual(response.status_code, 400)
+
+    def test_get__user_has_engagement_details_delete(self):
+        """Delete engagement details for the requesting user."""
+        request = self.factory.get(
+            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
+        )
+        request.user = self.user_with_activity_engagement
+        response = self.view(request, self.user_with_activity_engagement__engagement.id)
+
+        self.assertEqual(response.status_code, 200)
+
+        for result in response.data:
+            self.assertCountEqual(
+                list(result.keys()),
+                ["detail", "step", "user_responses", "started", "finished"],
+            )
+            self.assertEqual(
+                result["detail"],
+                f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
+                f"{self.user_with_activity_engagement__engagement.id}/details/"
+                f"{self.user_with_activity_engagement__detail.id}/",
+            )
+
+        request = self.factory.delete(
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
+            f"{self.user_with_activity_engagement__engagement.id}/details/"
+            f"{self.user_with_activity_engagement__detail.id}/"
+        )
+
+        response = self.view(request, self.user_with_activity_engagement__engagement.id)
+
+        self.assertFalse(response.data["detail"])
