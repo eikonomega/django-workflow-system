@@ -375,3 +375,11 @@ class WorkflowCollectionEngagementDetailView(APIView):
                 data["state"]["proceed"] = True
 
             return Response(data=data, status=status.HTTP_200_OK)
+
+    def delete(self, request, engagement_id, id):
+        engagement_details = WorkflowCollectionEngagementDetail.objects.filter(
+            workflow_collection_engagement=engagement_id,
+            workflow_collection_engagement__user=request.user,
+        )
+        engagement_details.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
