@@ -1403,18 +1403,14 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         response = self.view(request, self.user_with_activity_engagement__engagement.id)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["detail"].length(), 1)
 
-        for result in response.data:
-            self.assertCountEqual(
-                list(result.keys()),
-                ["detail", "step", "user_responses", "started", "finished"],
-            )
-            self.assertEqual(
-                result["detail"],
-                f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
-                f"{self.user_with_activity_engagement__engagement.id}/details/"
-                f"{self.user_with_activity_engagement__detail.id}/",
-            )
+        self.assertEqual(
+            response.data["detail"],
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
+            f"{self.user_with_activity_engagement__engagement.id}/details/"
+            f"{self.user_with_activity_engagement__detail.id}/",
+        )
 
         request = self.factory.delete(
             f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
@@ -1422,6 +1418,11 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"{self.user_with_activity_engagement__detail.id}/"
         )
 
+        request = self.factory.get(
+            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
+        )
+
         response = self.view(request, self.user_with_activity_engagement__engagement.id)
 
-        self.assertFalse(response.data["detail"])
+        self.assertEqual(response.data["detail"].length(), 0)
+        self.assertEqual(response.status_code, 204)
