@@ -134,6 +134,42 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 self.user_with_activity_engagement__detail.started,
             )
 
+    def test_get__user_has_engagement_detail_delete(self):
+        """Delete engagement details for the requesting user."""
+        request = self.factory.get(
+            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
+            f"{self.user_with_activity_engagement__detail.id}/"
+        )
+
+        request.user = self.user_with_activity_engagement
+        response = self.view(request, self.user_with_activity_engagement__engagement.id)
+
+        self.assertEqual(response.status_code, 200)
+        # self.assertEqual(response.data[0]["detail"].length(), 1)
+
+        self.assertEqual(
+            response.data[0]["detail"],
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
+            f"{self.user_with_activity_engagement__engagement.id}/details/"
+            f"{self.user_with_activity_engagement__detail.id}/",
+        )
+
+        request = self.factory.delete(
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
+            f"{self.user_with_activity_engagement__engagement.id}/details/"
+            f"{self.user_with_activity_engagement__detail.id}/"
+        )
+
+        request = self.factory.get(
+            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
+            f"{self.user_with_activity_engagement__detail.id}/"
+        )
+
+        request.user = self.user_with_activity_engagement
+        response = self.view(request, self.user_with_activity_engagement__engagement.id)
+        # self.assertEqual(response.data["detail"].length(), 0)
+        self.assertEqual(response.status_code, 204)
+
     def test_post__incomplete_payload(self):
         """Incomplete JSON payload returns a 400 error."""
         user = UserFactory()
