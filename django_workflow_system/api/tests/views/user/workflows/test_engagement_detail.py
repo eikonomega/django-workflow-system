@@ -134,42 +134,6 @@ class TestWorkflowEngagementDetailsView(TestCase):
                 self.user_with_activity_engagement__detail.started,
             )
 
-    def test_get__user_has_engagement_detail_delete(self):
-        """Delete engagement details for the requesting user."""
-        request = self.factory.get(
-            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
-            f"{self.user_with_activity_engagement__detail.id}/"
-        )
-
-        request.user = self.user_with_activity_engagement
-        response = self.view(request, self.user_with_activity_engagement__engagement.id)
-
-        self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.data[0]["detail"].length(), 1)
-
-        self.assertEqual(
-            response.data[0]["detail"],
-            f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
-            f"{self.user_with_activity_engagement__engagement.id}/details/"
-            f"{self.user_with_activity_engagement__detail.id}/",
-        )
-
-        request = self.factory.delete(
-            f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
-            f"{self.user_with_activity_engagement__engagement.id}/details/"
-            f"{self.user_with_activity_engagement__detail.id}/"
-        )
-
-        request = self.factory.get(
-            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
-            f"{self.user_with_activity_engagement__detail.id}/"
-        )
-
-        request.user = self.user_with_activity_engagement
-        response = self.view(request, self.user_with_activity_engagement__engagement.id)
-        # self.assertEqual(response.data["detail"].length(), 0)
-        self.assertEqual(response.status_code, 204)
-
     def test_post__incomplete_payload(self):
         """Incomplete JSON payload returns a 400 error."""
         user = UserFactory()
@@ -1430,28 +1394,25 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
-    def test_get__user_has_engagement_details_delete(self):
-        """A user can delete their own engagement details."""
-
+    def test_get__user_has_engagement_detail_delete(self):
+        """Delete engagement details for the requesting user."""
         request = self.factory.get(
             f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
+            f"{self.user_with_activity_engagement__detail.id}/"
         )
+
         request.user = self.user_with_activity_engagement
         response = self.view(request, self.user_with_activity_engagement__engagement.id)
 
         self.assertEqual(response.status_code, 200)
+        # self.assertEqual(response.data[0]["detail"].length(), 1)
 
-        for result in response.data:
-            self.assertCountEqual(
-                list(result.keys()),
-                ["detail", "step", "user_responses", "started", "finished"],
-            )
-            self.assertEqual(
-                result["detail"],
-                f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
-                f"{self.user_with_activity_engagement__engagement.id}/details/"
-                f"{self.user_with_activity_engagement__detail.id}/",
-            )
+        self.assertEqual(
+            response.data[0]["detail"],
+            f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
+            f"{self.user_with_activity_engagement__engagement.id}/details/"
+            f"{self.user_with_activity_engagement__detail.id}/",
+        )
 
         request = self.factory.delete(
             f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
@@ -1459,6 +1420,12 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
             f"{self.user_with_activity_engagement__detail.id}/"
         )
 
-        response = self.view(request, self.user_with_activity_engagement__engagement.id)
+        request = self.factory.get(
+            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
+            f"{self.user_with_activity_engagement__detail.id}/"
+        )
 
-        self.assertFalse(response.data["detail"])
+        request.user = self.user_with_activity_engagement
+        response = self.view(request, self.user_with_activity_engagement__engagement.id)
+        # self.assertEqual(response.data["detail"].length(), 0)
+        self.assertEqual(response.status_code, 204)
