@@ -1395,7 +1395,8 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_get__user_has_engagement_details_delete(self):
-        """Delete engagement details for the requesting user."""
+        """A user can delete their own engagement details."""
+
         request = self.factory.get(
             f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
         )
