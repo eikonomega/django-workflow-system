@@ -30,8 +30,6 @@ class WorkflowCollectionEngagementDetailsView(APIView):
       for a given WorkflowEngagement belonging to the requesting user.
     * Post: Create a new WorkflowCollectionEngagementDetail resource for a
       given WorkflowEngagement on behalf of the requesting user.
-    * Delete: Deletes a WorkflowCollectionEngagementDetail resource for a
-      given WorkflowEngagement on behalf of the requesting user.
     """
 
     required_scopes = ["read", "write"]
@@ -207,6 +205,9 @@ class WorkflowCollectionEngagementDetailView(APIView):
     * Patch: Update a specific WorkflowCollectionEngagementDetail resource
       associated with a given WorkflowEngagement and belonging
       to the requesting user.
+
+    * Delete: Deletes a WorkflowCollectionEngagementDetail resource for a
+      given WorkflowEngagement on behalf of the requesting user.
     """
 
     required_scopes = ["read", "write"]
@@ -379,7 +380,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             return Response(data=data, status=status.HTTP_200_OK)
 
     def delete(self, request, engagement_id, id):
-        """Delete  a WorkflowCollectionEngagementDetail associated with a given WorkflowEngagement for current user."""
+        """Delete a WorkflowCollectionEngagementDetail associated with a given WorkflowEngagement for current user."""
         engagement_detail = WorkflowCollectionEngagementDetail.objects.get(
             id=id,
             workflow_collection_engagement=engagement_id,
