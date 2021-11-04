@@ -205,6 +205,9 @@ class WorkflowCollectionEngagementDetailView(APIView):
     * Patch: Update a specific WorkflowCollectionEngagementDetail resource
       associated with a given WorkflowEngagement and belonging
       to the requesting user.
+
+    * Delete: Deletes a WorkflowCollectionEngagementDetail resource for a
+      given WorkflowEngagement on behalf of the requesting user.
     """
 
     required_scopes = ["read", "write"]
@@ -375,3 +378,14 @@ class WorkflowCollectionEngagementDetailView(APIView):
                 data["state"]["proceed"] = True
 
             return Response(data=data, status=status.HTTP_200_OK)
+
+    def delete(self, request, engagement_id, id):
+        # TODO: Need to handle case where a request is received to delete a detail that does not belong to the user.
+        """Delete a WorkflowCollectionEngagementDetail associated with a given WorkflowEngagement for current user."""
+        engagement_detail = WorkflowCollectionEngagementDetail.objects.get(
+            id=id,
+            workflow_collection_engagement=engagement_id,
+            workflow_collection_engagement__user=request.user,
+        )
+        engagement_detail.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
