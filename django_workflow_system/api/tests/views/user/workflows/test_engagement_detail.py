@@ -518,6 +518,9 @@ class TestWorkflowEngagementDetailsView(TestCase):
 class TestWorkflowCollectionEngagementDetailView(TestCase):
     def setUp(self):
         self.view = WorkflowCollectionEngagementDetailView.as_view()
+
+        # There are times when we will want to call the collection level view as part of a test.
+        self.collection_view = WorkflowCollectionEngagementDetailsView.as_view()
         self.factory = APIRequestFactory()
         self.single_activity_collection: WorkflowCollection = WorkflowCollectionFactory(
             **{
@@ -1394,38 +1397,44 @@ class TestWorkflowCollectionEngagementDetailView(TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
-    def test_get__user_has_engagement_detail_delete(self):
-        """Delete engagement details for the requesting user."""
-        request = self.factory.get(
-            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
-            f"{self.user_with_activity_engagement__detail.id}/"
-        )
+    def test_user_can_delete_personal_engagement_detail(self):
+        """A user can delete their own CollectionEngagementDetail resources."""
 
-        request.user = self.user_with_activity_engagement
-        response = self.view(request, self.user_with_activity_engagement__engagement.id)
+        # Step 1: Ensure there is 1 engagement detail on the engagement that can be deleted.
+        request = self.factory.get(
+            f"/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/"
+        )
+        request.user = self.user_with_engagement
+        response = self.collection_view(
+            request, self.user_with_engagement__engagement.id
+        )
 
         self.assertEqual(response.status_code, 200)
-        # self.assertEqual(response.data[0]["detail"].length(), 1)
+        self.assertEqual(len(response.data), 1)
 
-        self.assertEqual(
-            response.data[0]["detail"],
-            f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
-            f"{self.user_with_activity_engagement__engagement.id}/details/"
-            f"{self.user_with_activity_engagement__detail.id}/",
-        )
-
+        # Step 2: Attempt to delete the engagment detail.
         request = self.factory.delete(
             f"http://testserver/api/workflow_system/users/self/workflows/engagements/"
-            f"{self.user_with_activity_engagement__engagement.id}/details/"
-            f"{self.user_with_activity_engagement__detail.id}/"
+            f"{self.user_with_engagement__engagement.id}/details/"
+            f"{self.user_with_engagement__detail.id}/"
         )
 
-        request = self.factory.get(
-            f"/users/self/workflows/engagements/{self.user_with_activity_engagement__engagement.id}/details/"
-            f"{self.user_with_activity_engagement__detail.id}/"
+        request.user = self.user_with_engagement
+        response = self.view(
+            request,
+            self.user_with_engagement__engagement.id,
+            self.user_with_engagement__detail.id,
         )
-
-        request.user = self.user_with_activity_engagement
-        response = self.view(request, self.user_with_activity_engagement__engagement.id)
-        # self.assertEqual(response.data["detail"].length(), 0)
         self.assertEqual(response.status_code, 204)
+
+        # Step 3: Verify the engagement detail was deleted.
+        request = self.factory.get(
+            f"/users/self/workflows/engagements/{self.user_with_engagement__engagement.id}/details/"
+        )
+        request.user = self.user_with_engagement
+        response = self.collection_view(
+            request, self.user_with_engagement__engagement.id
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)

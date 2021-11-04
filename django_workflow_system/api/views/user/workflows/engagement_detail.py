@@ -380,6 +380,7 @@ class WorkflowCollectionEngagementDetailView(APIView):
             return Response(data=data, status=status.HTTP_200_OK)
 
     def delete(self, request, engagement_id, id):
+        # TODO: Need to handle case where a request is received to delete a detail that does not belong to the user.
         """Delete a WorkflowCollectionEngagementDetail associated with a given WorkflowEngagement for current user."""
         engagement_detail = WorkflowCollectionEngagementDetail.objects.get(
             id=id,
