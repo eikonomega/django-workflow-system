@@ -119,7 +119,7 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
         )
 
         for step in all_collection_steps:
-            pprint(vars(step))
+            pprint(vars(step), "\n")
 
         # Special case to prevent crash when collection has no steps.
         if not all_collection_steps:
@@ -149,6 +149,9 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
             .annotate(workflow_order=F("workflowcollectionmember__order"))
             .order_by("workflowcollectionmember__order")
         )
+
+        for collection in all_collection_workflows:
+            pprint("Collection Member", vars(collection), "\n")
 
         all_engagement_details: QuerySet[
             WorkflowCollectionEngagementDetail
@@ -268,10 +271,15 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
                 next_step = next_step_in_workflow
                 next_workflow = next_step_in_workflow.workflow
 
+                print("Using the next step in the same workflow.")
+
             elif (
                 self.workflow_collection.category == "SURVEY"
                 or self.workflow_collection.ordered
             ):
+                print(
+                    "There is no next step in the current workflow. Need to see if there is a next step in the next workflow."
+                )
                 """
                 If there isn't another step in the workflow AND the collection is a survey
                 or an ordered activity, we can use the first step of the next workflow in the
