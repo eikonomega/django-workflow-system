@@ -292,6 +292,9 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
 
                 Go through steps in index order sort of like Rocky had previously.
                 """
+
+                print("Last Step", vars(previous_step))
+
                 first_step_of_next_workflow = (
                     all_collection_steps.filter(
                         workflow_order__gt=previous_step.workflow_order
@@ -299,6 +302,8 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
                     .order_by("order")
                     .first()
                 )
+
+                print("First Step of Next Workflow", first_step_of_next_workflow)
 
                 if first_step_of_next_workflow:
                     next_step = first_step_of_next_workflow
