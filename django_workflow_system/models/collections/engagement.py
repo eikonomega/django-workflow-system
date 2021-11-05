@@ -299,7 +299,7 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
                     all_collection_steps.filter(
                         workflow_order__gt=previous_step.workflow_order
                     )
-                    .order_by("order")
+                    .order_by("workflow_order", "order")
                     .first()
                 )
 
