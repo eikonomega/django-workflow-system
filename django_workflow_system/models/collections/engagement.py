@@ -4,6 +4,7 @@ import uuid
 from django.db.models.expressions import F, Window
 from django.db.models.functions import RowNumber
 from django.db.models.query import QuerySet
+from pprint import pprint
 
 import jsonschema
 from django.conf import settings
@@ -118,7 +119,7 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
         )
 
         for step in all_collection_steps:
-            print(step.__dict__)
+            pprint(vars(step))
 
         # Special case to prevent crash when collection has no steps.
         if not all_collection_steps:
