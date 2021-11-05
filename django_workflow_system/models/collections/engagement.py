@@ -119,7 +119,7 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
         )
 
         for step in all_collection_steps:
-            pprint(vars(step), "\n")
+            print(vars(step), "\n")
 
         # Special case to prevent crash when collection has no steps.
         if not all_collection_steps:
@@ -151,7 +151,7 @@ class WorkflowCollectionEngagement(CreatedModifiedAbstractModel):
         )
 
         for collection in all_collection_workflows:
-            pprint("Collection Member", vars(collection), "\n")
+            print("Collection Member", vars(collection), "\n")
 
         all_engagement_details: QuerySet[
             WorkflowCollectionEngagementDetail
