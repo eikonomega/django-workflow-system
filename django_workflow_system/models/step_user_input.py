@@ -20,6 +20,7 @@ from django_workflow_system.utils.response_schema_handlers import (
     single_choice_question_schema,
     true_false_question_schema,
 )
+from django_workflow_system.utils import workflow_step_media_location
 
 
 class WorkflowStepUserInput(CreatedModifiedAbstractModel):
@@ -52,6 +53,10 @@ class WorkflowStepUserInput(CreatedModifiedAbstractModel):
         help_text="Used to specify input, label, options, and correct answers."
     )
     type = models.ForeignKey(WorkflowStepUserInputType, on_delete=models.PROTECT)
+
+    url = models.ImageField(
+        upload_to=workflow_step_media_location, max_length=200, null=True
+    )
 
     class Meta:
         db_table = "workflow_system_step_user_input"
