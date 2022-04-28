@@ -44,7 +44,7 @@ class SteptextInline(admin.TabularInline):
 class StepUserInputForm(forms.ModelForm):
     class Meta:
         model = WorkflowStepUserInput
-        fields = ["ui_identifier", "required", "type", "specification"]
+        fields = ["ui_identifier", "required", "type", "specification", "url"]
 
     class Media:
         js = ("admin/js/jquery.init.js",)
